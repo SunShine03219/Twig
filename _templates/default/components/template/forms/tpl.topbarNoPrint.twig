@@ -1,0 +1,881 @@
+{% macro tpl_topbar() %}
+<script>
+	window.addEventListener('load', function(){
+	
+		// Date Start
+		$('#date_start').datepicker({
+			uiLibrary: 'bootstrap4',
+			iconsLibrary: 'fontawesome',
+			format: 'mm/dd/yyyy',
+			size: 'small'
+		});
+		// Date End
+		$('#date_end').datepicker({
+			uiLibrary: 'bootstrap4',
+			iconsLibrary: 'fontawesome',
+			format: 'mm/dd/yyyy',
+			size: 'small'
+		});
+	});
+</script>
+
+<style>
+
+	@media print {
+		#myTable {transform: scale(.6);}
+	}
+	#stage{
+		overflow-x:hidden;
+	}
+	
+	.custom_form_control{
+		display: block;
+		height: calc(1.5em + .75rem + 2px);
+		padding: .375rem .75rem;
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #495057;
+		background-color: #fff;
+		background-clip: padding-box;
+		border: 1px solid #ced4da;
+		border-radius: .25rem;
+		transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+	}
+	.tool_open{
+		color: white !important;
+		background-color: #1d2b36 !important;
+	}
+
+	@media (min-width: 992px) {
+		#showSideBar {
+			display:none !important
+		}
+	}
+	@media (max-width: 992px) {
+		#btnPrint {
+			display:none !important
+		}
+	}
+
+	@media (max-width: 550px) {
+		#search_form {
+			display:none !important
+		}
+		#affiliate_select {
+			display:none !important
+		}
+
+	}
+	@media (min-width: 550px) {
+		#search_form2 {
+			display:none !important
+		}
+		#affiliate_select2 {
+			display:none !important
+		}
+		#fullScreen {
+			display:none !important
+		}
+		#customize_button {
+			display:none !important
+		}
+	}
+	
+
+</style>
+<div class="pos-f-t" id="top_bar">
+
+
+	<nav id="funding_nav" class="navbar navbar-light bg-light d-flex" style="display:inline-block;width:100%">
+		<div class="d-flex justify-content-start">
+			<button class="navbar-toggler p-2 mt-2" style="height:40px;" id="showSideBar" type="button">
+				<i class="fas fa-bars"></i>
+			</button>
+
+			<a href="/deals/new" style="height:40px;" class="btn btn-warning text-white my-2 m-2" type="button">
+				<i class="fas fa-plus-circle fa-fw"></i> New Deal
+			</a>
+
+			<div id="search_form" class="search m-2" style="display:inline-block; width:300px !important">
+				<form id="deal_search" name="search" action="/deals/search" method="get" style="margin-block-end: 0em;">
+					<input id="input_deal_search" type="text" name="search" style = "width:90% !important" placeholder="Search deals..."{% if search %} value="{{ search }}"{% endif %} />
+					<i class="fas fa-search" onclick="document.getElementById('deal_search').submit();"></i>
+				</form>
+			</div>
+
+			<div id="affiliate_select" class="d-inline-flex justify-content-between m-2" style="margin-left: 100px !important;">
+				<select class="form-control" id="affiliated_company_list" style="width:300px">
+					{% for affiliate in session.affiliation %}
+					<option value="{{ affiliate.id }}" {% if session.company_id == affiliate.id %} selected="selected"{% endif %}>{{ affiliate.name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+
+
+		</div>
+
+		<div class="d-flex justify-content-end">
+			<div class="btn-group m-2" style="float:right">
+				<button type="button" class="btn btn-secondary dropdown-toggle" style="background-color:#1d2b36 !important; border-color:#1d2b36 !important" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fas fa-user fa-fw"></i>
+				</button>
+				<div class="dropdown-menu dropdown-menu-right" style="background-color:#fff;border: 1px solid rgba(0,0,0,.15) !important">
+					<a class="dropdown-item" style="background-color:#fff" href="/profile/user?id={{ session.user_id }}"><i class="fas fa-user fa-fw"></i> {{ session.name_first }} {{ session.name_last }} </a>
+					{# <a class="dropdown-item" style="background-color:#fff" href="http://thefundingtracker.net/"><i class="fas fa-sign-out-alt"></i> Old FundingTracker</a> #}
+					<a class="dropdown-item" style="background-color:#fff" href="/messages/notifications"><i class="fas fa-bell"></i> Notifications Center</a>
+					<a class="dropdown-item" style="background-color:#fff" href="logout.php"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+				</div>
+			</div>
+		</div>
+
+	</nav>
+
+	<div id="nav-title" style="height:45px">
+		<div style="display:inline">{{ page_title }}</div>
+		<div style="display:inline;">
+			<span id="fullScreen" class="btn btn-success" style="display: inline; margin-left:10px; cursor:pointer">
+				Full View
+			</span>
+		</div>
+		<button id="customize_button" class="btn btn-primary btn-md" style="float:right; margin-right:10px;" id="btn_customize" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+				Customize
+		</button>
+	</div>
+
+	<div class="collapse" id="navbarToggleExternalContent">
+		<div id="search_form2" class="search m-2" style="display:inline-block; background-color: #fff; margin-left:50px !important">
+			<form id="deal_search" name="search" action="/deals/search" method="get" style="margin-block-end: 0em;">
+				<input type="text" name="search" placeholder="Search deals..."{% if search %} value="{{ search }}"{% endif %} />
+				<i class="fas fa-search" onclick="document.getElementById('search_form2').submit();"></i>
+			</form>
+		</div>
+		<div id="affiliate_select2" class="justify-content-between m-2" style="margin-left:50px !important">
+			<select class="form-control" id="affiliated_company_list2" style="width:82%">
+				{% for affiliate in session.affiliation %}
+				<option value="{{ affiliate.id }}" {% if session.company_id == affiliate.id %} selected="selected"{% endif %}>{{ affiliate.name }}</option>
+				{% endfor %}
+			</select>
+		</div>
+
+	</div>
+</div>
+<div id="dialog" title="Message" class="modal hide">
+	<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header" style="display: flex; align-items: flex-end">
+			<h4 class="modal-title" id="modal-day-title">Messages</h4>
+			<a href="/messages/notifications">View all notifications</a>
+		</div>
+		<div class="modal-body" id="modal-messages-body" style="word-wrap: break-word">
+		...
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-light btn-sm btn-block" data-dismiss="modal">Close</button>
+		</div>
+	</div>
+  </div>
+</div>
+<div id="note_modal" class="modal fade" role="dialog">
+	<div class="modal-dialog modal-lg">
+				<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="col-md-5"></div>
+				<h4 class="modal-title">Notes</h4>
+			</div>
+			<div class="modal-body">
+				<form action="/togglemodal.php" method="post" class="m-2">
+					<input type="hidden" name="note_id" id="note_id">
+					<input type="hidden" name="action" value="insert">
+					<input type="hidden" name="type" value="add_new_note">
+
+
+					<div class="container">
+						<div class="row  mb-2">                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+							<input class="custom_form_control mr-sm-2 ml-3" style="display:inline-block; width:60%" name="note_content" type="text" placeholder="Add New Note">
+							<button class="btn btn-outline-success ml-2 my-sm-0" type="submit"><i class="fas fa-plus"></i> Add</button>					
+						</div>
+						<div id="note_modal_body">
+
+						</div>
+					</div>
+					<style>
+						.note-row{
+							font-size: 14px;
+							background-color: #eff3f4;
+							padding: 10px;
+							margin: 1px 0;
+						}
+
+						#note_modal_body{
+							max-height:300px;
+							overflow-y:auto;
+						}
+					</style>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+
+		</div>
+	</div>
+</div>
+
+<div id="dialog" title="Message" class="modal hide">
+	<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header" style="display: flex; align-items: flex-end">
+			<h4 class="modal-title" id="modal-day-title">Messages</h4>
+			<a href="/messages/notifications">View all notifications</a>
+		</div>
+		<div class="modal-body" id="modal-messages-body" style="word-wrap: break-word">
+		...
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-light btn-sm btn-block" data-dismiss="modal">Close</button>
+		</div>
+	</div>
+  </div>
+</div>
+<script>
+	$(document).ready(function(){
+
+		$("#fullScreen").click(function(){
+			changeFullScreenMode();
+		});
+		
+		$("#hideSideBar").click(function(){
+			$("#nav-sidebar").removeAttr('style');
+			$("#showSideBar").removeClass("open");
+		});
+
+		$("#showSideBar").click(function(){
+			if(!$(this).hasClass('open')){
+				$("#nav-sidebar").attr('style','display: block !important');
+				$(this).addClass("open");
+			}
+			else{
+				$("#nav-sidebar").removeAttr('style');
+				$(this).removeClass("open");
+			}
+		});
+		$("#top_bar, #nav-title, #content-container").click(function(e){
+			var container = $("#showSideBar");
+			if (!container.is(e.target) && container.has(e.target).length === 0) {
+				$("#nav-sidebar").removeAttr('style');
+				$("#showSideBar").removeClass("open");
+			}
+		});
+		$("#btn_customize").click(function(e){
+			if($(this).hasClass('tool_open')){
+				$(this).removeClass('tool_open');
+				$("#nav-sidebar").height()
+			}else{
+				$(this).addClass('tool_open');
+			}
+		});
+	});
+
+	function changeFullScreenMode(){
+		var isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+			if(isMobile){
+				if($("#fullScreen").hasClass('active')){
+					$("#fullScreen").removeClass('active');
+					$("#fullScreen").removeClass('btn-danger');
+					$("#fullScreen").addClass('btn-success');
+					$("th, td").css("font-size", "14px");
+					$("th, td").css("padding-left", "5px");
+					$("th, td").css("padding-right", "5px");
+				}else{
+					$("#fullScreen").addClass('active');
+					$("#fullScreen").removeClass('btn-success');
+					$("#fullScreen").addClass('btn-danger');
+					$("th, td").css("font-size", "4px");
+					$("th, td").css("padding-left", "1px");
+					$("th, td").css("padding-right", "1px");
+				}
+			}else{
+					$("th, td").css("font-size", "14px");
+					$("th, td").css("padding-left", "5px");
+					$("th, td").css("padding-right", "5px");
+			}
+	}
+
+	function changeTDStyle(){
+		var isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+			if(isMobile){
+				if($("#fullScreen").hasClass('active')){
+					$("th, td").css("font-size", "4px");
+					$("th, td").css("padding-left", "1px");
+					$("th, td").css("padding-right", "1px");
+
+				}else{
+					$("th, td").css("font-size", "14px");
+					$("th, td").css("padding-left", "5px");
+					$("th, td").css("padding-right", "5px");
+				}
+			}else{
+					$("th, td").css("font-size", "14px");
+					$("th, td").css("padding-left", "5px");
+					$("th, td").css("padding-right", "5px");
+			}
+
+			document.querySelectorAll('.deal-row td').forEach(function(td) {
+				if (td.lang != "action"){
+					var row = td.parentElement;
+					td.addEventListener('click', function(e) {
+						e.preventDefault();
+						var id = row.dataset.id;
+						window.location.href = '/deals/view?id=' + id;
+					});	
+				}
+			});
+	}
+
+	function printData(){
+		var divToPrint = document.getElementById("content-container");
+		var siteContainer = document.getElementById("site-container");
+		$("#content").children().first().addClass("p-5");
+		$("table").addClass("borderTable");
+
+		var temp = siteContainer.innerHTML;
+		siteContainer.innerHTML = divToPrint.innerHTML;
+
+		$("#site-container").css("transform", "scale(0.85,0.85)");
+		$(".chart").css("transform", "scale(0.65,0.65)");
+		
+		$(".chat_button").hide();
+		window.print();
+		$(".chat_button").show();
+		
+		siteContainer.innerHTML = temp;
+
+		$("#site-container").css("transform", "");
+
+		$(".table").removeClass("borderTable");
+		$("#content").children().first().removeClass("p-5");
+
+		// add event listener
+		var navs = document.querySelectorAll('#nav-sidebar .primary-link');
+
+		navs.forEach(function(nav) {
+			nav.addEventListener('click', function(e) {
+				e.preventDefault();
+				var caret = nav.querySelector('.nav-caret'),
+					secondaryNav = nav.parentNode.querySelector('.secondary');
+					
+				if (secondaryNav.classList.contains('hidden')){
+					secondaryNav.classList.remove('hidden');
+					caret.classList.remove('fa-caret-right');
+					caret.classList.add('fa-caret-down');
+				} else {
+					secondaryNav.classList.add('hidden');
+					caret.classList.remove('fa-caret-down');
+					caret.classList.add('fa-caret-right');
+				}
+			});
+		});
+
+		$("#hideSideBar").click(function(){
+			$("#nav-sidebar").removeAttr('style');
+			$("#showSideBar").removeClass("open");
+		});
+
+		$("#showSideBar").click(function(){
+			if(!$(this).hasClass('open')){
+				$("#nav-sidebar").attr('style','display: block !important');
+				$(this).addClass("open");
+			}
+			else{
+				$("#nav-sidebar").removeAttr('style');
+				$(this).removeClass("open");
+			}
+
+		});
+
+		$("#top_bar, #nav-title, #content-container").click(function(e){
+			var container = $("#showSideBar");
+			if (!container.is(e.target) && container.has(e.target).length === 0) {
+				$("#nav-sidebar").removeAttr('style');
+				$("#showSideBar").removeClass("open");
+			}
+		});
+		// add event listener
+
+	}
+
+	function viewNotifications(id) {
+		$.post('/modals.php', 
+		{
+			type: 'info',
+			id: id
+		}, function(output) {
+			let data = JSON.parse(output);
+			if(data.success == 1){
+				jQuery('#modal-messages-title').text(data.title);
+				jQuery('#modal-messages-body').html(data.text);
+				
+				jQuery('#dialog').modal({
+					title: data.title,
+					dialogClass: "no-close",
+					width: '500px',
+					maxWidth: 600,
+					minWidth: 400,
+					beforeClose: function(){
+						console.log('close Dialog')
+						return false;
+					},
+					buttons: {
+						'button text' : function() {
+							$(this).dialog('close');
+						}
+					}
+				});
+				jQuery('#dialog').on('hide.bs.modal', function(e){
+					location.reload()
+				})
+			}
+		});
+	}
+
+	$(document).ready(function(){
+		setInterval(function() {
+			let now = Date.now()
+			let prevTime = localStorage.getItem("{{session.user_id}}") ?? 0
+
+			if(now > parseInt(prevTime) + 4000){
+				localStorage.clear();
+				localStorage.setItem("{{session.user_id}}", now);
+				viewNotifications(0)
+			}
+		}, 5000)
+	})
+	
+
+	function viewNotes(id) {
+		$("#note_id").val(id);
+		$.post('/togglemodal.php', 
+		{
+			type: 'getNote',
+			id: id
+		}, function(data) {
+			var notes = JSON.parse(data);
+			var text = "";
+			for (var i = 0; i < notes.length; i ++) {
+				text += `<div class="col-12 note-row mt-2"><span>` + (i + 1) + `. `+
+				notes[i]['note']+`</br><b>`+ notes[i]['name_first'] +
+				` `+ notes[i]['name_last'] +`</b>( `+ 
+				notes[i]['note_date']+` )</div>`;
+			}
+
+			document.getElementById("note_modal_body").innerHTML = text;
+			$("#note_modal").modal('show');
+		});
+	}
+	
+	function deleteDeal(id) {
+
+		$("#note_id").val(id);
+		if(confirm("Are you sure you want to delete this deal?"))
+		{
+			$.post('/togglemodal.php', 
+			{
+				type: 'deleteDeal',
+				id: id
+			}, function(data) {
+				if(JSON.parse(data) == "success"){
+					alert("The deal has been deleted!");
+					location.reload();
+				}else{
+					alert("Delete failed!");
+				}
+			});
+		}
+
+	}
+	
+	var hideData = [
+		{
+			path: "/reports/company-gross",
+			hideItems:[
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/desk-manager",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/sales-people",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/finance",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/lenders",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/flooring",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/funded",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+				'new_car',
+			]
+		},
+		{
+			path: "/reports/sales-board",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'deleted',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'include_deleted',
+				'payment_status',
+				'search_dt'
+			]
+		},
+		{
+			path: "/reports/gross-w-vehicle",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/lead-sources",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/finance-approval",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+				'deleted',
+			]
+		},
+		{
+			path: "/reports/time-to-fund",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+				'deleted',
+			]
+		},
+		{
+			path: "/reports/finance-penetration",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+				'deleted',
+			]
+		},
+		{
+			path: "/reports/gross-new",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/gross-used",
+			hideItems: [
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/reports/trade-in",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+				'deleted'
+			]
+		},
+		{
+			path: "/deals",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/deals/funded",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/deals/close",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/deals/delete",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'deleted',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/deals/floored",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/deals/deferred",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'deleted',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'search_dt',
+			]
+		},
+		{
+			path: "/deals/view",
+			hideItems: [
+				'new_car',
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/deals/approved",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'deleted',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		},
+		{
+			path: "/deals/unapproved",
+			hideItems: [
+				'month_to_date',
+				'today',
+				'custom_range',
+				'all_time',
+				'new_car',
+				'deleted',
+				'previous_month',
+				'yesterday',
+				'start',
+				'select_month',
+				'end',
+				'include_deleted',
+				'payment_status',
+				'search_dt',
+			]
+		}
+	]
+	document.body.onload = function () {
+		var path = window.location.pathname
+		pageObj = hideData.find((obj) => 
+			obj.path == path
+		);
+		if(pageObj) {
+			pageObj.hideItems.map((item) => {
+				$("." + item).remove()
+			})
+		}
+		document.getElementById("content-container").onmousedown = function() {
+			var a = '<button id="customizeBtn" type="button" class="btn btn-light" onClick="javascript: showCustomize();">Customize</button>'
+			$(".topbar-cuatomize").html(a)
+			$("#customizeView").removeClass("show");
+			$("#customizeView").addClass("hide");
+			$("#customizeView").hide()
+		}
+	}
+	
+	function showCustomize(){
+		var a = '<button id="customizeBtn" type="button" class="btn btn-light" onClick="javascript: submit();">Submit</button>'
+		$(".topbar-cuatomize").html(a)
+		$("#customizeView").show();
+		$("#customizeView").addClass("show");
+		setTimeout(function(){
+			$("#customizeView").height("auto");
+		}, 2000)
+	}
+	function submit() {
+		$("#customizeForm").submit()
+	}
+	
+	$('#affiliated_company_list').off('change');
+	$('#affiliated_company_list').change(function(){
+		$.ajax({
+			type:"POST",
+			url: "superuser/impersonate",
+			data: {
+				company_id: this.value,
+				user_id: '{{session.user_id}}'
+			},
+			success:function(data){
+				toastr.success("Successfully updated affiliation", "Success")
+				setTimeout(function(){
+					location.reload()
+				}, 1000)
+			},
+			error:function(data){
+				toastr.error(data.responseText ? data.responseText : data,"error")
+			}
+		})
+	});
+	$('#affiliated_company_list2').off('change');
+	$('#affiliated_company_list2').change(function(){
+		$.ajax({
+			type:"POST",
+			url: "superuser/impersonate",
+			data: {
+				company_id: this.value,
+				user_id: '{{session.user_id}}'
+			},
+			success:function(data){
+				toastr.success("Successfully updated affiliation", "Success")
+				setTimeout(function(){
+					location.reload()
+				}, 1000)
+			},
+			error:function(data){
+				toastr.error(data.responseText ? data.responseText : data,"error")
+			}
+		})
+	});
+</script>
+{% endmacro %}

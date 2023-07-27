@@ -1,0 +1,168 @@
+{% macro tpl_couponForm() %}
+	<script>
+        window.addEventListener('load', function(){
+
+            // Start Date 
+            $('#start_date').datepicker({
+                uiLibrary: 'bootstrap4',
+                iconsLibrary: 'fontawesome',
+                format: 'mm/dd/yyyy',
+                size: 'small',
+                minDate:function() {
+		            var date = new Date();
+		            return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+		        }
+                
+            });
+
+            // End Date 
+            $('#end_date').datepicker({
+                uiLibrary: 'bootstrap4',
+                iconsLibrary: 'fontawesome',
+                format: 'mm/dd/yyyy',
+                size: 'small',
+                minDate: function() {
+		            var curDate = $("#start_date").val();
+		            var date = new Date(curDate);
+		            return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+		        }
+            });
+
+
+            {%if(errors != "")%}
+            alert("{{errors}}");
+            {% endif %}
+        });
+	</script>
+	<div class="form-ft">
+		<div class="container">
+			<form name="{% if action == 'insert' %}new_coupon{% else %}edit_coupon{% endif %}" id="coupon_form" action="" >
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+				{% if action != 'insert' %}
+					<input type="hidden" name="id" value="{{ coupon.id }}" id="coupon_id">
+				{% endif %}
+
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Coupon Information</div>
+				</div>
+
+				<div class="form-group required row">
+
+					<label for="name_first" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Title</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="title" id="title" value="{{ coupon.title }}" required>
+					</div>
+
+					<label for="name_last" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Code </label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-btn form-control-sm" name="coupon" id="coupon" readonly="readonly" value="{{ coupon.coupon }}" required>
+						<button type="button" class="btn btn-primary btn-sm" id="generateCoupon" >
+							<i class="fas fa-plus-circle"></i>
+						</button>
+					</div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Start Date</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="start_date" id="start_date" required value="{{ coupon.start_date|date("m/d/Y") }}">
+					</div>
+
+					<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">End Date</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="end_date" id="end_date" required value="{{ coupon.end_date|date("m/d/Y") }}">
+					</div>
+
+				</div>
+
+
+				<div class="row">
+					<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">No Limit</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" name="no_limit" id="no_limit" value="1" {% if coupon.no_limit == '1' %} checked{% endif %}>
+						</div>
+					</div>
+
+					<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Type</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<select class="form-control form-control-sm" name="coupon_type" id="coupon_type">
+							<option value="1" {% if coupon.coupon_type == '1' %} selected {% endif %}>Fix</option>
+							<option value="2" {% if coupon.coupon_type == '2' %} selected {% endif %}>Percent</option>
+						</select>
+					</div>
+
+				</div>
+
+				<div class="row">
+					<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">User Allowed</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="number" class="form-control form-control-sm" name="user_allowed" min="0" id="user_allowed" value="{{ coupon.user_allowed != '' ? coupon.user_allowed : 0 }}" {{ coupon.no_limit == '1' ? 'readonly="readonly"' : '' }}>
+					</div>
+					<label for="coupon_value" id="coupon_value_label" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">{{ (coupon.coupon_type != '2') ? 'Value($)' : 'Value(%)' }} </label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="number" class="form-control form-control-sm" name="coupon_value" id="coupon_value" min="0" value="{{ coupon.coupon_value != '' ? coupon.coupon_value : 0 }}">
+					</div>
+				</div>
+
+				<div class="row">
+					
+					<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Active</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" name="status" id="status" value="1" {% if coupon.status == '1' %} checked{% endif %}>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row mt-3">
+				<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right"></label>
+					<div class="col-sm-6 col-md-2 col-xl-2">
+						<button type="submit" class="btn btn-primary btn-sm btn-block user-form">Submit</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+	</div>
+	<script language = "JavaScript">
+	
+		$("#coupon_form").submit(function(e){
+			e.preventDefault();
+			var formData = new FormData(this);
+			$.ajax({
+				type:'POST',
+				url: "superuser/coupons",
+				data: formData,
+				cache: false,
+				contentType: false,
+				processData: false,
+				success: function(data) {
+				    //console.log(data);
+					window.location.href = "superuser/coupons"
+				},
+				error: function(data){
+					console.log(data)
+				}
+			})
+		});
+
+		$(document).on('change', '#coupon_type', function(){
+			var selectedVal = $(this).val();
+			if(selectedVal == 1){
+				$('#coupon_value_label').html('Value($)');
+				$('#coupon_value').removeAttr('max');
+			} else{
+				$('#coupon_value_label').html('Value(%)');
+				$('#coupon_value').attr('max', '100');
+			}
+		});
+
+	</script>
+{% endmacro %}

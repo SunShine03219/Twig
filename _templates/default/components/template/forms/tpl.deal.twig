@@ -1,0 +1,1787 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	{% if (disabled == "") %}
+	<script>
+		window.addEventListener('load', function(){
+		
+			// Date Sold
+			$('#date_sold').datepicker({
+				uiLibrary: 'bootstrap4',
+				iconsLibrary: 'fontawesome',
+				format: 'mm/dd/yyyy',
+				size: 'small'
+			});
+			
+			// Flooring Date Paid
+			$('#flooring_date').datepicker({
+				uiLibrary: 'bootstrap4',
+				iconsLibrary: 'fontawesome',
+				format: 'mm/dd/yyyy',
+				size: 'small'
+			});
+			
+			// Financing Date Sent
+			$('#date_sent').datepicker({
+				uiLibrary: 'bootstrap4',
+				iconsLibrary: 'fontawesome',
+				format: 'mm/dd/yyyy',
+				size: 'small'
+			});
+			
+			// Financing Funded Date
+			$('#funded_date').datepicker({
+				uiLibrary: 'bootstrap4',
+				iconsLibrary: 'fontawesome',
+				format: 'mm/dd/yyyy',
+				size: 'small'
+			});
+			
+			// Deferred Down Payment Date
+			$('#inputunsaved1').datepicker({
+				uiLibrary: 'bootstrap4',
+				iconsLibrary: 'fontawesome',
+				format: 'mm/dd/yyyy',
+				size: 'small'
+			});
+		});
+	</script>
+	{% endif %}
+	<script>
+			{%if(errors != "")%}
+				alert("{{errors}}");
+			{% endif %}
+	</script>
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+
+					<div class="form-ft">
+						<div class="container">
+							<form {{disabled}} name="deal" action="{% if action == 'new' %}deals/new{% else %}deals/view{% endif %}" method="POST">
+								<input type="hidden" name="action" value="{% if action == 'new' %}new{% else %}edit{% endif %}">
+								<input type="hidden" name="company_id" value="{% if action == 'new' %}{{ session.company_id }}{% else %}{{ deal.company_id }}{% endif %}">
+								<input type="hidden" id = "id" name="id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+								<input type="hidden" id = "deal_id" name="deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+								<input type="hidden" name="version" value="{% if action == 'new' %}0{% else %}{{ deal.version }}{% endif %}">
+								<input type="hidden" name="nonce" value="{{ nonce_list.nonce }}">
+
+								<div class="row">
+									<div class="w-100 form-section-heading">Customer and Vehicle Information</div>
+								</div>
+	
+								<div class="form-group row">
+								
+									<label for="holdback" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Holdback</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" name="holdback" id="holdback" value="{{ deal.holdback }}" disabled>
+									</div>
+
+									<label for="whole_sale" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Whole Sale</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" {{disabled}} name="whole_sale" id="whole_sale" value="whole_sale" {% if deal.whole_sale == '1' %} checked{% endif %}>
+										</div>
+									</div>
+									
+								</div>
+	
+								<div class="form-group row">
+	
+									<label for="client_name" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Client Name*</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" name="client_name" {{disabled}} id="client_name" value="{{ deal.client_name }}">
+									</div>
+	
+									<label for="client_phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Client Phone</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="client_phone" id="client_phone" value="{{ deal.client_phone }}">
+									</div>
+	
+									<label for="stock" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Stock Number*</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="stock" id="stock" value="{{ deal.stock }}">
+									</div>
+	
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="year" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Year*</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="year" id="year" value="{{ deal.year }}">
+									</div>
+	
+									<label for="make" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Make*</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="make" id="make" value="{{ deal.make }}">
+									</div>
+
+									<label for="model" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Model*</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="model" id="model" value={{ deal.model }}>
+									</div>
+
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="date_sold" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Date Sold</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="date_sold" id="date_sold" value="{% if deal.date_sold %}{{ deal.date_sold|date("m/d/Y") }}{% else %}{{ "now"|date("m/d/Y") }}{% endif %}">
+									</div>
+	
+									<label for="miles" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Miles</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="miles" id="miles" value="{{ deal.miles }}">
+									</div>
+									<label for="color" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Color</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="color" id="color" value="{{ deal.color }}">
+									</div>
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="payable_gross" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Payable Gross</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="payable_gross" id="payable_gross" value="{{ deal.payable_gross}}">
+									</div>
+									{# <label for="total_gross" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Total Gross</label>
+									<div class="col-6 col-md-3 col-xl-2">
+									{% if action == 'new' %}
+										<input type="text" class="form-control form-control-sm" name="total_gross" id="total_gross" value="">
+									{% else %}
+										<input type="text" class="form-control form-control-sm" name="total_gross" id="total_gross" value="{{ deal.payable_gross + deal.pack}}">
+									{% endif %}
+									</div>
+										<input type="hidden" class="form-control form-control-sm" name="payable_gross" id="payable_gross" value="">
+										<script>
+										$(document).ready(function(){
+											$("#total_gross, #pack").change(function(){
+												var total_gross = parseFloat($("#total_gross").val());
+												var pack = parseFloat($("#pack").val());
+												$("#payable_gross").val(total_gross - pack);
+											});
+										})
+										</script> #}
+									<label for="newcar" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">New Car</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" {{disabled}} name="newcar" id="newcar" value="newcar" {% if deal.newcar == '1' %} checked{% endif %}>
+										</div>
+									</div>
+									
+									<label for="sale_price_funding" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Sale Price Funding</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="sale_price_funding" id="sale_price_funding" value={{ deal.sale_price_funding }}>
+									</div>
+									
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="pack" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Pack</label>
+									<div class="col-6 col-md-3 col-xl-2">
+									{% if action == 'new' %}
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="pack" id="pack" value="{{ pack_section.value }}">
+									{% else %}
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="pack" id="pack" value="{{ deal.pack }}">
+									{% endif %}
+									</div>
+									<label for="doc_fee" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Doc Fee</label>
+									<div class="col-6 col-md-3 col-xl-2">
+									{% if action == 'new' %}
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="doc_fee" id="doc_fee" value="{{ doc_fee_section.value }}">
+									{% else %}
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="doc_fee" id="doc_fee" value="{{ deal.doc_fee }}">
+									{% endif %}
+									</div>
+									
+								</div>
+								
+								<div class="form-group row">
+
+									<label for="deskmanager" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Desk Manager</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-btn form-control-sm" {{disabled}} name="deskmanager" id="deskmanager">
+											<option value="">None</option>
+											{% for manager in desk_managers %}
+												<option value="{{ manager.id }}" {% if deal.deskmanager == manager.id %} selected="selected"{% endif %}>{{ manager.val }}</option>
+											{% endfor %}
+										</select>
+										<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#deskManagerModal">
+											<i class="fas fa-plus-circle"></i>
+										</button>
+									</div>
+
+								</div>
+								<div class="form-group row mt-3">
+									<label for="salesperson" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Salesperson</label>
+
+									{# <label for="salesperson" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Selected Persons</label> #}
+									<div class="col-12 col-md-4 col-xl-3" style="min-height:150px;  overflow-y:auto">
+										<ul class="list-group " id="selectedSales">
+											{% for sales_person in sales %}
+												{% for person in sales_people %}
+													{% if person == sales_person.id %}
+														<li class="list-group-item p-1" value="{{ sales_person.id }}">
+														<input type="hidden" {{disabled}} id= "salespeople{{ sales_person.id }}" name="salespeople[]" value="{{ sales_person.id }}">
+															<span>{{ sales_person.val }}</span>
+															<span class="badge selectedSales" style="float:right; font-size:15px; color:red; point; cursor:pointer"><i class="fas fa-minus-circle"></i></span>
+														</li>
+													{% endif %}
+												{% endfor %}
+											{% endfor %}
+										</ul>
+										<select class="form-control form-control-btn form-control-sm" {{disabled}} name="salespersons" id="salespersons" style="width: 100%; margin-top: 2px">
+											<option value="">None</option>
+											{% for sales_person in sales %}
+												{% set selected = 0 %}
+												{% for person in sales_people %}
+													{% if person == sales_person.id %}
+														{% set selected = 1 %}
+													{% endif %}
+												{% endfor %}
+												{% if selected == 0 %}
+													<option value="{{ sales_person.id }}">{{ sales_person.val }}</option>
+												{% endif %}
+											{% endfor %}
+										</select>
+									</div>
+									
+
+
+								</div>
+								<script>
+									$(document).on("change", "#salespersons", function(){
+										var id = $(this).val();
+										if(id){
+											var selectedOption = $(this).find('option:selected')
+											var name = selectedOption.text();
+											selectedOption.remove();
+											var content = "<li class='list-group-item p-1' value='"+ id +"'>" + 
+														"<input type='hidden' name='salespeople[]' value='"+ id+ "'>"+
+															"<span>"+ name +"</span>"+
+															"<span class='badge selectedSales' style='float:right; font-size:15px; color:red; point; cursor:pointer'><i class='fas fa-minus-circle'></i></span>"+
+														"</li>";
+											$("#selectedSales").append(content);
+										}
+										
+									})
+									$(document).on("click", ".selectedSales", function(){
+										var id = $(this).parent().attr("value");
+										var name = $(this).prev().text();
+										$(this).parent().remove();
+										var content = "<option value='" + id + "'>" + name  + "</option>"
+										$('#salespersons').append(content)
+									});
+								</script>
+								<div class="row">
+									<div class="w-100 form-section-heading">Permissions</div>
+								</div>
+								
+								<div class="row">
+									{% if sec_deals_permission == '1' %}
+									<label for="locked" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Lock / Unlock</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<div class="form-check">
+											<input {{disabled}} type="checkbox" class="form-check-input" name="locked" id="locked" value="locked" {% if deal.locked == '1' %} checked{% endif %}>
+										</div>
+									</div>
+									{% endif %}
+
+									<label for="pending_documents" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Pending Documents</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" {{disabled}} name="pending_documents" id="pending_documents" value="pending_documents" {% if deal.pending_documents == '1' %} checked{% endif %}>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="w-100 form-section-heading">Flooring</div>
+								</div>
+	
+								<div class="form-group row">
+								
+									<label for="flooring_id" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Floored By</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-btn form-control-sm" {{disabled}} name="flooring_id" id="flooring_id">
+											<option value="">None</option>
+											{% for flooring_company in flooring %}
+												<option value="{{ flooring_company.id }}" {% if deal.flooring_id == flooring_company.id %} selected="selected"{% endif %}>{{ flooring_company.val }}</option>
+											{% endfor %}
+										</select>
+										<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#flooringCompanyModal">
+											<i class="fas fa-plus-circle"></i>
+										</button>
+									</div>
+									
+									<label for="flooring_paid" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Paid</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" {{disabled}} name="flooring_paid" id="flooring_paid" value="flooring_paid" {% if deal.flooring_paid == '1' %} checked{% endif %}>
+										</div>
+									</div>
+								
+									<label for="date_paid" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Date Paid</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="flooring_date" id="flooring_date" value="{{ deal.flooring_date|date("m/d/Y") }}">
+									</div>
+								
+								</div>
+								
+								<div class="row">
+									<div class="w-100 form-section-heading">Lead Source</div>
+								</div>
+	
+								<div class="form-group row">
+								
+									<label for="lead_id" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Lead Source</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-btn form-control-sm" {{disabled}} name="lead_id" id="lead_id">
+											<option value="">None</option>
+											{% for lead_source in leads %}
+												<option value="{{ lead_source.id }}" {% if deal.lead_id == lead_source.id %} selected="selected"{% endif %}>{{ lead_source.val }}</option>
+											{% endfor %}
+										</select>
+										<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#leadSourceModal">
+											<i class="fas fa-plus-circle"></i>
+										</button>
+									</div>
+								
+								</div>
+	
+								<div class="row">
+									<div class="w-100 form-section-heading">Financing Information</div>
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="financed_deal" class="col-6 col-md-1 col-xl-1 col-form-label-sm txt-right">Financed</label>
+									<div class="col-6 col-md-2 col-xl-2">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" {{disabled}} name="financed_deal" id="financed_deal" value="financed_deal" {% if deal.financed_deal == '1' %} checked{% endif %}>
+										</div>
+									</div>
+									
+									<label for="funded" class="col-6 col-md-1 col-xl-1 col-form-label-sm txt-right">Funded</label>
+									<div class="col-6 col-md-2 col-xl-2">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" {{disabled}} name="funded" id="funded" value="funded" {% if deal.funded == '1' %} checked{% endif %}>
+										</div>
+									</div>
+									
+									<label for="approved" class="col-6 col-md-1 col-xl-1 col-form-label-sm txt-right">Approved</label>
+									<div class="col-6 col-md-2 col-xl-2">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" {{disabled}} name="approved" id="approved" value="approved" {% if deal.approved == '1' %} checked{% endif %}>
+										</div>
+									</div>
+									{% if deal.funded == '1' and action != 'new' %}
+									<label for="closed" class="col-6 col-md-1 col-xl-1 col-form-label-sm txt-right">Closed</label>
+									<div class="col-6 col-md-2 col-xl-2">
+										<div class="form-check">
+											<input type="checkbox" class="form-check-input" {{disabled}} name="closed" id="closed" value="closed" {% if deal.closed_dms == '1' %} checked{% endif %}>
+										</div>
+									</div>
+									{% endif %}
+								
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="finance_person" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Finance Person</label>
+									<div class="col-6 col-md-1 col-xl-2">
+										<select class="form-control form-control-btn form-control-sm" {{disabled}} name="finance_person" id="finance_person">
+											<option value="">None</option>
+											{% for finance_manager in finance %}
+												<option value="{{ finance_manager.id }}" {% if deal.finance_person == finance_manager.id %} selected="selected"{% endif %}>{{ finance_manager.val }}</option>
+											{% endfor %}
+										</select>
+										<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#financePersonModal">
+											<i class="fas fa-plus-circle"></i>
+										</button>
+									</div>
+									
+									<label for="lender_id" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Lending Source</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-btn form-control-sm" {{disabled}} name="lender_id" id="lender_id">
+											<option value="">None</option>
+											{% for lender in lenders %}
+												<option value="{{ lender.id }}" {% if deal.lender_id == lender.id %} selected="selected"{% endif %}>{{ lender.val }}</option>
+											{% endfor %}
+										</select>
+										<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#lendingSourceModal">
+											<i class="fas fa-plus-circle"></i>
+										</button>
+									</div>
+								
+								</div>
+
+								<div class="form-group row">
+									<label for="down_payment" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Down-Payment</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="down_payment" id="down_payment" value="{{ deal.down_payment }}">
+									</div>
+									<label for="term" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Term</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="term" id="term" value="{{ deal.term }}">
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label for="guarantee" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Guarantee</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="guarantee" id="guarantee" value="{{ deal.guarantee }}">
+									</div>
+									<label for="rate" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Rate</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="rate" id="rate" value="{{ deal.rate }}">
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label for="holdback_finance" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Holdback</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="holdback_finance" id="holdback_finance" value="{{ deal.holdback_finance }}">
+									</div>
+									<label for="monthly_payment" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Monthly Payment</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="monthly_payment" id="monthly_payment" value="{{ deal.rate }}">
+									</div>
+								</div>
+
+
+								
+								<div class="form-group row">
+									
+									<label for="amount_financed" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Amount Financed</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="amount_financed" id="amount_financed" value="{{ deal.amount_financed }}">
+									</div>
+									
+									<label for="discount" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Discount</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="discount" id="discount" value="{{ deal.discount }}">
+									</div>
+								
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="date_sent" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Date Sent</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="date_sent" id="date_sent" value="{{ deal.date_sent|date("m/d/Y") }}">
+									</div>
+									
+									<label for="date_funded" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Date Funded</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="funded_date" id="funded_date" value="{{ deal.funded_date|date("m/d/Y") }}">
+									</div>
+								
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="finance_payment" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Payment Send</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-sm" {{disabled}} name="finance_payment" id="finance_payment">
+											<option value="">None</option>
+											<option value="1" {% if deal.finance_payment == '1' %} selected="selected"{% endif %}>Yes</option>
+											<option value="0" {% if deal.finance_payment == '0' %} selected="selected"{% endif %}>No</option>
+										</select>
+									</div>
+
+									<label for="finance_payoff" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Payoff</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-sm" {{disabled}} name="finance_payoff" id="finance_payoff">
+											<option value="">None</option>
+											<option value="1" {% if deal.finance_payoff == '1' %} selected="selected"{% endif %}>Yes</option>
+											<option value="0" {% if deal.finance_payoff == '0' %} selected="selected"{% endif %}>No</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="finance_trade" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Trade</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-sm" {{disabled}} name="finance_trade" id="finance_trade">
+											<option value="">None</option>
+											<option value="1" {% if deal.finance_trade == '1' %} selected="selected"{% endif %}>Yes</option>
+											<option value="0" {% if deal.finance_trade == '0' %} selected="selected"{% endif %}>No</option>
+										</select>
+									</div>
+									
+									<label for="finance_makemodel" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Make/Model</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="finance_makemodel" id="finance_makemodel" value="{{ deal.finance_makemodel }}">
+									</div>
+								
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="finance_year" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Year</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="finance_year" id="finance_year" value="{% if deal.finance_year and deal.finance_year > 0 %}{{ deal.finance_year }}{% endif %}">
+									</div>
+									
+									<label for="finance_amount_verified_by" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Amount Verified By</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="finance_amount_verified_by" id="finance_amount_verified_by" value="{{ deal.finance_amount_verified_by }}">
+									</div>
+								
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="finance_payoff_amount" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Payoff Amount</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="finance_payoff_amount" id="finance_payoff_amount" value="{% if deal.finance_payoff_amount and deal.finance_payoff_amount > 0 %}{{ deal.finance_payoff_amount }}{% endif %}">
+									</div>
+									
+									<label for="finance_acv" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">ACV</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="finance_acv" id="finance_acv" value="{{ deal.finance_acv }}">
+									</div>
+								
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="finance_miles" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Miles</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="finance_miles" id="finance_miles" value="{% if deal.finance_miles and deal.finance_miles > 0 %}{{ deal_new.finance_miles }}{% endif %}">
+									</div>
+									
+									<label for="finance_trade_allowance" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Trade Allowance</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="finance_trade_allowance" id="finance_trade_allowance" value="{{ deal.finance_trade_allowance }}">
+									</div>
+								
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="finance_vehicle_notes" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Vehicle Notes</label>
+									<div class="col-6 col-md-9 col-xl-6">
+										<textarea class="form-control form-control-sm" {{disabled}} name="finance_vehicle_notes" id="finance_vehicle_notes" rows="2">{{ deal.finance_vehicle_notes }}</textarea>
+									</div>
+									
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="finance_lien_info" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Lien Info</label>
+									<div class="col-6 col-md-9 col-xl-6">
+										<textarea class="form-control form-control-sm" {{disabled}} name="finance_lien_info" id="finance_lien_info" rows="2">{{ deal.finance_lien_info }}</textarea>
+									</div>
+									
+								</div>
+								
+
+								
+								<div class="row">
+									<div class="w-100 form-section-heading">Warranty and Gap Insurance Information</div>
+								</div>
+								
+								<div class="form-group row">
+										<label for="warranty_included" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Warranty Included</label>
+										<div class="col-6 col-md-3 col-xl-2">
+											<div class="form-check">
+												<input type="checkbox" class="form-check-input" {{disabled}} name="warranty_included" id="warranty_included" value="warranty_included" {% if deal.warranty_included == '1' %} checked{% endif %}>
+											</div>
+										</div>
+
+										<label for="warranty_sold_outside" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Warranty Sold Outside Deal</label>
+										<div class="col-6 col-md-3 col-xl-2">
+											<div class="form-check">
+												<input type="checkbox" class="form-check-input" {{disabled}} name="warranty_sold_outside" id="warranty_sold_outside" value="warranty_sold_outside" {% if deal.warranty_sold_outside == '1' %} checked{% endif %}>
+											</div>
+										</div>
+								</div>
+
+								<div class="form-group row">
+								
+									<label for="warranty_id" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Warranty</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-btn form-control-sm" {{disabled}} name="warranty_id" id="warranty_id">
+											<option value="">None</option>
+											{% for warranty_company in warranty %}
+												<option value="{{ warranty_company.id }}" {% if deal.warranty_id == warranty_company.id %} selected="selected"{% endif %}>{{ warranty_company.val }}</option>
+											{% endfor %}
+										</select>
+										<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#warrantyProviderModal">
+											<i class="fas fa-plus-circle"></i>
+										</button>
+									</div>
+									
+									<label for="warranty_sale" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Warranty Sale Price</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="warranty_sale" id="warranty_sale" value="{{ deal.warranty_sale }}">
+									</div>
+									
+									<label for="warranty_cost" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Warranty Cost</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="warranty_cost" id="warranty_cost" value="{{ deal.warranty_cost }}">
+									</div>
+								
+								</div>
+				
+								<div class="form-group row">
+
+									<label for="gap_id" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Gap Insurance</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<select class="form-control form-control-btn form-control-sm" {{disabled}} name="gap_id" id="gap_id">
+											<option value="">None</option>
+											{% for gap_company in gap %}
+												<option value="{{ gap_company.id }}" {% if deal.gap_id == gap_company.id %} selected="selected"{% endif %}>{{ gap_company.val }}</option>
+											{% endfor %}
+										</select>
+										<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#gapProviderModal">
+											<i class="fas fa-plus-circle"></i>
+										</button>
+									</div>
+								
+									<label for="gap_sale" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Gap Sale Price</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="gap_sale" id="gap_sale" value="{{ deal.gap_sale }}">
+									</div>
+									
+									<label for="gap_cost" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Gap Cost</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="gap_cost" id="gap_cost" value="{{ deal.gap_cost }}">
+									</div>
+								
+								</div>
+
+								<div class="form-group row">
+									<label for="reserve" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Bank Reserve</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="reserve" id="reserve" value="{{ deal.reserve }}">
+									</div>
+								</div>
+
+								<div class="col-12 col-md-4 col-xl-3" style = "margin:10px">
+									<button {{disabled}} id="btnAddMisc" type="button" class="btn btn-primary btn-sm">
+										<i class="fas fa-plus-circle"></i> Add Misc Finance
+									</button>
+								</div>
+							 
+							
+							<div id="miscBox">
+								{% if deal_finance_sale %}
+									
+									   
+									{% for key,d_finance_sale in deal_finance_sale %}
+										<div class='misc-finance-row misc-finance-row-{{key}}'>
+										<button id="btnDeleteMisc" type="button" class="btn btn-primary btn-sm" style="float: right;margin-top:auto;" onclick='deleteMiscRow("{{key}}")'>
+											<i class="fas fa-minus-circle"></i> Delete
+										</button>
+										<div class="form-group row">
+										
+										<label for="misc_finance" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Product</label>
+										
+										<div class="col-6 col-md-3 col-xl-2">
+											<select class="form-control form-control-btn form-control-sm" {{disabled}} name="misc_id[]" id="misc_id">
+												<option value="">None</option>
+												{% for misc_finance in misc %}
+													<option value="{{ misc_finance.id }}" {% if d_finance_sale[0] == misc_finance.id %} selected="selected"{% endif %}>{{ misc_finance.val }}</option>
+												{% endfor %}
+											</select>
+											<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#miscProviderModal">
+												<i class="fas fa-plus-circle"></i>
+											</button>
+										</div>
+									
+										<label for="finance_sale" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Price</label>
+										<div class="col-6 col-md-3 col-xl-2">
+											<input type="number" class="form-control form-control-sm" {{disabled}} name="finance_sale[]" id="finance_sale" value="{{ d_finance_sale[1] }}">
+										</div>
+										
+										<label for="finance_cost" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Cost</label>
+										<div class="col-6 col-md-3 col-xl-2">
+											<input type="number" class="form-control form-control-sm" {{disabled}} name="finance_cost[]" id="finance_cost" value="{{ d_finance_sale[2] }}">
+										</div>
+									</div>	
+									</div>	
+								    {% endfor %}										
+							    {% else %}
+							    <div class='misc-finance-row misc-finance-row-789'>
+									<button id="btnDeleteMisc" type="button" class="btn btn-primary btn-sm" style="float: right;margin-top:auto;" onclick='deleteMiscRow("789")'>
+										<i class="fas fa-minus-circle"></i> Delete
+									</button>
+									<div class="form-group row">
+															
+										<label for="misc_finance" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Product</label>
+										{# <div class="col-6 col-md-3 col-xl-2">
+											<!--<input type="text" class="form-control form-control-sm" name="finance_id" id="finance_id">-->
+										</div> #}
+										<div class="col-6 col-md-3 col-xl-2">
+											<select class="form-control form-control-btn form-control-sm" {{disabled}} name="misc_id[]" id="misc_id">
+												<option value="">None</option>
+												{% for misc_finance in misc %}
+													<option value="{{ misc_finance.id }}" {% if deal.misc_id == misc_finance.id %} selected="selected"{% endif %}>{{ misc_finance.val }}</option>
+												{% endfor %}
+											</select>
+											<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#miscProviderModal">
+												<i class="fas fa-plus-circle"></i>
+											</button>
+										</div>
+									
+										<label for="finance_sale" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Price</label>
+										<div class="col-6 col-md-3 col-xl-2">
+											<input type="number" class="form-control form-control-sm" {{disabled}} name="finance_sale[]" id="finance_sale" value="{{ deal.finance_sale }}">
+										</div>
+										
+										<label for="finance_cost" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Cost</label>
+										<div class="col-6 col-md-3 col-xl-2">
+											<input type="number" class="form-control form-control-sm" {{disabled}} name="finance_cost[]" id="finance_cost" value="{{ deal.finance_cost }}">
+										</div>
+									
+									</div>
+								</div>
+								{% endif %}
+
+							 </div> 
+								
+ 
+								
+								
+								
+								{# <div class="form-group row">
+								
+									<label for="reserve" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Bank Reserve</label>
+									<div class="col-6 col-md-3 col-xl-2">
+										<input type="text" class="form-control form-control-sm" {{disabled}} name="reserve" id="reserve" value="{{ deal.reserve }}">
+									</div>
+								
+								</div> #}
+								
+								<div class="row">
+									<div class="w-100 form-section-heading">Deferred Down Payments</div>
+								</div>
+								<div class="table-responsive">
+									<table class="table">
+										<thead class="thead-light">
+										<tr>
+											<th>Status</th>
+											<th>Paid</th>
+											<th>Delete</th>
+											<th>Due Date</th>
+											<th>Amount</th>
+											<th>Coupon Value</th>
+											<th>Payable Amount</th>
+											<th>Payment Method</th>
+											<th>Note</th>
+											<th></th>
+										</tr>
+										</thead>
+										<tbody id="deffered_payments">
+										<input type="hidden" id="new_coupon_applied" name="new_coupon_applied" value="0">
+										{% for payment in pickup_payments %}
+											<tr>
+												<td>
+													<input type="hidden" {{disabled}} name="pickup_id[]" value="{{ payment.id }}">{{ payment.status }}
+													<input type="hidden" id="" name="pickup_coupon_id[]" value="{{ payment.coupon_id }}">
+												</td>
+												<td>
+													<input type="hidden" name="pickup_paid[]" id="paidpickup{{ payment.id }}" value="{{payment.paid}}">
+													<div class="form-check">
+														<input class="form-check-input update_paid" {{disabled}} type="checkbox" id="checkpaidpickup{{ payment.id }}" {% if payment.paid == 1 %} checked="checked"{% endif %}>
+													</div>
+												</td>
+												<td>
+													<input type="hidden" name="pickup_delete[]" {{disabled}} id="deletepickup{{ payment.id }}" value="{{payment.deleted}}">
+													<div class="form-check">
+														<input class="form-check-input update_delete" {{disabled}} type="checkbox" id="checkdeletepickup{{ payment.id }}"{% if payment.deleted == 1 %} checked="checked"{% endif %}>
+													</div>
+												</td>
+												
+												<td>
+													{# {% if payment.paid == 1 %}
+														<input type="hidden" name="pickup_date_due[]" value="{{ payment.date_due }}">{{ payment.date_due_formatted|date("m/d/Y") }}
+													{% else %}
+														<input type="hidden" name="pickup_date_due[]" id="date_duepickup{{ payment.id }}" value="{{ payment.date_due|date("m/d/Y") }}">
+														<input type="text" readonly="readonly" id="inputpickup{{ payment.id }}" value="{{ payment.date_due|date("m/d/Y") }}" class="form-control form-control-sm hasDatePicker">
+													{% endif %} #}
+														<input type="date" name="pickup_date_due[]" {{disabled}} id="inputpickup{{ payment.id }}" value="{{ payment.date_due }}" class="form-control form-control-sm hasDatePicker">
+												<td>
+													{% if payment.paid == 1 %}
+														<input type="hidden" name="pickup_amount[]" {{disabled}} value="{{ payment.amount }}">${{ payment.amount|number_format(2, '.', ',') }}
+													{% else %}
+														<input class="form-control form-control-sm" {{disabled}} type="text" name="pickup_amount[]" value="{{ payment.amount }}">
+													{% endif %}
+												</td>
+												<td>
+													{% if payment.paid == 1 %}
+														<input type="hidden" name="pickup_coupon_value[]" {{disabled}} value="{{ payment.coupon_value }}">${{ payment.coupon_value|number_format(2, '.', ',') }}
+													{% else %}
+														<input class="form-control form-control-sm" {{disabled}} type="text" name="pickup_coupon_value[]" value="{{ payment.coupon_value }}" readonly>
+													{% endif %}
+												</td>
+												<td>
+													{% if payment.paid == 1 %}
+														<input type="hidden" name="pickup_amount_payable[]" {{disabled}} value="{{ payment.amount_payable }}">${{ payment.amount_payable|number_format(2, '.', ',') }}
+													{% else %}
+														<input class="form-control form-control-sm" {{disabled}} type="text" name="pickup_amount_payable[]" value="{{ payment.amount_payable }}" readonly>
+													{% endif %}
+												</td>
+												<td>
+												{% if payment.paid == 1 %}
+													<input type="hidden" name="pickup_payment_method[]" {{disabled}} value="{{ payment.payment_method }}">
+												{% endif %}
+													<select class="form-control form-control-sm" {{disabled}} name="pickup_payment_method[]"{% if payment.paid == 1 %} disabled{% endif %}>
+														<option value="1"{% if payment.payment_method == "1" %} selected="selected"{% endif %}>Cash</option>
+														<option value="7"{% if payment.payment_method == "7" %} selected="selected"{% endif %}>CFA</option>
+														<option value="4"{% if payment.payment_method == "4" %} selected="selected"{% endif %}>Credit Card on File</option>
+														<option value="2"{% if payment.payment_method == "2" %} selected="selected"{% endif %}>Hold Check</option>
+														<option value="5"{% if payment.payment_method == "5" %} selected="selected"{% endif %}>Other</option>
+														<option value="3"{% if payment.payment_method == "3" %} selected="selected"{% endif %}>Promise to Pay</option>
+														<option value="6"{% if payment.payment_method == "6" %} selected="selected"{% endif %}>Tax Max</option>
+														<option value="8"{% if payment.payment_method == "8" %} selected="selected"{% endif %}>1st Payment Recourse</option>
+													</select>
+												</td>
+												<td>
+													{% if payment.paid == 1 %}
+														<input type="hidden" name="pickup_note[]" {{disabled}} value="{{ payment.note }}">
+														<textarea class="form-control form-control-sm" {{disabled}} name="pickup_note[]" rows="1" disabled>{{ payment.note }}</textarea>
+													{% else %}
+														<textarea class="form-control form-control-sm" {{disabled}} name="pickup_note[]" rows="1">{{ payment.note }}</textarea>
+													{% endif %}
+												</td>
+											</tr>
+										{% endfor %}
+										</tbody>
+									</table>
+								</div>
+
+								{# {% if action != 'new' %} #}
+									<div class="col-12 col-md-4 col-xl-3" style = "margin:10px">
+										<button {{disabled}} id="btnAddPayment" type="button" class="btn btn-primary btn-sm">
+											<i class="fas fa-plus-circle"></i> Add Payment
+										</button>
+									</div>
+									<script>
+									$("#btnAddPayment").click(function(){
+										$("#addPaymentModal").modal();	
+									});
+								{# {% endif %} #}
+
+									</script>
+
+								<div class="row">
+									<div class="w-100 form-section-heading">Notes</div>
+								</div>
+								
+								<div class="form-group row">
+								
+									<label for="notes" class="col-sm-4 col-md-2 col-xl-2 col-form-label-sm">Add Note</label>
+									<div class="col-sm-8 col-md-8 col-xl-8">
+										<textarea class="form-control form-control-sm" {{disabled}} name="note" id="note" rows="2">{{ deal.note }}</textarea>
+									</div>
+									
+								</div>
+								
+								<div class="row mt-3">
+									<div class="col-sm-6 col-md-2 col-xl-2 offset-4">
+										<button type="submit" {{disabled}} class="btn btn-primary btn-sm btn-block">Submit</button>
+									</div>									
+								</div>	
+								
+								{% if session.SEC_DELETE == true %}
+									{% if deal.funded == '0' %}
+                                    <div class="row">
+										<div class="col-sm-6 col-md-2 col-xl-2 offset-4 mt-4">
+											<button {{disabled}} id = "#btnDeleteDeal" type="button" class="btn btn-danger btn-sm btn-block">Delete Deal</button>
+										</div>
+									</div>
+										<script>
+											document.getElementById("#btnDeleteDeal").addEventListener("click", function(){
+												var deal_id = $("#deal_id").val();
+												if(confirm("Do you want to delete this deal?")){
+													$.post("/deleteDeal", {id : deal_id}, function(data){
+														location.href = "/deals/delete";
+														alert("Deal is deleted");
+													});	
+												}
+											});
+										</script>
+									{% endif %}
+								{% endif %}
+								
+								
+								
+								<div class="row">
+									<div class="w-100 form-section-heading"></div>
+								</div>
+								
+								{% for note in notes %}
+								
+									<div class="row">
+									
+										<div class="col-12 note-row">
+											{{ note.note }}
+											</br>
+											<b>{{ note.person }}</b> {{ note.posted|date("F jS \\a\\t g:ia") }}
+										</div>
+									
+									</div>
+								
+								{% endfor %}
+								
+							</form>
+						</div>
+					</div>
+					
+					<div class="modal fade" id="addPaymentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" name="type" value="addPayment">
+									<input type="hidden" id = "add_deal_id" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add Payment</h5>
+										<button {{disabled}} type="button" class="close" id="closePaymentModal" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+
+										<div class="row">
+											<label for="name" class="col-4 col-form-label-sm txt-right">Amount</label>
+											<div class="col-6">
+												<input {{disabled}} type="text" min = '1' class="form-control form-control-sm" name="amount" id="amount">
+											</div>
+										</div>
+										<div class="row">
+											<label for="name" class="col-4 col-form-label-sm txt-right">Due Date</label>
+											<div class="col-6">
+												<input {{disabled}} type="date" class="form-control form-control-sm" name="due_date" id="due_date">
+											</div>
+										</div>
+										<div class="row">
+											<label for="name" class="col-4 col-form-label-sm txt-right">Payment method</label>
+											<div class="col-6">
+											<select {{disabled}} name="payment_method" id="payment_method" class="form-control form-control-sm">
+												<option value="1">Cash</option>
+												<option value="7">CFA</option>
+												<option value="4">Credit Card on File</option>
+												<option value="2">Hold Check</option>
+												<option value="5">Other</option>
+												<option value="3">Promise to Pay</option>
+												<option value="6">Tax Max</option>
+												<option value="8">1st Payment Recourse</option>
+											</select>											
+											</div>
+										</div>
+										<div class="form-group row">
+											<label for="financed_deal" class="col-4 col-form-label-sm txt-right">Paid</label>
+											<div class="col-6 ">
+												<div class="form-check">
+													<input {{disabled}} type="checkbox" class="form-check-input form-ft" style="height:20px; width:20px" name="paid_check" id="paid_check" value="paid_check">
+												</div>
+											</div>
+										</div>
+										{# <div class="form-group row">
+											<label for="financed_deal" class="col-4 col-form-label-sm txt-right">Delete</label>
+											<div class="col-6 ">
+												<div class="form-check">
+													<input type="checkbox" class="form-check-input form-ft"  style="height:20px; width:20px" name="delete_check" id="delete_check" value="delete_check">
+												</div>
+											</div>
+										</div> #}
+										<div class="form-group row">
+							
+											<label for="notes" class="col-4  col-form-label-sm txt-right">Note</label>
+											<div class="col-6 ">
+												<textarea {{disabled}} class="form-control form-control-sm" name="pay_note" id="pay_note" rows="2" style="margin-top: 0px; margin-bottom: 9px; height: 54px;"></textarea>
+											</div>
+											
+										</div>
+										<div class="form-group row">
+											<label for="financed_deal" style="line-height:1.2;padding-right: 42px;"  class="col-4 col-form-label-sm txt-right">Apply Coupon<input type="checkbox" class="form-check-input form-ft"  style="margin-top:0;margin-left:10px;height:20px; width:20px" name="apply_coupon_check" id="apply_coupon_check" value="apply_coupon_check"></label>
+											<div class="col-6 " id="coupon_input_container" style="display: none" >
+												<div class="form-input">
+													<input type="text" class="form-control form-control-btn form-control-sm" name="coupon" id="coupon_input">
+													<input type="hidden" name="coupon" value="0" id="coupon_is_validated">
+													<button type="button" class="btn btn-primary btn-sm" id="validateCoupon" title="Validate Coupon">
+														<i class="fas fa-circle"></i>
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id="btn_add_payment" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+
+					<div class="modal fade" id="deskManagerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" id = "" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="type" value="deskmanager">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add New Desk Manager</h5>
+										<button {{disabled}} type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="row">
+											<label for="name" class="col-2 col-form-label-sm txt-right">Name</label>
+											<div class="col-10">
+												<input type="text" id = "input_new_desk" class="form-control form-control-sm" name="name" id="name">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id="btn_new_desk" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					
+					
+					<div class="modal fade" id="flooringCompanyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" id = "" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="type" value="flooring">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add New Flooring Company</h5>
+										<button {{disabled}} type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="row">
+											<label for="name" class="col-2 col-form-label-sm txt-right">Name</label>
+											<div class="col-10">
+												<input {{disabled}} type="text" id = "input_new_floor" class="form-control form-control-sm" name="name" id="name">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id = "btn_new_floor" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="modal fade" id="leadSourceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" id = "" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" name="type" value="lead">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add New Lead Source</h5>
+										<button {{disabled}} type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="row">
+											<label for="name" class="col-2 col-form-label-sm txt-right">Name</label>
+											<div class="col-10">
+												<input {{disabled}} type="text" id = "input_new_lead" class="form-control form-control-sm" name="name" id="name">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id = "btn_new_lead" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="modal fade" id="financePersonModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" id = "" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" name="type" value="finance">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add New Finance Person</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="row">
+											<label for="name" class="col-2 col-form-label-sm txt-right">Name</label>
+											<div class="col-10">
+												<input {{disabled}} type="text" id = "input_new_finance_person" class="form-control form-control-sm" name="name" id="name">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id = "btn_new_finance_person" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="modal fade" id="lendingSourceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" id = "" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="type" value="lender">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add New Lending Source</h5>
+										<button {{disabled}} type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="row">
+											<label for="name" class="col-2 col-form-label-sm txt-right">Name</label>
+											<div class="col-10">
+												<input {{disabled}} type="text" id = "input_new_leading_source" class="form-control form-control-sm" name="name" id="name">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id = "btn_new_leading_source" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="modal fade" id="warrantyProviderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" id = "" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="type" value="warranty">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add New Warranty Provider</h5>
+										<button {{disabled}} type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="row">
+											<label for="name" class="col-2 col-form-label-sm txt-right">Name</label>
+											<div class="col-10">
+												<input {{disabled}} type="text" id = "input_new_warranty" class="form-control form-control-sm" name="name" id="name">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id = "btn_new_warranty" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="modal fade" id="gapProviderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" id = "" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="type" value="gap">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add New Gap Provider</h5>
+										<button {{disabled}} type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="row">
+											<label for="name" class="col-2 col-form-label-sm txt-right">Name</label>
+											<div class="col-10">
+												<input {{disabled}} type="text" id = "input_new_gap_provider" class="form-control form-control-sm" name="name" id="name">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id = "btn_new_gap_provider" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+					<div class="modal fade" id="miscProviderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form>
+									<input type="hidden" name="action" value="insert">
+									<input type="hidden" id = "" name="add_deal_id" value="{% if action == 'new' %}0{% else %}{{ deal.id }}{% endif %}">
+									<input type="hidden" name="type" value="misc">
+									<input type="hidden" name="company_id" value="">
+									<input type="hidden" name="nonce" value="">
+									<div class="modal-header">
+										<h5>Add New Misc Provider</h5>
+										<button {{disabled}} type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<div class="row">
+											<label for="name" class="col-2 col-form-label-sm txt-right">Name</label>
+											<div class="col-10">
+												<input {{disabled}} type="text" id = "input_new_misc_provider" class="form-control form-control-sm" name="name" id="name">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<div class="row">
+											<div class="col-12">
+												<button {{disabled}} type="button" id = "btn_new_misc_provider" class="btn btn-primary btn-sm btn-block">Submit</button>
+											</div>
+
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+	jQuery('#salesperson option').mousedown(function(e) {
+		e.preventDefault();
+		jQuery(this).toggleClass('selected');
+	
+		jQuery(this).prop('selected', !jQuery(this).prop('selected'));
+		return false;
+	});
+
+	$(document).ready(function(){
+		var couponValForRow = 0;
+		var couponId = 0;
+		var amountPayable = 0;
+		$("#deffered_payments").on("click", '.update_paid, .update_delete', function(){
+			if($(this).is(':checked')){
+				$(this).parent().prev().val("1");
+			}else{
+				$(this).parent().prev().val("0");
+			}
+		});
+
+		$(document).on("click", '#apply_coupon_check', function(){
+			if($(this).is(':checked')){
+				$('#coupon_input_container').show();
+			}else{
+				$('#coupon_input_container').hide();
+			}
+		});
+
+		$(document).on("click", '#validateCoupon', function(e){
+			e.preventDefault();
+			var coupon = 'coupon=' + $(this).closest('#coupon_input_container').find('#coupon_input').val();
+			var amount = $('#amount').val();
+			if(amount != ''){
+				$.ajax({
+					type:'GET',
+					url: "admin/coupons?validate=1",
+					data: coupon,
+					cache: false,
+					contentType: false,
+					processData: false,
+					dataType: 'JSON',
+					success: function(data) {
+						if(data.status == true){
+							var coupon = data.coupon;
+							var amount = $("#amount").val();
+							var couponValue = 0;
+							if(coupon.coupon_type == "1"){
+								couponValForRow = coupon.coupon_value;
+							}else {
+								var val = amount * coupon.coupon_value;
+								val = val / 100;
+								couponValForRow = val;
+							}
+							couponId = coupon.id;
+							amountPayable = amount - couponValForRow;
+							data.message = data.message + ' You will get the benefit of '+ couponValForRow +'($) in payment.'
+							toastr.success(data.message, "Success");
+							$('#coupon_is_validated').val(1);
+						}else{
+							toastr.error(data.message, "Error");
+						}
+						//window.location.href = "admin/coupons"
+					},
+					error: function(data){
+						toastr.error(data.message, "Error")
+					}
+				})
+			}else{
+				toastr.error("Please Enter the Amount", "Error")
+			}
+			
+		});
+
+		$("#btn_add_payment").click(function(){
+			var now = $.now();
+			var coupon_is_validated = $("#coupon_is_validated").val();
+			var amount = $("#amount").val();
+			var date_due = $("#due_date").val();
+			var pay_note = $("#pay_note").val();
+			var payment_method = $("#payment_method").val();
+			var coupon_value = 0;
+			var coupon_id = 0;
+			var paid = $("#paid_check").is(':checked');
+			var coupon_check = $("#apply_coupon_check").is(':checked');
+			$('#new_coupon_applied').val(1);
+			if(coupon_is_validated == 1 && coupon_check){
+				coupon_value = couponValForRow;
+				coupon_id = couponId;
+			}
+			var amount_payable = amountPayable;
+			$('#coupon_is_validated').val(0);
+			
+			if(amount == ""){
+				alert("Please select amount!");
+				return;
+			}
+			if(date_due == ""){
+				alert("Please select due date!");
+				return;
+			}
+			var content=`<tr>
+							<td>`;
+							content += `<input type="hidden" id="pickup_coupon_id" name="pickup_coupon_id[]" value="` + coupon_id + `">`;
+			if(paid)
+				content += `		<input type="hidden" name="pickup_id[]" value="0">Paid`;
+			else 
+				content += `		<input type="hidden" name="pickup_id[]" value="0">Over Due`;
+				content += `</td>
+							<td>`;
+			if(paid)
+				content += `	<input type="hidden" name="pickup_paid[]" id="paidpickup` + now + `" value="1">
+								<div class="form-check">
+									<input class="form-check-input update_paid" type="checkbox" id="checkpaidpickup` + now + `" checked="checked">
+								</div>`;
+			else
+				content += `	<input type="hidden" name="pickup_paid[]" id="paidpickup` + now + `" value="0">
+								<div class="form-check">
+									<input class="form-check-input update_paid" type="checkbox" id="checkpaidpickup` + now + `" >
+								</div>`;
+				content += `</td>
+							<td>
+								<input type="hidden" name="pickup_delete[]" id="deletepickup` + now + `" value="0">
+								<div class="form-check">
+									<input class="form-check-input update_delete" type="checkbox" id="checkdeletepickup` + now + `" >
+								</div>
+							</td>`;
+
+				content += `<td>`;
+				content += `<input type="date" class="form-control form-control-sm" name="pickup_date_due[]" id="date_duepickup` + now + `" value="`+ date_due + `">`;
+				content += `</td>
+							<td>`;
+				if(paid)
+					content += `<input type="hidden" name="pickup_amount[]" value="`+ amount +`">$` + amount ;
+				else
+					content += `<input class="form-control form-control-sm" type="text" name="pickup_amount[]" value="`+ amount +`">`;
+				
+				content += `</td>
+								<td>`;
+				if(paid)
+					content += `<input type="hidden" name="pickup_coupon_value[]" value="`+ coupon_value +`">` + coupon_value ;
+				else
+					content += `<input class="form-control form-control-sm" type="text" name="pickup_coupon_value[]" value="`+ coupon_value +`">`;
+				content += `</td>
+								<td>`;
+				if(paid)
+					content += `<input type="hidden" name="pickup_amount_payable[]" value="`+ amount_payable +`">` + amount_payable ;
+				else
+					content += `<input class="form-control form-control-sm" type="text" name="pickup_amount_payable[]" value="`+ amount_payable +`">`;
+				
+				content += `</td>
+								<td>`;
+				if(paid)
+					content += `<input type="hidden" name="pickup_amount[]" value="`+ payment_method +`">`;
+				
+					content +=		`<select class="form-control form-control-sm" name="pickup_payment_method[]"`+ (paid?'disabled':'') + `>
+										<option value="1" ` + (payment_method==1? `selected="selected"` : ``) + `>Cash</option>
+										<option value="7" ` + (payment_method==7? `selected="selected"` : ``) + `>CFA</option>
+										<option value="4" ` + (payment_method==4? `selected="selected"` : ``) + `>Credit Card on File</option>
+										<option value="2" ` + (payment_method==2? `selected="selected"` : ``) + `>Hold Check</option>
+										<option value="5" ` + (payment_method==5? `selected="selected"` : ``) + `>Other</option>
+										<option value="3" ` + (payment_method==3? `selected="selected"` : ``) + `>Promise to Pay</option>
+										<option value="6" ` + (payment_method==6? `selected="selected"` : ``) + `>Tax Max</option>
+										<option value="8" ` + (payment_method==8? `selected="selected"` : ``) + `>1st Payment Recourse</option>
+									</select>
+								</td>
+								<td>`;
+				if(paid)
+					content += `<input type="hidden" name="pickup_note[]" value="`+ pay_note +`">`;
+				
+				if(paid)
+					content += `	<textarea  class="form-control form-control-sm" name="pickup_note[]" rows="1" disabled>`+ pay_note + `</textarea>`;
+				else
+					content += `	<textarea class="form-control form-control-sm" name="pickup_note[]" rows="1">`+ pay_note + `</textarea>`;
+				content +=`		</td>
+							</tr>`;
+			$("#deffered_payments").append(content);
+
+			$("#addPaymentModal").modal('hide');
+		});
+
+		$("#btn_new_desk").click(function(){
+			var action = "insert";
+			var type = "deskmanager";
+			var name = $("#input_new_desk").val();
+
+			if(name != ""){
+				$.post(
+					"/togglemodal.php", 
+					{
+						action : action,
+						type : type,
+						name : name,
+					}, 
+					function(data){
+						if(data != "fail"){
+							alert("Success!");
+							var content = "<option value="+ data +">"+ name +"</option>";
+							$("#deskmanager").append(content);
+						}else{
+							alert("Fail!");
+						}
+						$("#deskManagerModal").modal("hide");
+					});	
+			}else{
+				alert("Please insert name!");
+			}
+		});
+
+		$("#btn_new_floor").click(function(){
+			var action = "insert";
+			var type = "flooring";
+			var name = $("#input_new_floor").val();
+
+			if(name != ""){
+				$.post(
+					"/togglemodal.php", 
+					{
+						action : action,
+						type : type,
+						name : name,
+					}, 
+					function(data){
+						if(data != "fail"){
+							alert("Success!");
+							var content = "<option value="+ data +">"+ name +"</option>";
+							$("#flooring_id").append(content);
+						}else{
+							alert("Fail!");
+						}
+						$("#flooringCompanyModal").modal("hide");
+					});	
+			}else{
+				alert("Please insert name!");
+			}
+		});
+
+		$("#btn_new_lead").click(function(){
+			var action = "insert";
+			var type = "lead";
+			var name = $("#input_new_lead").val();
+
+			if(name != ""){
+				$.post(
+					"/togglemodal.php", 
+					{
+						action : action,
+						type : type,
+						name : name,
+					}, 
+					function(data){
+						if(data != "fail"){
+							alert("Success!");
+							var content = "<option value="+ data +">"+ name +"</option>";
+							$("#lead_id").append(content);
+						}else{
+							alert("Fail!");
+						}
+						$("#leadSourceModal").modal("hide");
+					});	
+			}else{
+				alert("Please insert name!");
+			}
+		});
+
+		$("#btn_new_finance_person").click(function(){
+			var action = "insert";
+			var type = "finance";
+			var name = $("#input_new_finance_person").val();
+
+			if(name != ""){
+				$.post(
+					"/togglemodal.php", 
+					{
+						action : action,
+						type : type,
+						name : name,
+					}, 
+					function(data){
+						if(data != "fail"){
+							alert("Success!");
+							var content = "<option value="+ data +">"+ name +"</option>";
+							$("#finance_person").append(content);
+						}else{
+							alert("Fail!");
+						}
+						$("#financePersonModal").modal("hide");
+					});	
+			}else{
+				alert("Please insert name!");
+			}
+		});
+
+		$("#btn_new_leading_source").click(function(){
+			var action = "insert";
+			var type = "lender";
+			var name = $("#input_new_leading_source").val();
+
+			if(name != ""){
+				$.post(
+					"/togglemodal.php", 
+					{
+						action : action,
+						type : type,
+						name : name,
+					}, 
+					function(data){
+						if(data != "fail"){
+							alert("Success!");
+							var content = "<option value="+ data +">"+ name +"</option>";
+							$("#lender_id").append(content);
+						}else{
+							alert("Fail!");
+						}
+						$("#lendingSourceModal").modal("hide");
+					});	
+			}else{
+				alert("Please insert name!");
+			}
+		});
+
+		$("#btn_new_warranty").click(function(){
+			var action = "insert";
+			var type = "warranty";
+			var name = $("#input_new_warranty").val();
+
+			if(name != ""){
+				$.post(
+					"/togglemodal.php", 
+					{
+						action : action,
+						type : type,
+						name : name,
+					}, 
+					function(data){
+						if(data != "fail"){
+							alert("Success!");
+							var content = "<option value="+ data +">"+ name +"</option>";
+							$("#warranty_id").append(content);
+						}else{
+							alert("Fail!");
+						}
+						$("#warrantyProviderModal").modal("hide");
+					});	
+			}else{
+				alert("Please insert name!");
+			}
+		});
+
+		$("#btn_new_gap_provider").click(function(){
+			var action = "insert";
+			var type = "gap";
+			var name = $("#input_new_gap_provider").val();
+
+			if(name != ""){
+				$.post(
+					"/togglemodal.php", 
+					{
+						action : action,
+						type : type,
+						name : name,
+					}, 
+					function(data){
+						if(data != "fail"){
+							alert("Success!");
+							var content = "<option value="+ data +">"+ name +"</option>";
+							$("#gap_id").append(content);
+						}else{
+							alert("Fail!");
+						}
+						$("#gapProviderModal").modal("hide");
+					});	
+			}else{
+				alert("Please insert name!");
+			}
+		});
+
+		$("#btn_new_misc_provider").click(function(){
+			var action = "insert";
+			var type = "misc";
+			var name = $("#input_new_misc_provider").val();
+
+			if(name != ""){
+				$.post(
+					"/togglemodal.php", 
+					{
+						action : action,
+						type : type,
+						name : name,
+					}, 
+					function(data){
+						if(data != "fail"){
+							alert("Success!");
+							var content = "<option value="+ data +">"+ name +"</option>";
+							$("#misc_id").append(content);
+						}else{
+							alert("Fail!");
+						}
+						$("#miscProviderModal").modal("hide");
+					});	
+			}else{
+				alert("Please insert name!");
+			}
+		});
+	});
+
+	$("#btnAddMisc").click(function(){
+		var misc_row_id = (Math.random() + 1).toString(36).substring(7);
+		console.log('fff'+misc_row_id);
+		var misc_row_cnt = $('.misc-finance-row').length;
+		if(misc_row_cnt < 3){
+		var miscData = `
+			<div class='misc-finance-row misc-finance-row-${misc_row_id}'>
+				<button id="btnDeleteMisc" type="button" class="btn btn-primary btn-sm" style="float: right;margin-top:auto;" onclick='deleteMiscRow("${misc_row_id}")'>
+					<i class="fas fa-minus-circle"></i> Delete
+				</button>
+				<div class="form-group row">
+										
+					<label for="misc_finance" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Product</label>
+					{# <div class="col-6 col-md-3 col-xl-2">
+						<!--<input type="text" class="form-control form-control-sm" name="finance_id" id="finance_id">-->
+					</div> #}
+					<div class="col-6 col-md-3 col-xl-2">
+						<select class="form-control form-control-btn form-control-sm" {{disabled}} name="misc_id[]" id="misc_id">
+							<option value="">None</option>
+							{% for misc_finance in misc %}
+								<option value="{{ misc_finance.id }}" {% if deal.misc_id == misc_finance.id %} selected="selected"{% endif %}>{{ misc_finance.val }}</option>
+							{% endfor %}
+						</select>
+						<button {{disabled}} type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#miscProviderModal">
+							<i class="fas fa-plus-circle"></i>
+						</button>
+					</div>
+				
+					<label for="finance_sale" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Price</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="number" class="form-control form-control-sm" {{disabled}} name="finance_sale[]" id="finance_sale" value="{{ deal.finance_sale }}">
+					</div>
+					
+					<label for="finance_cost" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Misc Finance Cost</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="number" class="form-control form-control-sm" {{disabled}} name="finance_cost[]" id="finance_cost" value="{{ deal.finance_cost }}">
+					</div>
+				
+				</div>
+			</div>
+		`;
+		$('#miscBox').append(miscData);
+		}
+		console.log($('.misc-finance-row').length);
+	});
+
+	function deleteMiscRow(id) {
+		console.log(document.querySelector(`misc-finance-row-${id}`));
+		$(`.misc-finance-row-${id}`).remove();
+	}
+
+
+</script>
+
+{% endblock %}

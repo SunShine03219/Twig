@@ -1,0 +1,439 @@
+
+{% macro tpl_companyRegister() %}
+
+<div class="row">
+	<div class="login-welcome text-white"><a href="/" style="color: #fff">Registeration - Create New Company</a></div>
+</div>
+<form name="register" action="" method="POST" class="text-white">
+	<input type="hidden" name="action" value="{{ action }}">
+
+	<div class="row">
+		<div class="w-100 form-section-heading">Company</div>
+	</div>
+
+	<div class="form-group required row">
+
+		<label for="name" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Company Name</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="name" id="name" required>
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="w-100 form-section-heading">Address</div>
+	</div>
+
+	<div class="form-group row">
+
+		<label for="address1" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Address 1</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="address1" id="address1">
+		</div>
+
+		<label for="address2" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Address 2</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="address2" id="address2">
+		</div>
+
+	</div>
+
+	<div class="form-group row">
+
+		<label for="city" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">City</label>
+		<div class="col-6 col-md-3 col-xl-2">
+			<input type="text" class="form-control form-control-sm" name="city" id="city" >
+		</div>
+
+		<label for="state" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">State</label>
+		<div class="col-6 col-md-3 col-xl-2">
+			<select class="form-control form-control-sm" name="state" id="state">
+			 {% for key, value in states %}
+				<option value="{{key}}">{{ value }}</option>
+			 {% endfor %}
+			</select>
+		</div>
+
+		<label for="zip" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Zip Code</label>
+		<div class="col-6 col-md-3 col-xl-2">
+			<input type="text" class="form-control form-control-sm" name="zip" id="zip">
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="w-100 form-section-heading">Contact Information</div>
+	</div>
+
+	<div class="form-group required row">
+
+		<label for="contact" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Main Contact</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="contact" id="contact" required>
+		</div>
+
+		<label for="phone_contact" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Contact Phone</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="phone_contact" id="phone_contact" required>
+		</div>
+
+	</div>
+
+	<div class="form-group required row">
+
+		<label for="phone_main" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Main Phone</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="phone_main" id="phone_main" required>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<label for="phone_fax" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Fax Number</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="phone_fax" id="phone_fax">
+		</div>
+
+		<label for="website" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Website</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="website" id="website">
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="w-100 form-section-heading">Referral</div>
+	</div>
+
+	<div class="form-group required row">
+
+		<label for="referred_by" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Referred by</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="referred_by" id="referred_by" required>
+		</div>
+
+	</div>
+
+
+	<div class="row">
+
+		<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-2 offset-xl-2">
+			<button type="submit" class="btn btn-primary btn-sm btn-block">Submit</button>
+		</div>
+
+	</div>
+</form>
+{% endmacro %}
+
+{% macro tpl_robotCheck() %}
+<div class="row">
+	<div class="login-welcome text-white"><a href="/">Please enter security code to continue.</a></div>
+</div>
+<form name="register" action="" method="POST" class="text-white">
+	<input type="hidden" name="action" value="{{ action }}">
+	
+	<div class="form-group required row">
+
+		<label for="captcha" style="text-align:right" class="col-sm-12 col-md-6 col-xl-4 col-form-label-sm label_text_right">Enter Code</label>
+		<div class="col-6 col-md-6 col-xl-4">
+			<input type="text" class="form-control form-control-sm" name="captcha" id="captcha" required>
+		</div>
+
+		<div class="col-6 col-md-3">
+			<img src="register?captcha=1"/>
+		</div>
+
+	</div>
+	<div class="row">
+
+		<div class="col-5 offset-6 col-md-3 offset-md-3 col-xl-4 offset-xl-4">
+			<button type="submit" class="btn btn-primary btn-sm btn-block user-form">Submit</button>
+		</div>
+
+	</div>
+</form>
+{% endmacro %}
+
+{% macro tpl_customerRegister() %}
+<div class="row">
+	<div class="login-welcome text-white"><a href="/">Registeration - Create New User.</a></div>
+</div>
+<form name="new_user" id="user_form" action="" method="POST"  class="text-white">
+	<input type="hidden" name="action" value="{{ action }}">
+	<div class="row">
+		<div class="w-100 form-section-heading">Login Information</div>
+	</div>
+
+	<div class="form-group required row">
+
+		<label for="username" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Username</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="username" id="username" required>
+			{% if error is defined %}
+				<div class="row">
+					<div class="login-error">
+						<i class="fas fa-exclamation-circle"></i> {{ error }}
+					</div>
+				</div>
+			{% endif %}
+		</div>
+		
+	
+
+		<label for="password" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Password</label>
+		<div class="col-6 col-md-3">
+			<input type="password" class="form-control form-control-sm" name="password" id="password" required>
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="w-100 form-section-heading">User Information</div>
+	</div>
+
+	<div class="form-group required row">
+
+		<label for="name_first" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">First Name</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="name_first" id="name_first" required>
+		</div>
+
+		<label for="name_last" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Last Name</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="name_last" id="name_last" required>
+		</div>
+
+	</div>
+
+	<div class="form-group required row">
+
+		<label for="position" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Position</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="position" id="position" required>
+		</div>
+
+	</div>
+
+	<div class="form-group required row">
+
+		<label for="email" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">E-Mail</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="email" id="email" required>
+		</div>
+
+	</div>
+
+	<div class="form-group row">
+
+		<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Phone</label>
+		<div class="col-6 col-md-3">
+			<input type="number" class="form-control form-control-sm" name="phone" id="phone" >
+		</div>
+
+		<label for="fax" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Fax</label>
+		<div class="col-6 col-md-3">
+			<input type="number" class="form-control form-control-sm" name="fax" id="fax">
+		</div>
+
+	</div>
+
+	<div class="row">
+
+		<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-4 offset-xl-4">
+			<button type="submit" class="btn btn-primary btn-sm btn-block user-form">Submit</button>
+		</div>
+
+	</div>
+
+</form>
+
+{% endmacro %}
+
+{% macro tpl_paymentInfo() %}
+<div class="row">
+	<div class="login-welcome text-white"><a href="/">Payment Information.</a></div>
+</div>
+<form name="register" id="paymentFrm" action="" method="POST" class="text-white">
+	<input type="hidden" name="action" value="{{ action }}">
+	<div class="row">
+		<div class="w-100 form-section-heading">Please select your Subscription</div>
+	</div>
+	<div class="form-group">
+		{% for subscription in subscriptions %}
+		<div class="row ml-4">
+			<div class="form-check-inline">
+				<input type="radio" name="subscription" class="form-check mx-4" id="subscription_{{ subscription.id }}" value="{{ subscription.id }}"/>
+				<label for="subscription_{{ subscription.id }}" class="form-check-label">{{ subscription.name }} - {{ subscription.description }}</label>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	<div class="row">
+		<div class="w-100 form-section-heading">Credit Card Information</div>
+	</div>
+	<div class="form-group row">
+		<label for="enter_now" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Enter Now</label>
+		<div class="col-6 col-md-3 pt-2">
+			<input type="radio" class="form-check-inline" name="enter_card" id="enter_now" value="1">
+		</div>
+
+		<label for="enter_later" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Enter Later</label>
+		<div class="col-6 col-md-3 pt-2">
+			<input type="radio" class="form-check-inline" name="enter_card" id="enter_later">
+		</div>
+
+	</div>
+	<div id="paymentResponse">{{error}}</div>
+	<div class="form-group row required">
+		<label for="card_number" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Credit Card Number</label>
+		<div class="col-6 col-md-3">
+			<div id="card_number" class="field"></div>
+		</div>
+	</div>
+	<div class="form-group row required">
+		<label for="card_number" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">EXPIRY DATE</label>
+		<div class="col-6 col-md-3">
+			<div id="card_expiry" class="field"></div>
+		</div>
+	</div>
+	<div class="form-group row required">
+		<label for="owner_name" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Name On Card</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="owner_name" id="owner_name" required>
+		</div>
+	</div>
+	<div class="form-group row required">
+		<label for="zip_code" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Billing Zip Code</label>
+		<div class="col-6 col-md-3">
+			<input type="text" class="form-control form-control-sm" name="zip_code" id="zip_code" required>
+		</div>
+		<label for="card_cvc" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Security Code</label>
+		<div class="col-6 col-md-3">
+			<div id="card_cvc" class="field"></div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div>Security code is a digit number printed on the back of Visa/MC cards or a 4 digit number on the front of American Express.</div>
+		<div>Your Credit Card information is transmitted securely using 256bit encrytion over SSL.</div>
+		<div>We do not store your credit card information.</div>
+	</div>
+	<div class="row">
+
+		<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-4 offset-xl-4">
+			<button type="submit" class="btn btn-primary btn-sm btn-block user-form">Submit</button>
+		</div>
+
+	</div>
+</form>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+// Create an instance of the Stripe object
+
+//live pk
+var stripe = Stripe('pk_live_51IulAeLiGGzfFa3lczCH37X59VNSLe9cVvAh2QXitFjwfcO6kFMtUtDvNzkPT7UHukl5EaqWxz4qHdpdOxnb4cQQ00KrfVc1xb');
+
+// Set your publishable API key
+{# var stripe = Stripe('pk_test_51J6gYTFK6zxHT0YTzguessodMOzPo43pSdlWQF45LAjIQ2rzCBxUVE6aFVNdJxIHduPHvXMLK56dg3S0Z8OXEUYR00yC0Cd75i'); #}
+
+// Create an instance of elements
+var elements = stripe.elements();
+
+var style = {
+    base: {
+        fontWeight: 400,
+        fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
+        fontSize: '16px',
+        lineHeight: '1.4',
+        color: '#555',
+        backgroundColor: '#fff',
+        '::placeholder': {
+            color: '#888',
+        },
+    },
+    invalid: {
+        color: '#eb1c26',
+    }
+};
+
+var cardElement = elements.create('cardNumber', {
+    style: style
+});
+cardElement.mount('#card_number');
+
+var exp = elements.create('cardExpiry', {
+    'style': style
+});
+exp.mount('#card_expiry');
+
+var cvc = elements.create('cardCvc', {
+    'style': style
+});
+cvc.mount('#card_cvc');
+
+// Validate input of the card elements
+var resultContainer = document.getElementById('paymentResponse');
+cardElement.addEventListener('change', function(event) {
+    if (event.error) {
+        resultContainer.innerHTML = '<p>'+event.error.message+'</p>';
+    } else {
+        resultContainer.innerHTML = '';
+    }
+});
+
+// Get payment form element
+var form = document.getElementById('paymentFrm');
+
+// Create a token when the form is submitted.
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+	if(document.querySelectorAll('[name=subscription]:checked').length === 0){
+		resultContainer.innerHTML = "Please select a subscription";
+		return;
+	}
+    createToken();
+});
+
+// Create single-use token to charge the user
+function createToken() {
+    stripe.createToken(cardElement).then(function(result) {
+        if (result.error) {
+            // Inform the user if there was an error
+            resultContainer.innerHTML = '<p>'+result.error.message+'</p>';
+        } else {
+            // Send the token to your server
+            stripeTokenHandler(result.token);
+        }
+    });
+}
+
+// Callback to handle the response from stripe
+function stripeTokenHandler(token) {
+    // Insert the token ID into the form so it gets submitted to the server
+    var stripeToken = document.createElement('input');
+    stripeToken.setAttribute('type', 'hidden');
+    stripeToken.setAttribute('name', 'stripeToken');
+    stripeToken.setAttribute('value', token.id);
+    form.appendChild(stripeToken); 
+	
+	var cardtype = document.createElement('input');
+    cardtype.setAttribute('type', 'hidden');
+    cardtype.setAttribute('name', 'cardtype');
+    cardtype.setAttribute('value', token.card.brand);
+    form.appendChild(cardtype);
+	
+	var last4 = document.createElement('input');
+    last4.setAttribute('type', 'hidden');
+    last4.setAttribute('name', 'last4');
+    last4.setAttribute('value', token.card.last4);
+    form.appendChild(last4);
+	
+	var expriation = document.createElement('input');
+    expriation.setAttribute('type', 'hidden');
+    expriation.setAttribute('name', 'exp_date');
+    expriation.setAttribute('value', token.card.exp_year+'-'+(token.card.exp_month < 10 ? '0' : '')+token.card.exp_month);
+    form.appendChild(expriation);
+	console.log(token, form)
+    // Submit the form
+    form.submit();
+}
+</script>
+{% endmacro %}

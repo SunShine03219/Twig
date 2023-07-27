@@ -1,0 +1,20 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'forms/tpl.topbarNoPrint.twig' as topbar %}
+{% import 'forms/tpl.notification.twig' as form %}
+
+{% block tpl_grid %}
+
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					{{ form.tpl_notificationForm }}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

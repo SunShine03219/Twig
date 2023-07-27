@@ -1,0 +1,68 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "479635aa96d26e07f3ae7ad00b7fbb95",
+    "packages": [
+        {
+            "name": "cdtweb/us-states-list",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cdtweb/us-states-list.git",
+                "reference": "06d3c8664561e6f87edad68587e375494f6acdb4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cdtweb/us-states-list/zipball/06d3c8664561e6f87edad68587e375494f6acdb4",
+                "reference": "06d3c8664561e6f87edad68587e375494f6acdb4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.1",
+                "squizlabs/php_codesniffer": "2.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cdtweb\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Clint Tyler",
+                    "email": "ctyler@cdtwebsolutions.com"
+                }
+            ],
+            "description": "A library that provides a list of US states and territories.",
+            "homepage": "https://github.com/cdtweb/us-states-list",
+            "keywords": [
+                "states",
+                "us"
+            ],
+            "support": {
+                "issues": "https://github.com/cdtweb/us-states-list/issues",
+                "source": "https://github.com/cdtweb/us-states-list/tree/master"
+            },
+            "time": "2017-11-08T22:48:27+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
+}

@@ -1,0 +1,14 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.nav.twig' as nav %}
+{% import 'tpl.header.twig' as header %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ nav.tpl_navMain }}
+		<div id="site-content-container">
+			{{ header.tpl_headerDefault }}
+		
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,424 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+{% block tpl_grid %}
+
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table table-responsive">
+						<div class="header-content table-responsive">
+							<table class="top-table report-duble">
+								<tr>
+									<td class="theader">Deals: </td>
+									<td class="tnum">{{ companygrosses['companytotal'][0]['deals'] }}</td>
+									<td class="theader">Total Gross:</td>
+									<td class="tnum">${{ companygrosses['companytotal'][0]['total_gross'] | number_format(2, ".", ',')}}</td>
+									<td class="theader">Front End Gross:</td>
+									<td class="tnum">${{companygrosses['companytotal'][0]['frontend'] | number_format(2, ".", ',')}}</td>
+									<td class="theader">Back End Gross:</td>
+									<td class="tnum">${{companygrosses['companytotal'][0]['backend'] | number_format(2, ".", ',')}}</td>
+								</tr>
+								<tr>
+									<td class="theader">Financed Deals: </td>
+									<td class="tnum">{{ companygrosses['companytotal'][0]['financed_deals'] }}</td>
+									<td class="theader">Amount Financed:</td>
+									{# <td class="tnum">${{ companygrosses['companytotal'][0]['financed_total'] | number_format(2, ".", ',') }}</td> #}
+									{% if '-' in companygrosses['companytotal'][0]['financed_total'] %}
+										<td class="tnum text-danger">
+										$({{companygrosses['companytotal'][0]['financed_total'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{companygrosses['companytotal'][0]['financed_total'] | number_format(2, '.', ',')}}
+										</td>
+									{% endif %}
+									<td class="theader">Funded:</td>
+									{# <td class="tnum">${{companygrosses['companytotal'][0]['funded_total'] | number_format(2, ".", ',')}}</td> #}
+									{% if '-' in companygrosses['companytotal'][0]['funded_total'] %}
+										<td class="tnum text-danger">
+										$({{companygrosses['companytotal'][0]['funded_total'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{companygrosses['companytotal'][0]['funded_total'] | number_format(2, '.', ',')}}
+										</td>
+									{% endif %}
+									<td class="theader">Unfunded:</td>
+									{# <td class="tnum">${{companygrosses['companytotal'][0]['unfunded_total'] | number_format(2, ".", ',')}}</td> #}
+									{% if '-' in companygrosses['companytotal'][0]['unfunded_total'] %}
+										<td class="tnum text-danger">
+										$({{companygrosses['companytotal'][0]['unfunded_total'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{companygrosses['companytotal'][0]['unfunded_total'] | number_format(2, '.', ',')}}
+										</td>
+									{% endif %}
+								<tr>
+								{% if companygrosses['projected'] %}
+								<tr>
+									<td class="theader">Projected Deals:</td>
+									<td class="tnum">{{ companygrosses['projected'].deals }}</td>
+									<td class="theader">Projected Gross:</td>
+									{% if '-' in companygrosses['projected'].total_gross %}
+										<td class="tnum text-danger">
+										$({{companygrosses['projected'].total_gross | replace({'-': ''}) }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{companygrosses['projected'].total_gross}}
+										</td>
+									{% endif %}
+									<td class="theader">Projected Front End:</td>
+									{% if '-' in companygrosses['projected'].frontend %}
+										<td class="tnum text-danger">
+										$({{companygrosses['projected'].frontend | replace({'-': ''}) }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{companygrosses['projected'].frontend}}
+										</td>
+									{% endif %}
+									<td class="theader">Projected Back End:</td>
+									{% if '-' in companygrosses['projected'].backend %}
+										<td class="tnum text-danger">
+										$({{companygrosses['projected'].backend | replace({'-': ''}) }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{companygrosses['projected'].backend}}
+										</td>
+									{% endif %}
+								<tr>
+								{% endif %}
+							</table>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<colgroup style="width: 100%;">
+									<col width="10%">
+									<col width="8%">
+									<col width="5%">
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+									<col width="15%">
+									<col width="15%">
+									<col width="10%">
+									<col width="15%">
+								</colgroup>
+								<thead>
+									<tr>
+										{% if sortdir == "desc" and sortid == "date_sold" %}
+										<th class="sortable" onclick='javascript:sortColumn("date_sold", "asc")'>Date Sold
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable" onclick='javascript:sortColumn("date_sold", "desc")'>Date Sold
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+
+										{% if sortdir == "desc" and sortid == "client_name" %}
+										<th class="sortable" onclick='javascript:sortColumn("client_name", "asc")'>Client
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable" onclick='javascript:sortColumn("client_name", "desc")'>Client
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+										{# <th>Client</th> #}
+										{# <th>Stock</th> #}
+										{% if sortdir == "desc" and sortid == "stock" %}
+										<th class="sortable" onclick='javascript:sortColumn("stock", "asc")'>Stock
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable" onclick='javascript:sortColumn("stock", "desc")'>Stock
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+
+										{# <th>Desk Manager</th> #}
+										{% if sortdir == "desc" and sortid == "deskmanager" %}
+										<th class="sortable" onclick='javascript:sortColumn("deskmanager", "asc")'>Desk Manager
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable" onclick='javascript:sortColumn("deskmanager", "desc")'>Desk Manager
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+										{# <th>Finance Person</th> #}
+										{% if sortdir == "desc" and sortid == "financeperson" %}
+										<th class="sortable" onclick='javascript:sortColumn("financeperson", "asc")'>Finance Person
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable" onclick='javascript:sortColumn("financeperson", "desc")'>Finance Person
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+										{# <th class="tnum">Payable Gross</th> #}
+										{% if sortdir == "desc" and sortid == "payable_gross" %}
+										<th class="sortable tnum" onclick='javascript:sortColumn("payable_gross", "asc")'>Payable Gross
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable tnum" onclick='javascript:sortColumn("payable_gross", "desc")'>Payable Gross
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+										{# <th class="tnum">Front End</th> #}
+										{% if sortdir == "desc" and sortid == "frontend" %}
+										<th class="sortable tnum" onclick='javascript:sortColumn("frontend", "asc")'>Front End
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable tnum" onclick='javascript:sortColumn("frontend", "desc")'>Front End
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+										{# <th class="tnum">Back End</th> #}
+										{% if sortdir == "desc" and sortid == "backend" %}
+										<th class="sortable tnum" onclick='javascript:sortColumn("backend", "asc")'>Back End
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable tnum" onclick='javascript:sortColumn("backend", "desc")'>Back End
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+										{# <th class="tcen">Holdback</th> #}
+										{% if sortdir == "desc" and sortid == "holdback" %}
+										<th class="sortable" onclick='javascript:sortColumn("holdback", "asc")'>Holdback
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable" onclick='javascript:sortColumn("holdback", "desc")'>Holdback
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+										{# <th class="tnum">Total Gross</th> #}
+										{% if sortdir == "desc" and sortid == "total_gross" %}
+										<th class="sortable" onclick='javascript:sortColumn("total_gross", "asc")'>Total Gross
+											<i class="fas fa-caret-down"></i>
+										</th>
+										{% else %}
+										<th class="sortable" onclick='javascript:sortColumn("total_gross", "desc")'>Total Gross
+											<i class="fas fa-caret-up"></i>
+										</th>
+										{% endif %}
+									<tr>
+								</thead>
+								<tbody>
+									{% for companygross in companygrosses['tabledata'] %}
+										<tr class="deal-row1" data-id="{{ companygross.deal_id }}" style="border-bottom: 1px solid #dadada">
+											<td>{{ companygross.date_sold_f }}</td>
+											<td>
+												<a href="deals/view?id={{companygross.deal_id}}" onclick="viewLender('{{  companygross.deal_id  }}')">{{ companygross.client_name }}</a>
+											</td>
+											<td>{{ companygross.stock }}</td>
+											<td>{{ companygross.deskmanager }}</td>
+											<td>{{ companygross.financeperson }}</td>
+											{% if '-' in companygross.payable_gross %}
+												<td class="tnum text-danger">
+													$({{companygross.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+												</td>
+											{% else %}
+												<td class="tnum">
+													${{companygross.payable_gross | number_format(2, '.', ',')}}
+												</td>
+											{% endif %}
+											{% if '-' in companygross.frontend %}
+												<td class="tnum text-danger">
+												$({{companygross.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+												</td>
+											{% else %}
+												<td class="tnum">
+												${{companygross.frontend | number_format(2, '.', ',')}}
+												</td>
+											{% endif %}
+											{% if '-' in companygross.backend %}
+												<td class="tnum text-danger">
+												$({{companygross.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+												</td>
+											{% else %}
+												<td class="tnum">
+												${{companygross.backend | number_format(2, '.', ',')}}
+												</td>
+											{% endif %}
+											{% if '-' in companygross.holdback %}
+												<td class="tnum text-danger">
+												$({{companygross.holdback | replace({'-': ''}) | number_format(2, '.', ',') }})
+												</td>
+											{% else %}
+												<td class="tnum">
+												${{companygross.holdback | number_format(2, '.', ',')}}
+												</td>
+											{% endif %}
+											{% if '-' in companygross.total_gross %}
+												<td class="tnum text-danger">
+												$({{companygross.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+												</td>
+											{% else %}
+												<td class="tnum">
+												${{companygross.total_gross | number_format(2, '.', ',')}}
+												</td>
+											{% endif %}
+										</tr>
+									{% endfor %}
+									
+									<tr data-id="{{ lend.dealid }}" style="background: #0072ba; border-bottom: 1px solid #000000; color: black">
+										<th >Total</th>
+										<th class="tcen"></th>
+										<th class="">{{ companygrosses['companytotal'][0]['deals'] }}</th>
+										<th class="tnum"></th>
+										<th class="tnum"></th>
+										{% if '-' in companygrosses['companytotal'][0]['payable_gross'] %}
+											<th class="tnum text-danger">
+											$({{companygrosses['companytotal'][0]['payable_gross'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['companytotal'][0]['payable_gross'] | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if '-' in companygrosses['companytotal'][0]['frontend'] %}
+											<th class="tnum text-danger">
+											$({{companygrosses['companytotal'][0]['frontend'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['companytotal'][0]['frontend'] | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if '-' in companygrosses['companytotal'][0]['backend'] %}
+											<th class="tnum text-danger">
+											$({{companygrosses['companytotal'][0]['backend'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['companytotal'][0]['backend'] | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										<th class=""></th>
+										{% if '-' in companygrosses['companytotal'][0]['total_gross'] %}
+											<th class="tnum text-danger">
+											$({{companygrosses['companytotal'][0]['total_gross'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['companytotal'][0]['total_gross'] | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+									</tr>
+									<tr  data-id="{{ lend.dealid }}" style="background: #0072ba; border-bottom: 1px solid #000000; color: black;">
+										<th class="">Average</th>
+										<th class="tcen"></th>
+										<th class=""></th>
+										<th class="tnum"></th>
+										<th class="tnum"></th>
+										{# <th class="tnum">${{ (companygrosses['companytotal'][0]['payable_gross_average'] | round(1, 'floor')) | number_format(2, '.', ',') }}</th> #}
+										{% if '-' in companygrosses['companytotal'][0]['payable_gross_average'] %}
+											<th class="tnum text-danger">
+											$({{companygrosses['companytotal'][0]['payable_gross_average'] | replace({'-': ''}) | round(1, 'floor') | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['companytotal'][0]['payable_gross_average'] | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{ (companygrosses['companytotal'][0]['frontend_average'] | round(2, 'floor') ) | number_format(2, '.', ',')}}</th> #}
+										{% if '-' in companygrosses['companytotal'][0]['frontend_average'] %}
+											<th class="tnum text-danger">
+											$({{companygrosses['companytotal'][0]['frontend_average'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['companytotal'][0]['frontend_average'] | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{( companygrosses['companytotal'][0]['backend_average'] | round(2, 'floor')) | number_format(2, '.', ',')}}</th> #}
+										{% if '-' in companygrosses['companytotal'][0]['backend_average'] %}
+											<th class="tnum text-danger">
+											$({{companygrosses['companytotal'][0]['backend_average'] | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['companytotal'][0]['backend_average'] | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										<th class=""></th>
+										{# <th class="tnum">${{ (companygrosses['companytotal'][0]['frontend_average'] - companygrosses['companytotal'][0]['backend_average'] | abs()) | number_format(2, '.', ',')}}</th> #}
+										{% if '-' in (companygrosses['companytotal'][0]['total_gross'] / companygrosses['companytotal'][0]['total_gross_average']) %}
+											<th class="tnum text-danger">
+											$({{(companygrosses['companytotal'][0]['total_gross'] / companygrosses['companytotal'][0]['total_gross_average']) | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{(companygrosses['companytotal'][0]['total_gross'] |abs() / companygrosses['companytotal'][0]['total_gross_average'] | abs()) | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+									</tr>
+									{% if companygrosses['projected'] %}
+									<tr style="background: #0072ba; color: black;">
+										<th class="	">Projected Deals:</th>
+										<th class=""></th>
+										<th class="">{{companygrosses['projected'].stock}}</th>
+										<th class="tnum"></th>
+										<th class="tnum"></th>
+										{% if '-' in companygrosses['projected'].payable_gross %}
+											<th class="tnum text-danger">
+											$({{companygrosses['projected'].payable_gross | replace({'-': ''})  }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['projected'].payable_gross }}
+											</th>
+										{% endif %}
+										{% if '-' in companygrosses['projected'].frontend %}
+											<th class="tnum text-danger">
+											$({{companygrosses['projected'].frontend | replace({'-': ''})  }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['projected'].frontend }}
+											</th>
+										{% endif %}
+										{% if '-' in companygrosses['projected'].backend %}
+											<th class="tnum text-danger">
+											$({{companygrosses['projected'].backend | replace({'-': ''})  }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['projected'].backend }}
+											</th>
+										{% endif %}
+										<th class=""></th>
+										{% if '-' in companygrosses['projected'].total_gross %}
+											<th class="tnum text-danger">
+											$({{companygrosses['projected'].total_gross | replace({'-': ''})  }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{companygrosses['projected'].total_gross }}
+											</th>
+										{% endif %}
+									</tr>
+									{% endif %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

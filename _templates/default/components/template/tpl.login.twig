@@ -1,0 +1,77 @@
+{% extends 'tpl.container.twig' %}
+
+{% block tpl_grid %}
+	<div class="container-fluid login-container">
+		<div id="login">
+			<div class="row">
+				<div class="login-logo">
+					<span class="funding">FUNDING</span>
+					<span class="tracker">TRACKER</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="login-welcome">Welcome To Funding Tracker!</div>
+			</div>
+			<form name="login" action="/login" method="post">
+				{% if error is defined %}
+					<div class="row">
+						<div class="login-error">
+							<i class="fas fa-exclamation-circle"></i> {{ error }}
+						</div>
+					</div>
+				{% endif %}
+				<div class="row">
+					<div class="login-field">
+						<div class="login-label">USERNAME</div>
+						<input class="login_input" type="text" name="username" placeholder="Enter your username" autocomplete="off"{% if username is defined %} value="{{ username }}"{% endif %} required>
+					</div>
+				</div>
+				<div class="row">
+					<div class="login-field">
+						<div class="login-label">PASSWORD</div>
+						<input class="login_input" type="password" name="password" placeholder="Enter your password" autocomplete="off" required>
+					</div>
+				</div>
+				<style>
+					.login-welcome{
+							margin: 0 auto 40px !important;
+					}
+					@media (max-width: 550px) {
+						.funding, .tracker{
+							font-size:35px !important;
+						}
+						.login-welcome{
+							color: #ad273a;
+							margin: 0 auto 40px;
+							font-size: 20px;
+							font-weight: 100;
+						}
+						#login {
+							width:300px !important;
+						}
+						.login_input{
+							width:140px !important;
+						}
+					}
+				</style>
+				<input type="hidden" name="type" value="login">
+				<input type="hidden" name="nonce" value="{{ nonce }}">
+				<div class="row">
+					<input class="login-btn" type="submit" value="LOGIN">
+				</div>
+			</form>
+			<div class="row">
+				<a class="login-forgot" href="/forgot">Forgot your password?</a>
+			</div>
+			<div class="row">
+				<a class="login-forgot mt-2" href="/register">Sign Up to Funding Tracker</a>
+			</div>
+			<div class="row">
+				<p class="login-forgot mt-2 mb-0" href="javascript:;">Sales and Support - 425-220-9294</p>
+			</div>
+			<div class="row">
+				<p class="login-forgot mt-2" href="javascript:;" style="margin-top:3px">info@fundingtracker.net</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}

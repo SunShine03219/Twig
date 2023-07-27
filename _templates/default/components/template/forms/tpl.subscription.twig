@@ -1,0 +1,146 @@
+{% macro tpl_subscriptionForm() %}
+	<div class="form-ft">
+		<div class="container">
+			<form name="subscription" action="superuser/subscriptions" method="POST">
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+				{% if action != 'insert' %}
+					<input type="hidden" name="id" value="{{ hidden_input_array.id }}">
+				{% endif %}
+
+				<div class="row">
+					<div class="w-100 form-section-heading">{% if action == 'insert' %}Create {% else %} Edit {% endif %} Subscription Type</div>
+				</div>
+
+				<div class="form-group required">
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="name" class="col-6 col-md-5 col-form-label-sm txt-right">Subscription Type Name</label>
+							<div class="col-6 col-md-7">
+								<input type="text" class="form-control form-control-sm" name="name" id="name" value="{{ subscription.name }}" required>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group required">
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="referral" class="col-6 col-md-5 col-form-label-sm txt-right">Refferal Code</label>
+							<div class="col-6 col-md-7">
+								<input type="text" class="form-control form-control-sm" name="referral" id="referral" value="{{ subscription.referral }}" required>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group required row m-0">
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="payment_interval_length" class="col-6 col-md-5 col-form-label-sm txt-right">Interval Length</label>
+							<div class="col-6 col-md-7">
+								<input type="text" class="form-control form-control-sm" name="payment_interval_length" id="payment_interval_length" value="{{ subscription.payment_interval_length }}" required>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="payment_interval_unit" class="col-6 col-md-5 col-form-label-sm txt-right">Interval Unit</label>
+							<div class="col-6 col-md-7">
+								<select class="form-control form-control-sm" name="payment_interval_unit" id="payment_interval_unit" value="{{ subscription.payment_interval_unit }}" required>
+									<option value="day">Day</option>
+									<option value="month">Month</option>
+									<option value="year">Year</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group required" >
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="payment_amount" class="col-6 col-md-5 col-form-label-sm txt-right">Payment Amount</label>
+							<div class="col-6 col-md-7">
+								<input type="text" class="form-control form-control-sm" name="payment_amount" id="payment_amount" value="{{ subscription.payment_amount }}" required>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group required" >
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="total_occurances" class="col-6 col-md-5 col-form-label-sm txt-right">Occurancess</label>
+							<div class="col-6 col-md-7">
+								<input type="text" class="form-control form-control-sm" name="total_occurances" id="total_occurances" value="{{ subscription.total_occurances }}" required>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group required" >
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="trial_days" class="col-6 col-md-5 col-form-label-sm txt-right">Trial Days</label>
+							<div class="col-6 col-md-7">
+								<input type="text" class="form-control form-control-sm" name="trial_days" id="trial_days" value="{{ subscription.trial_days }}" required>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group required" >
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="description" class="col-6 col-md-5 col-form-label-sm txt-right">Description</label>
+							<div class="col-6 col-md-7">
+								<input type="text" class="form-control form-control-sm" name="description" id="description" value="{{ subscription.description }}" required>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group required" >
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="active" class="col-6 col-md-5 col-form-label-sm txt-right">Active</label>
+							<div class="col-6 col-md-7">
+								<select class="form-control form-control-sm" name="active" id="active" >
+									<option value="1" >Active</option>
+									<option value="0">Inactive</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group required" >
+					<div class="col-xs-12 col-md-6">
+						<div class="row">
+							<label for="active" class="col-6 col-md-5 col-form-label-sm txt-right">Type</label>
+							<div class="col-6 col-md-7">
+								<select class="form-control form-control-sm" name="type" id="type" >
+									<option value="DEFAULT" selected >Default</option>
+									<option value="SPECIAL" >Special</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+
+					<div class="col-6 offset-6 col-md-3 offset-md-3">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">Submit</button>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript">
+		jQuery(document).ready(function(){
+			const type = "{{subscription.type}}";
+			jQuery('#type').val(type).change();
+		});
+	</script>
+{% endmacro %}
+

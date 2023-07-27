@@ -1,0 +1,177 @@
+{% macro tpl_companyForm() %}
+	<div class="form-ft">
+		<div class="container">
+			<form name="edit_company" action="{% if form_parent == 'administration' %}admin/company{% else %}superuser/customers{% endif %}" method="POST">
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+				{% if action != 'insert' %}
+					<input type="hidden" name="id" value="{{ hidden_input_array.id }}">
+				{% endif %}
+				{% if error != '' %}
+				<div class="col-12">
+					<div class="login-error">
+						<i class="fas fa-exclamation-circle"></i> {{ error }}
+					</div>
+				</div>
+				{% endif %}
+
+				{% if success != '' %}
+				<div class="col-12">
+					<div class="login-success">
+						<i class="fas fa-exclamation-circle"></i> {{ success }}
+					</div>
+				</div>
+				{% endif %}
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Company</div>
+				</div>
+
+				<div class="form-group required row">
+
+					<label for="name" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Company Name</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="name" id="name" value="{{ company.name }}"{% if action != 'insert' %} readonly="readonly"{% endif %} required>
+					</div>
+
+				</div>
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Address</div>
+				</div>
+
+				<div class="form-group required row">
+
+					<label for="address1" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Address 1</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="address1" id="address1" value="{{ company.address1 }}" required>
+					</div>
+
+					<label for="address2" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right required-none">Address 2</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="address2" id="address2" value="{{ company.address2 }}">
+					</div>
+
+				</div>
+
+				<div class="form-group required row">
+
+					<label for="city" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">City</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="city" id="city" value="{{ company.city }}" required>
+					</div>
+
+					<label for="state" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">State</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="state" id="state" value="{{ company.state }}" required>
+					</div>
+
+					<label for="zip" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Zip Code</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="zip" id="zip" value="{{ company.zip }}" >
+					</div>
+
+				</div>
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Contact Information</div>
+				</div>
+
+				<div class="form-group required row">
+
+					<label for="contact" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Main Contact</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="contact" id="contact" value="{{ company.contact }}" required>
+					</div>
+
+					<label for="phone_contact" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Contact Phone</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="phone_contact" id="phone_contact" value="{{ company.phone_contact }}"
+						required>
+					</div>
+
+				</div>
+
+				<div class="form-group required row">
+
+					<label for="phone_main" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Main Phone</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="phone_main" id="phone_main" value="{{ company.phone_main }}" required>
+					</div>
+
+					<label for="phone_fax" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right required-none">Fax Number</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="phone_fax" id="phone_fax" value="{{ company.phone_fax }}">
+					</div>
+
+					<label for="website" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right required-none">Website</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="website" id="website" value="{{ company.website }}">
+					</div>
+
+				</div>
+
+				{% if action != 'insert' %}
+
+					<div class="row">
+						<div class="w-100 form-section-heading">Referral</div>
+					</div>
+	
+					<div class="form-group row">
+	
+						<label for="referred_by" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Referred by</label>
+						<div class="col-6 col-md-3 col-xl-2">
+							<input type="text" class="form-control form-control-sm" name="referred_by" id="referred_by" value="{{ company.referred_by }}">
+						</div>
+	
+					</div>
+	
+					<div class="form-group row">
+	
+						<label for="active" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Active</label>
+						<div class="col-6 col-md-3 col-xl-2">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="active" id="active"{% if company.active == 1 %} checked="checked"{% endif %}>
+							</div>
+						</div>
+	
+					</div>
+
+				{% endif %}
+
+				<div class="row">
+
+					<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-2 offset-xl-2">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">Submit</button>
+					</div>
+
+				</div>
+			</form>
+
+			<form name="edit_stripe" action="superuser/customers?id={{id_costumer}}" method="POST">
+				<input type="hidden" name="action" value="stripe" />
+				<input type="hidden" name="id" value="{{ hidden_input_array.id }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+				<div class="row">
+					<div class="w-100 form-section-heading">Stripe</div>
+				</div>
+				
+				<div class="form-group row">
+				
+					<label for="referred_by" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">CustomerID</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input readonly="readonly" type="text" class="form-control form-control-sm" name="stripe_customer" id="stripe_customer" value="{{ stripe_customer_id }}">
+					</div>
+
+				</div>
+				<div class="row">
+				{% if stripe_customer_id == '' %}
+					<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-2 offset-xl-2">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">Activete</button>
+					</div>
+				{% endif %}
+				</div>
+			</form>
+		</div>
+	</div>
+{% endmacro %}

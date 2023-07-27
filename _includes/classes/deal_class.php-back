@@ -1,0 +1,1380 @@
+<?php
+
+class deal{
+
+
+	/*
+	 * ------------------------------------------------------------
+	 * VARIABLES
+	 * ------------------------------------------------------------
+	 */
+	
+	private $id;
+	private $version;
+	private $company_id;
+	private $client_name;
+	private $holdback;
+	private $newcar;
+	private $client_phone;
+	private $year;
+	private $make;
+	private $sale_price_funding;
+	private $model;
+	private $stock;
+	private $date_sold;
+	private $date_sent;
+	private $amount_financed;
+	private $dealer_check;
+	private $discount;
+	private $sales_count;
+	private $dealnote;
+	private $salespeople;
+	private $deskmanager;
+	private $lender_id;
+	private $funded;
+	private $approved;
+	private $approved_date;
+	private $funded_date;
+	private $finance_person;
+	private $finance_payment;
+	private $initial_gross;
+	private $payable_gross;
+	private $pack;
+	private $doc_fee;
+	private $lead_id;
+	private $flooring_id;
+	private $flooring_paid;
+	private $flooring_date;
+	private $warranty_id;
+	private $warranty_sale;
+	private $warranty_cost;
+	private $warranty_gross;
+	private $gap_id;
+	private $gap_sale;
+	private $gap_cost;
+	private $gap_gross;
+	private $finance_sale;
+	private $finance_cost;
+	private $finance_gross;
+	private $reserve;
+	private $financed_deal;
+	private $created_by;
+	private $created_timestamp;
+	private $modified_by;
+	private $modified_timestamp;
+	private $closed_dms;
+	private $pickuppayments;
+	private $deleted;
+	private $deleted_by;
+	private $deleted_timestamp;
+	private $miles;
+
+	private $finance_trade;
+	private $finance_year;
+	private $finance_makemodel;
+	private $finance_payoff;
+	private $finance_payoff_amount;
+	private $finance_amount_verified_by;
+	private $finance_lien_info;
+	private $finance_miles;
+	private $finance_acv;
+	private $finance_vehicle_notes;
+	private $locked;
+	private $pending_documents;
+
+	const DEAL_FINANCE = 'deal_finance';
+	
+	const TABLE = 'deals';
+	const MAP_DEAL_TO_SALES = 'deals_to_sales';
+	 
+	 
+	/*
+	 * ------------------------------------------------------------
+	 * CONSTRUCTOR
+	 * ------------------------------------------------------------
+	 */
+	 
+	 
+	public function __construct(){
+		$this->zero_it();
+	}
+	
+	 
+	/*
+	 * ------------------------------------------------------------
+	 * ZERO IT
+	 * ------------------------------------------------------------
+	 */
+	 
+
+	private function zero_it(){
+		$this->id = 0;
+		$this->version = 0;
+		$this->company_id = 0;
+		$this->holdback = 0;
+		$this->newcar = 0;
+		$this->client_name = '';
+		$this->client_phone = '';
+		$this->year=0;
+		$this->make = '';
+		$this->model = '';
+		$this->sale_price_funding = '';
+		$this->stock = '';
+		$this->date_sold = '';
+		$this->date_sent = '';
+		$this->sales_count = 0;
+		$this->amount_financed = 0;
+		$this->dealer_check = 0;
+		$this->discount = 0;
+		$this->dealnote = new dealnote();
+		$this->salespeople = array();
+		$this->pickuppayments = array();
+		$this->deskmanager = 0;
+		$this->lender_id = 0;
+		$this->funded = 0;
+		$this->approved = 0;
+		$this->approved_date = 0;
+		$this->funded_date = '';
+		$this->finance_person = 0;
+		$this->finance_payment = 0;
+		$this->initial_gross = 0;
+		$this->payable_gross = 0;
+		$this->pack = 0;
+		$this->doc_fee = 0;
+		$this->lead_id = 0;
+		$this->flooring_id = 0;
+		$this->flooring_paid = 0;
+		$this->flooring_date = '';
+		$this->warranty_id = 0;
+		$this->warranty_sale = 0;
+		$this->warranty_cost = 0;
+		$this->warranty_gross = 0;
+		$this->gap_id = 0;
+		$this->gap_sale = 0;
+		$this->gap_cost = 0;
+		$this->gap_gross = 0;
+		$this->finance_sale = 0;
+		$this->finance_cost = 0;
+		$this->finance_gross = 0;
+		$this->reserve = 0;
+		$this->financed_deal = 0;
+		$this->created_by = 0;
+		$this->modified_timestamp = 0;
+		$this->modified_by = 0;
+		$this->modified_timestamp = 0;
+		$this->closed_dms = 0;
+		$this->deleted=0;
+		$this->deleted_by = 0;
+		$this->deleted_timestamp = 0;
+		$this->miles = 0;
+
+		$this->finance_trade = '';
+		$this->finance_year = 2017;
+		$this->finance_makemodel = '';
+		$this->finance_payoff = 0;
+		$this->finance_amount_verified_by = '';
+		$this->finance_lien_info = '';
+		$this->finance_payoff_amount = 0;
+		$this->finance_miles = 0;
+		$this->finance_acv = 0;
+		$this->finance_vehicle_notes;
+		$this->locked = 0;
+		$this->pending_documents = 0;
+	}
+	 
+	/*
+	 * ------------------------------------------------------------
+	 * POPULATE
+	 * ------------------------------------------------------------
+	 */
+	 
+
+	private function populate(){
+	
+		if(empty($this->id)) {$this->zero_it(); return false;}
+
+		$where = array('id' => $this->id);
+		$data = db_select_one(self::TABLE, $where);
+		
+		if(!$data){ $this->zero_it(); return false; }
+		
+		$this->set_id($data['id']);
+		$this->set_version($data['version']);
+		$this->set_company_id($data['company_id']);
+		$this->set_holdback($data['holdback']);
+		$this->set_newcar($data['newcar']);
+		$this->set_client_name($data['client_name']);
+		$this->set_client_phone($data['client_phone']);
+		$this->set_year($data['year']);
+		$this->set_make($data['make']);
+		$this->set_model($data['model']);
+		$this->set_sale_price_funding($data['sale_price_funding']);
+		$this->set_stock($data['stock']);
+		$this->set_date_sold($data['date_sold']);
+		$this->set_date_sent($data['date_sent']);
+		$this->set_amount_financed($data['amount_financed']);
+		$this->set_dealer_check($data['dealer_check']);
+		$this->set_discount($data['discount']);
+		$this->set_deskmanager($data['deskmanager']);
+		$this->set_lender_id($data['lender_id']);
+		$this->set_funded($data['funded']);
+		$this->set_approved($data['approved']);
+		$this->set_approved_date($data['approved_date']);
+		$this->set_funded_date($data['funded_date']);
+		$this->set_finance_person($data['finance_person']);
+		$this->set_finance_payment($data['finance_payment']);
+		$this->set_initial_gross($data['initial_gross']);
+		$this->set_payable_gross($data['payable_gross']);
+		$this->set_pack($data['pack']);
+		$this->set_doc_fee($data['doc_fee']);
+		$this->set_lead_id($data['lead_id']);
+		$this->set_flooring_id($data['flooring_id']);
+		$this->set_flooring_paid($data['flooring_paid']);
+		$this->set_flooring_date($data['flooring_date']);
+		$this->set_warranty_id($data['warranty_id']);
+		$this->set_warranty_sale($data['warranty_sale']);
+		$this->set_warranty_cost($data['warranty_cost']);
+		$this->set_warranty_gross($data['warranty_gross']);
+		$this->set_gap_id($data['gap_id']);
+		$this->set_gap_sale($data['gap_sale']);
+		$this->set_gap_cost($data['gap_cost']);
+		$this->set_gap_gross($data['gap_gross']);
+		$this->set_finance_sale($data['finance_sale']);
+		$this->set_finance_cost($data['finance_cost']);
+		$this->set_finance_gross($data['finance_gross']);
+		$this->set_reserve($data['reserve']);
+		$this->set_financed_deal($data['financed_deal']);
+		$this->set_created_by($data['created_by']);
+		$this->set_created_timestamp($data['created_timestamp']);
+		$this->set_modified_by($data['modified_by']);
+		$this->set_modified_timestamp($data['modified_timestamp']);
+		$this->set_closed_dms($data['closed_dms']);
+		$this->set_deleted($data['deleted']);
+		$this->set_miles($data['miles']);
+
+		$this->set_finance_trade($data['finance_trade']);
+		$this->set_finance_year($data['finance_year']);
+		$this->set_finance_makemodel($data['finance_makemodel']);
+		$this->set_finance_payoff($data['finance_payoff']);
+		$this->set_finance_amount_verified_by($data['finance_amount_verified_by']);
+		$this->set_finance_lien_info($data['finance_lien_info']);
+		$this->set_finance_payoff_amount($data['finance_payoff_amount']);
+		$this->set_finance_miles($data['finance_miles']);
+		$this->set_finance_acv($data['finance_acv']);
+		$this->set_finance_vehicle_notes($data['finance_vehicle_notes']);
+		$this->set_locked($data['locked']);
+		$this->set_pending_documents($data['pending_documents']);
+		
+		if($salespeople = $this->retrieve_salespeople_for_deal()){
+			$this->set_salespeople($salespeople);
+		} else {
+			$this->set_salespeople(array());
+		}
+		
+		if($pickuppayments = $this->retrieve_pickup_payments_for_deal()){
+			$this->set_pickuppayments($pickuppayments);
+		} else {
+			$this->set_pickuppayments(array());
+		}
+				
+		return true;
+	}
+	
+	private function retrieve_salespeople_for_deal(){
+		if(!$this->get_id()){
+			die('Retrieve salespeople for deal called without ID set.');
+		}
+		$whereclause = db_build_where(array('deal_id'=>$this->get_id()));
+		$sql = 'SELECT count(*) c FROM ' . self::MAP_DEAL_TO_SALES . ' ' . $whereclause;
+		$result = db_select_assoc($sql);
+		if(!is_array($result)){
+			echo "There was an error finding the count of sales people on this deal with $sql\n";
+			return false;
+		}
+
+		if($result['c'] == 0){
+			//no sales people on this deal
+			return false;
+		}
+		
+		$sql = 'SELECT sales_id FROM ' . self::MAP_DEAL_TO_SALES . ' ' . $whereclause;
+		
+		$result = db_select_assoc_array($sql);
+		if(!is_array($result)){
+			echo "There was an error retrieving sales people on this deal with $sql\n";
+			return false;
+		}
+				
+		$salespeople = array();
+		foreach($result as $row){
+			$salespeople[] = $row['sales_id'];
+		}
+		
+		return $salespeople;		
+	}
+	
+	private function retrieve_pickup_payments_for_deal(){
+		$id = $this->get_id();
+		if(empty($id)){return false;}
+		$where = array('deal_id'=>$id);
+		$columns = array('id');
+		
+		$result = db_select(pickuppayment::TABLE, $where, '', 'id');
+		if($result === false || empty($result)){return false;}
+		$pickuppayments = array();
+		foreach($result as $row){
+			$pickuppayments[] = $row['id'];
+		}
+		return $pickuppayments;
+	}
+	 
+
+	/*
+	 * ------------------------------------------------------------
+	 * MAKE_ME_INTO
+	 * ------------------------------------------------------------
+	 */
+
+	public function make_me_into($v){
+		$this->set_id($v);
+		$result = $this->populate();
+		return $result;
+	}
+	 
+	 
+	/*
+	 * ------------------------------------------------------------
+	 * ACCESSORS
+	 * ------------------------------------------------------------
+	 */
+	 
+
+	public function get_id(){
+		return $this->id;
+	}
+	
+	public function get_version(){
+		return $this->version;
+	}
+
+	public function get_company_id(){
+		return $this->company_id;
+	}
+
+	public function get_holdback(){
+		return $this->holdback;
+	}
+	public function get_newcar(){
+		return $this->newcar;
+	}
+	public function get_client_name(){
+		return $this->client_name;
+	}
+	
+	public function get_client_phone(){
+		return $this->client_phone;
+	}
+
+	public function get_year(){
+		return $this->year;
+	}
+	
+	public function get_make(){
+		return $this->make;
+	}
+	
+	public function get_model(){
+		return $this->model;
+	}
+
+	public function get_sale_price_funding(){
+		return $this->sale_price_funding;
+	}
+	
+	public function get_vehicle(){
+		return $this->get_year() . ' ' . $this->get_make() . ' ' . $this->get_model();
+	}
+	
+	public function get_stock(){
+		return $this->stock;
+	}
+	
+	public function get_note(){
+		return $this->dealnote;
+	}
+
+	public function get_date_sold(){
+		return $this->date_sold;
+	}
+
+	public function get_date_sent(){
+		return $this->date_sent;
+	}
+	
+	public function get_sales_count(){
+		return $this->sales_count;
+	}
+	
+	public function get_amount_financed(){
+		return $this->amount_financed;
+	}
+
+	public function get_dealer_check(){
+		return $this->dealer_check;
+	}
+
+	public function get_discount(){
+		return $this->discount;
+	}
+	
+	public function get_salespeople(){
+		return $this->salespeople;
+	}
+	
+	public function get_pickuppayments(){
+		return $this->pickuppayments;
+	}
+	
+	public function get_deskmanager(){
+		return $this->deskmanager;
+	}
+
+	public function get_lender_id(){
+		return $this->lender_id;
+	}
+
+	public function get_funded(){
+		return $this->funded;
+	}
+	public function get_approved(){
+		return $this->approved;
+	}
+	public function get_approved_date(){
+		return $this->approved_date;
+	}
+	
+	public function get_funded_date(){
+		return $this->funded_date;
+	}
+
+	public function get_finance_person(){
+		return $this->finance_person;
+	}
+	public function get_finance_payment(){
+		return $this->finance_payment;
+	}
+	
+	public function get_initial_gross(){
+		return $this->initial_gross;
+	}
+
+	public function get_payable_gross(){
+		return $this->payable_gross;
+	}
+
+	public function get_pack(){
+		return $this->pack;
+	}
+
+	public function get_doc_fee(){
+		return $this->doc_fee;
+	}
+	
+	public function get_lead_id(){
+		return $this->lead_id;
+	}
+
+	public function get_flooring_id(){
+		return $this->flooring_id;
+	}
+	
+	public function get_flooring_paid(){
+		return $this->flooring_paid;
+	}
+	
+	public function get_flooring_date(){
+		return $this->flooring_date;
+	}
+
+	public function get_warranty_id(){
+		return $this->warranty_id;
+	}
+
+	public function get_warranty_sale(){
+		return $this->warranty_sale;
+	}
+
+	public function get_warranty_cost(){
+		return $this->warranty_cost;
+	}
+
+	public function get_warranty_gross(){
+		return $this->warranty_gross;
+	}
+
+	public function get_gap_id(){
+		return $this->gap_id;
+	}
+
+	public function get_gap_sale(){
+		return $this->gap_sale;
+	}
+
+	public function get_gap_cost(){
+		return $this->gap_cost;
+	}
+
+	public function get_gap_gross(){
+		return $this->gap_gross;
+	}
+
+	public function get_finance_sale(){
+		return $this->finance_sale;
+	}
+
+	public function get_finance_cost(){
+		return $this->finance_cost;
+	}
+
+	public function get_finance_gross(){
+		return $this->finance_gross;
+	}
+
+	public function get_reserve(){
+		return $this->reserve;
+	}
+
+	public function get_financed_deal(){
+		return $this->financed_deal;
+	}
+	
+	public function get_created_by(){
+		return $this->created_by;
+	}
+	
+	public function get_created_timestamp(){
+		return $this->created_timestamp;
+	}
+
+	public function get_modified_by(){
+		return $this->modified_by;
+	}
+
+	public function get_modified_timestamp(){
+		return $this->modified_timestamp;
+	}
+
+	public function get_closed_dms(){
+		return $this->closed_dms;
+	}
+	
+	public function get_deleted(){
+		return $this->deleted;
+	}
+
+	public function get_miles(){
+		return $this->miles;
+	}
+
+	public function get_finance_trade(){
+	return $this->finance_trade;
+	}
+
+	public function get_finance_year(){
+		return $this->finance_year;
+	}
+
+	public function get_finance_makemodel(){
+		return $this->finance_makemodel;
+	}
+
+	public function get_finance_payoff(){
+		return $this->finance_payoff;
+	}
+
+	public function get_finance_amount_verified_by(){
+		return $this->finance_amount_verified_by;
+	}
+
+	public function get_finance_lien_info(){
+		return $this->finance_lien_info;
+	}
+	 
+	public function get_finance_payoff_amount(){
+		return $this->finance_payoff_amount;
+	}
+	
+	public function get_finance_miles(){
+	    return $this->finance_miles;
+	}
+	
+	public function get_finance_acv(){
+	    return $this->finance_acv;
+	}
+	
+	public function get_finance_vehcile_notes(){
+	    return $this->finance_vehicle_notes;
+	}
+
+	public function get_locked(){
+	    return $this->locked;
+	}
+
+	public function get_pending_documents(){
+	    return $this->pending_documents;
+	}
+	
+	/*
+	 * ------------------------------------------------------------
+	 * MODIFIERS
+	 * ------------------------------------------------------------
+	 */
+	 
+	 
+	public function set_id($v){
+		if($v){
+			$this->id = $v;
+		}
+	}
+	
+	public function set_version($v){
+		if($v){
+			$this->version = $v;
+		}
+	}
+
+	public function set_company_id($v){
+		if($v){
+			$this->company_id = $v;
+		}
+	}
+
+	public function set_holdback($v){
+		if($v){
+			$this->holdback = $v;
+		}
+	}
+	public function set_newcar($v){
+		if($v){
+			$this->newcar = $v;
+		}
+	}
+	public function set_client_name($v){
+		if($v){
+			$this->client_name = $v;
+		}
+	}
+	
+	public function set_client_phone($v){
+		if($v){
+			$this->client_phone = $v;
+		}
+	}
+
+	public function set_year($v){
+		if($v){
+			$this->year = $v;
+		}
+	}
+	
+	public function set_make($v){
+		if($v){
+			$this->make = $v;
+		}
+	}
+	
+	public function set_model($v){
+		if($v){
+			$this->model = $v;
+		}
+	}
+		
+	public function set_sale_price_funding($v){
+		if($v){
+			$this->sale_price_funding = $v;
+		}
+	}
+	
+	public function set_stock($v){
+		if($v){
+			$this->stock = $v;
+		}
+	}
+
+	public function set_date_sold($v){
+		if(!empty($v) && $v!='0000-00-00'){
+			$this->date_sold = $v;
+		}
+	}
+	
+	public function set_sales_count($v){
+		$v = intval($v);
+		$this->sales_count = $v;			
+	}
+
+	public function set_date_sent($v){
+		if(!empty($v) && $v!='0000-00-00'){
+			$this->date_sent = $v;
+		}
+	}
+	
+	public function set_amount_financed($v){
+		$this->amount_financed = $v;
+	}
+
+	public function set_dealer_check($v){
+		$this->dealer_check = $v;
+	}
+
+	public function set_discount($v){
+		$this->discount = $v;
+	}
+	
+	public function set_salespeople($v){
+		if(!empty($v)){
+			if(!is_array($v)){
+				$v = array($v);//make it an array if it isn't one
+			}
+			$this->salespeople = array_unique($v);
+		} else {
+			$this->salespeople = array();
+		}
+		$this->set_sales_count(count($this->salespeople));
+	}
+	
+	public function set_pickuppayments($v){
+		if(!empty($v)){
+			if(!is_array($v)){$v = array($v);}
+			$this->pickuppayments = array_unique($v);
+		} else {
+			$this->pickuppayments = array();
+		}
+	}
+	
+	public function set_deskmanager($v){
+		$v = intval($v);
+		$this->deskmanager = $v;
+	}
+
+	public function set_lender_id($v){
+		$v = intval($v);
+		$this->lender_id = $v;
+	}
+
+	public function set_funded($v){
+		if($v){
+			$this->funded = 1;
+		} else {
+			$this->funded = 0;
+		}
+	}
+	public function set_approved($v){
+		if($v){
+			$this->approved = 1;
+			$this->approved_date = date("Y-m-d h:i:s");
+		} else {
+			$this->approved = 0;
+		}
+	}
+        
+	
+	public function set_approved_date($v){
+		if(!empty($v) && $v!='0000-00-00'){
+			$this->approved_date = $v;
+		}
+	}
+	public function set_funded_date($v){
+		if(!empty($v) && $v!='0000-00-00'){
+			$this->funded_date = $v;
+		}
+	}
+
+	public function set_finance_person($v){
+		$v = intval($v);
+		$this->finance_person = $v;
+	}
+	public function set_finance_payment($v){
+		if($v){
+			$this->finance_payment = 1;
+		} else {
+			$this->finance_payment = 0;
+		}
+	}
+	
+	public function set_initial_gross($v){
+		$this->initial_gross = $v;
+	}
+
+	public function set_payable_gross($v){
+		$this->payable_gross = $v;
+	}
+
+	public function set_pack($v){
+		$this->pack = $v;
+	}
+
+	public function set_doc_fee($v){
+		$this->doc_fee = $v;
+	}
+	
+	public function set_lead_id($v){
+		$v = intval($v);
+		$this->lead_id = $v;
+	}
+
+	public function set_flooring_id($v){
+		$v = intval($v);
+		$this->flooring_id = $v;
+	}
+	
+	public function set_flooring_paid($v){
+		if($v){
+			$this->flooring_paid = 1;
+		} else {
+			$this->flooring_paid = 0;
+		}
+	}
+	
+	public function set_flooring_date($v){
+		if(!empty($v) && $v!='0000-00-00'){
+			$this->flooring_date = $v;
+		}
+	}
+
+	public function set_warranty_id($v){
+		$v = intval($v);
+		$this->warranty_id = $v;
+	}
+
+	public function set_warranty_sale($v){
+		$this->warranty_sale = $v;
+	}
+
+	public function set_warranty_cost($v){
+		$this->warranty_cost = $v;
+	}
+
+	public function set_warranty_gross($v){
+		$this->warranty_gross = $v;
+	}
+
+	public function set_gap_id($v){
+		$v = intval($v);
+		$this->gap_id = $v;
+	}
+
+	public function set_gap_sale($v){
+		$this->gap_sale = $v;
+	}
+
+	public function set_gap_cost($v){
+		$this->gap_cost = $v;
+	}
+
+	public function set_gap_gross($v){
+		$this->gap_gross = $v;
+	}
+
+	public function set_finance_sale($v){
+		$this->finance_sale = $v;
+	}
+
+	public function set_finance_cost($v){
+		$this->finance_cost = $v;
+	}
+
+	public function set_finance_gross($v){
+		$this->finance_gross = $v;
+	}
+
+	public function set_reserve($v){
+		$this->reserve = $v;
+	}
+
+	public function set_financed_deal($v){
+		if($v){
+			$this->financed_deal = 1;
+		} else {
+			$this->financed_deal = 0;
+		}
+	}
+	
+
+	public function set_created_by($v){
+		$v = intval($v);
+		$this->created_by = $v;
+	}
+	
+	public function set_created_timestamp($v){
+		if($v){
+			$this->created_timestamp = $v;
+		}
+	}
+
+	public function set_modified_by($v){
+		$v = intval($v);
+		$this->modified_by = $v;
+	}
+
+	public function set_modified_timestamp($v){
+		$this->modified_timestamp = $v;
+	}
+
+	public function set_closed_dms($v){
+		if($v){
+			$this->closed_dms = 1;
+		} else {
+			$this->closed_dms = 0;
+		}
+	}
+	
+	public function set_deleted($v){
+		if($v){
+			$this->deleted = 1;
+		} else {
+			$this->deleted = 0;
+		}
+	}
+	
+	public function set_deleted_by($v){
+		$v = intval($v);
+		$this->deleted_by = $v;
+	}
+
+	public function set_deleted_timestamp($v){
+			$this->deleted_timestamp = $v;
+	}
+	
+	public function set_miles($v){
+			$this->miles = $v;
+	}
+	
+	public function set_finance_trade($v){
+		if($v){
+			$this->finance_trade =1;
+		}else{
+			$this->finance_trade =0;
+		}
+	}
+	public function set_finance_year($v){
+		$this->finance_year =$v;
+	}
+	public function set_finance_makemodel($v){
+		$this->finance_makemodel =$v;
+	}
+
+	public function set_finance_payoff($v){
+		if($v){
+			$this->finance_payoff =1;
+		}else{
+			$this->finance_payoff =0;
+		}
+	}
+	
+	public function set_finance_amount_verified_by($v){
+		$this->finance_amount_verified_by =$v;
+	}
+	
+	public function set_finance_lien_info($v){
+		$this->finance_lien_info =$v;
+	}
+
+	public function set_finance_payoff_amount($v){
+		$this->finance_payoff_amount =$v;
+	}
+	
+	public function set_finance_miles($v){
+	    $this->finance_miles =$v;
+	}
+	
+	public function set_finance_acv($v){
+	    $this->finance_acv =$v;
+	}
+	
+	public function set_finance_vehicle_notes($v){
+	    $this->finance_vehicle_notes =$v;
+	}
+
+	public function set_locked($v){
+	    if($v){
+			$this->locked = 1;
+		} else {
+			$this->locked = 0;
+		}
+	}
+
+	public function set_pending_documents($v){
+	    if($v){
+			$this->pending_documents = 1;
+		} else {
+			$this->pending_documents = 0;
+		}
+	}
+	 
+	/*
+	 * ------------------------------------------------------------
+	 * TO_ARRAY
+	 * ------------------------------------------------------------
+	 */
+	 
+
+	public function to_array(){
+		$myarray = array();
+		$myarray['id'] = $this->id;
+		$myarray['version'] = $this->version;
+		$myarray['company_id'] = $this->company_id;
+		$myarray['holdback'] = $this->holdback;
+		$myarray['newcar'] = $this->newcar;
+		$myarray['client_name'] = $this->client_name;
+		$myarray['client_phone'] = $this->client_phone;
+		$myarray['year'] = $this->year;
+		$myarray['make'] = $this->make;
+		$myarray['model'] = $this->model;
+		$myarray['sale_price_funding'] = $this->sale_price_funding;
+		$myarray['stock'] = $this->stock;
+		$myarray['date_sold'] = $this->date_sold;
+		$myarray['date_sent'] = $this->date_sent;
+		$myarray['amount_financed'] = $this->amount_financed;
+		$myarray['dealer_check'] = $this->dealer_check;
+		$myarray['discount'] = $this->discount;
+		$myarray['salespeople'] = $this->salespeople;
+		$myarray['pickuppayments'] = $this->pickuppayments;
+		$myarray['sales_count'] = $this->sales_count;
+		$myarray['deskmanager'] = $this->deskmanager;
+		$myarray['lender_id'] = $this->lender_id;
+		$myarray['funded'] = $this->funded;
+		$myarray['approved'] = $this->approved;
+		$myarray['approved_date'] = $this->approved_date;
+		$myarray['funded_date'] = $this->funded_date;
+		$myarray['finance_person'] = $this->finance_person;
+		$myarray['finance_payment'] = $this->finance_payment;
+		$myarray['initial_gross'] = $this->initial_gross;
+		$myarray['payable_gross'] = $this->payable_gross;
+		$myarray['pack'] = $this->pack;
+		$myarray['doc_fee'] = $this->doc_fee;
+		$myarray['lead_id'] = $this->lead_id;
+		$myarray['flooring_id'] = $this->flooring_id;
+		$myarray['flooring_paid'] = $this->flooring_paid;
+		$myarray['flooring_date'] = $this->flooring_date;
+		$myarray['warranty_id'] = $this->warranty_id;
+		$myarray['warranty_sale'] = $this->warranty_sale;
+		$myarray['warranty_cost'] = $this->warranty_cost;
+		$myarray['warranty_gross'] = $this->warranty_gross;
+		$myarray['gap_id'] = $this->gap_id;
+		$myarray['gap_sale'] = $this->gap_sale;
+		$myarray['gap_cost'] = $this->gap_cost;
+		$myarray['gap_gross'] = $this->gap_gross;
+		$myarray['finance_sale'] = $this->finance_sale;
+		$myarray['finance_cost'] = $this->finance_cost;
+		$myarray['finance_gross'] = $this->finance_gross;
+		$myarray['reserve'] = $this->reserve;
+		$myarray['financed_deal'] = $this->financed_deal;
+		$myarray['created_by'] = $this->created_by;
+		$myarray['created_timestamp'] = $this->created_timestamp;
+		$myarray['modified_by'] = $this->modified_by;
+		$myarray['modified_timestamp'] = $this->modified_timestamp;
+		$myarray['closed_dms'] = $this->closed_dms;
+		$myarray['deleted'] = $this->deleted;
+		$myarray['miles'] = $this->miles;
+
+		$myarray['finance_trade'] = $this->finance_trade;		
+		$myarray['finance_year'] = $this->finance_year;
+		$myarray['finance_makemodel'] = $this->finance_makemodel;
+		$myarray['finance_payoff'] = $this->finance_payoff;
+		$myarray['finance_amount_verified_by'] = $this->finance_amount_verified_by;
+		$myarray['finance_lien_info'] = $this->finance_lien_info;
+		$myarray['finance_payoff_amount'] = $this->finance_payoff_amount;
+		$myarray['finance_miles'] = $this->finance_miles;
+		$myarray['finance_acv'] = $this->finance_acv;
+		$myarray['finance_vehicle_notes'] = $this->finance_vehicle_notes;
+		$myarray['locked'] = $this->locked;
+		$myarray['pending_documents'] = $this->pending_documents;
+		
+		return $myarray;
+	}
+	
+		 
+	/*
+	 * ------------------------------------------------------------
+	 * FROM_ARRAY
+	 * ------------------------------------------------------------
+	 */
+	
+	public function from_array(&$data){
+		$this->set_id($data['id']);
+		$this->set_version($data['version']);
+		$this->set_company_id($data['company_id']);
+		$this->set_holdback($data['holdback']);
+		$this->set_newcar($data['newcar']);
+		$this->set_client_name($data['client_name']);
+		$this->set_client_phone($data['client_phone']);
+		$this->set_year($data['year']);
+		$this->set_make($data['make']);
+		$this->set_model($data['model']);
+		$this->set_sale_price_funding($data['sale_price_funding']);
+		$this->set_stock($data['stock']);
+		$this->set_date_sold($data['date_sold']);
+		$this->set_date_sent($data['date_sent']);
+		$this->set_amount_financed($data['amount_financed']);
+		$this->set_dealer_check($data['dealer_check']);
+		$this->set_discount($data['discount']);
+		$this->set_salespeople($data['salespeople']);
+		$this->set_pickuppayments($data['pickuppayments']);
+		$this->set_sales_count($data['sales_count']);
+		$this->set_deskmanager($data['deskmanager']);
+		$this->set_lender_id($data['lender_id']);
+		$this->set_approved($data['approved']);
+		$this->set_approved_date($data['approved_date']);
+		$this->set_funded($data['funded']);
+		$this->set_funded_date($data['funded_date']);
+		$this->set_finance_person($data['finance_person']);
+		$this->set_finance_payment($data['finance_payment']);
+		$this->set_initial_gross($data['initial_gross']);
+		$this->set_payable_gross($data['payable_gross']);
+		$this->set_pack($data['pack']);
+		$this->set_doc_fee($data['doc_fee']);
+		$this->set_lead_id($data['lead_id']);
+		$this->set_flooring_id($data['flooring_id']);
+		$this->set_flooring_paid($data['flooring_paid']);
+		$this->set_flooring_date($data['flooring_date']);
+		$this->set_warranty_id($data['warranty_id']);
+		$this->set_warranty_sale($data['warranty_sale']);
+		$this->set_warranty_cost($data['warranty_cost']);
+		$this->set_warranty_gross($data['warranty_gross']);
+		$this->set_gap_id($data['gap_id']);
+		$this->set_gap_sale($data['gap_sale']);
+		$this->set_gap_cost($data['gap_cost']);
+		$this->set_gap_gross($data['gap_gross']);
+		$this->set_finance_sale($data['finance_sale']);
+		$this->set_finance_cost($data['finance_cost']);
+		$this->set_finance_gross($data['finance_gross']);
+		$this->set_reserve($data['reserve']);
+		$this->set_financed_deal($data['financed_deal']);
+		$this->set_created_by($data['created_by']);
+		$this->set_created_timestamp($data['created_timestamp']);
+		$this->set_modified_by($data['modified_by']);
+		$this->set_modified_timestamp($data['modified_timestamp']);
+		$this->set_closed_dms($data['closed_dms']);
+		$this->set_deleted($data['deleted']);
+		$this->set_miles($data['miles']);
+		
+		$this->set_finance_trade($data['finance_trade']);
+		$this->set_finance_year($data['finance_year']);
+		$this->set_finance_makemodel($data['finance_makemodel']);
+		$this->set_finance_payoff($data['finance_payoff']);
+		$this->set_finance_amount_verified_by($data['finance_amount_verified_by']);
+		$this->set_finance_lien_info($data['finance_lien_info']);
+		$this->set_finance_payoff_amount($data['finance_payoff_amount']);
+		$this->set_finance_miles($data['finance_miles']);
+		$this->set_finance_acv($data['finance_acv']);
+		$this->set_finance_vehicle_notes($data['finance_vehicle_notes']);
+		$this->set_locked($data['locked']);
+		$this->set_pending_documents($data['pending_documents']);
+		
+	}
+	
+	/*
+	 * ------------------------------------------------------------
+	 * VALIDATE
+	 * ------------------------------------------------------------
+	 */
+	
+	public function stock_exists_in_db($stock){
+		$where = array('company_id'=>$this->get_company_id(), 'stock'=>$stock, 'deleted'=>0);
+		if(db_exists_multi(self::TABLE, $where)){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+
+	/*
+	 * ------------------------------------------------------------
+	 * INSERT_NEW
+	 * ------------------------------------------------------------
+	 */
+	 
+
+	public function insert_new(){
+		
+		$this->set_version(1);
+		$this->poke_created();
+		 
+		$data = $this->to_array();
+		$finance_sale = $_SESSION["finance_sale"];//finance_sale
+		$finance_cost = $_SESSION["finance_cost"]; //finance_cost
+
+		 $misc_id = $_SESSION["misc_id"];
+
+		 $Json_finance_sale = json_encode($finance_sale);
+		 $Json_finance_cost = json_encode($finance_cost);
+		 $Json_misc_id = json_encode($misc_id);
+	  
+ 
+		unset($data['id']);
+		unset($data['salespeople']);
+		unset($data['pickuppayments']);
+		$data['locked'] = $this->simplePostData('locked');
+		$data['pending_documents'] = $this->simplePostData('pending_documents');
+		$tablename = self::TABLE;
+		$new_deal_ID =0;
+		$result = db_insert_assoc_one(self::TABLE, $data);
+		$new_deal_ID = $result;
+
+
+		foreach($misc_id as $key=>$value)
+		 {
+			// echo $result;
+			$data_finace =array("deal_id"=>$new_deal_ID,"misc_id"=>$value,"misc_fin_price"=>$finance_sale[$key],"mis_fin_cost"=>$finance_cost[$key]);
+			$result = db_insert_assoc_one(self::DEAL_FINANCE, $data_finace);		
+		 }
+			$data_update =array("misc_id"=>$Json_misc_id,"finance_cost"=>$Json_finance_cost,"finance_sale"=>$Json_finance_sale,"finance_cost"=>$Json_finance_cost);
+			$where = array('id' =>$new_deal_ID);		
+		     db_update(self::TABLE, $data_update, $where);
+
+		if($result){ 
+
+			$this->set_id(db_get_insert_id());
+			$this->refresh_salespeople();
+		}
+	
+		return $result;
+		
+		
+
+	}
+	
+	private function refresh_salespeople(){
+		if(!$this->get_id()){
+			return false;
+		}
+		$sql = "DELETE from " . self::MAP_DEAL_TO_SALES . " WHERE deal_id='" . $this->get_id() . "' ";
+		db_delete_bare($sql);//yes, terrible, I know
+		$inserts = 0;
+		
+		if(is_array($this->salespeople) && count($this->salespeople)>=1){
+			$inserts = array();
+			foreach($this->get_salespeople() as $sales_id){
+				array_push($inserts, sprintf("('%d', '%d')", $this->get_id(), $sales_id));
+			}
+			$sql = 'INSERT INTO ' . self::MAP_DEAL_TO_SALES . " (deal_id, sales_id) VALUES " . join(', ', $inserts);
+			$inserts = db_insert_bare($sql);
+		}
+		return $inserts;
+	}
+	 
+	/*
+	 * ------------------------------------------------------------
+	 * UPDATE_ONE
+	 * ------------------------------------------------------------
+	 */
+	
+	private function poke_created(){
+		$this->set_created_by($_SESSION['FT']['user_id']);
+		$this->set_created_timestamp(db_timestamp());
+		$this->set_modified_by($this->get_created_by());
+		$this->set_modified_timestamp($this->get_created_timestamp());
+	}
+	
+	private function poke_modified(){
+		$this->set_modified_by($_SESSION['FT']['user_id']);
+		$this->set_modified_timestamp(db_timestamp());
+	}
+	 
+
+	public function update_one(){
+		$this->poke_modified();
+		$this->set_version($this->get_version() + 1);
+		$where = array('id' => $this->id);
+		$data = $this->to_array();
+		$data['closed_dms'] = $this->simplePostData('closed');
+		$data['locked'] = $this->simplePostData('locked');
+		$data['pending_documents'] = $this->simplePostData('pending_documents');
+		unset($data['id']);
+		unset($data['salespeople']);
+		unset($data['pickuppayments']);
+		$result = db_update(self::TABLE, $data, $where);
+		
+		if($result){
+			$this->refresh_salespeople();
+		}
+		
+		return $result;
+	}
+
+	private function simplePostData($value) {
+		if(isset($_POST[$value]) && $_POST[$value])
+		{
+			if($value == 'locked' && $_SESSION['FT']['SEC_DEALS_PERMISSION'] != 1) {
+				header("Location: deals/new");
+			}
+			return 1;
+		}else{
+			return 0;
+		}
+	}
+	
+
+	
+	/*
+	 * ------------------------------------------------------------
+	 * Formbuilders - public
+	 * ------------------------------------------------------------
+	 */
+
+	
+	/*
+	 * ------------------------------------------------------------
+	 * Formbuilders - Components
+	 * ------------------------------------------------------------
+	 */
+
+	
+	/*
+	 * ------------------------------------------------------------
+	 * Formbuilders - private
+	 * ------------------------------------------------------------
+	 */
+
+	/*
+	 * ------------------------------------------------------------
+	 * PUBLIC MEMBER FUNCTIONS
+	 * ------------------------------------------------------------
+	 */
+	 
+	//used to display the created by and modified by to each deal page
+	public function build_timestamp_data(){
+		$output = "";
+		$output .= 'Created by: <b>' . user::get_full_name($this->get_created_by()) . '</b> at <i>' . date('M j Y g:i:s a',strtotime($this->get_created_timestamp())) . "</i>.<br/>\n";
+		$output .= 'Last Modified by: <b>' . user::get_full_name($this->get_modified_by()) . '</b> at <i>' . date('M j Y g:i:s a',strtotime($this->get_modified_timestamp())) . "</i>.<br/>\n";
+		return $output;
+		
+	}
+	 
+	 	
+	/*
+	 * ------------------------------------------------------------
+	 * PRIVATE MEMBER FUNCTIONS
+	 * ------------------------------------------------------------
+	 */
+	
+	
+	 	
+	/*
+	 * ------------------------------------------------------------
+	 * PUBLIC STATIC FUNCTIONS
+	 * ------------------------------------------------------------
+	 */
+
+	
+	 	
+	/*
+	 * ------------------------------------------------------------
+	 * PRIVATE STATIC FUNCTIONS
+	 * ------------------------------------------------------------
+	 */
+	 
+	 
+	 
+}

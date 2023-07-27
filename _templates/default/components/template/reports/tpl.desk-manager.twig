@@ -1,0 +1,996 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+        <script type = "text/javascript" src = "_templates/default/components/template/resources/js/loader.js"></script>
+        <script type = "text/javascript" src = "_templates/default/components/template/resources/js/common.js"></script>
+        <script type = "text/javascript">
+            google.charts.load('current', {packages: ['corechart']});
+        </script>
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="mb-1 p-23">
+						<div class="report-table header-content  table-responsive">
+							<table class="top-table report-duble">
+								<tbody>
+									<tr>
+										<td class="theader">Deals: </td>
+										<td class="tnum">{{ deskmanagers['totalcompanydata'][0].deals}}</td>
+										<td class="theader">Total Gross:</td>
+										<td class="tnum">${{ deskmanagers['totalcompanydata'][0].total_gross | number_format(2, '.', ',')}}</td>
+										<td class="theader">Front End Gross:</td>
+										<td class="tnum">${{ deskmanagers['totalcompanydata'][0].frontend | number_format(2, '.', ',')}}</td>
+										<td class="theader">Back End Gross:</td>
+										<td class="tnum">${{ deskmanagers['totalcompanydata'][0].backend | abs() | number_format(2, '.', ',')}}</td>
+									<tr>
+									{% if deskmanagers['projected'] %}
+									<tr>
+										<td class="theader">Projected Sales: </td>
+										<td class="tnum">{{ deskmanagers['projected'].deals}}</td>
+										<td class="theader">Projected Total:</td>
+										<td class="tnum">${{ deskmanagers['projected'].total_gross}}</td>
+										<td class="theader">Projected Front End:</td>
+										<td class="tnum">${{ deskmanagers['projected'].frontend}}</td>
+										<td class="theader">Projected Back End:</td>
+										<td class="tnum">${{ deskmanagers['projected'].backend}}</td>
+									<tr>
+									{% endif %}
+								</tbody>
+							</table>
+						</div>
+						<div class="chart">
+							<div id="total_sales" ></div>
+							<div id="total_gross"></div>
+							<div id="average_gross"></div>
+							<div id="total_backend"></div>
+							<div id="average_backend"></div>
+
+							<div class="chart-view-controller m-4">
+								<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('total_sales')">Total Sales</button>
+								<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('total_gross')">Total Gross</button>
+								<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('average_gross')">Average Gross</button>
+								<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('total_backend')">Total Back End</button>
+								<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('average_backend')">Average Back End</button>
+							</div>
+						</div>
+						<div class="report-table-duble table-responsive">
+							<table class="table table-striped">
+								<colgroup>
+									<col width="10%">
+									<col width="4%">
+									<col width="10%">
+									<col width="8%">
+									<col width="10%">
+									<col width="10%">
+									<col width="8%">
+									<col width="8%">
+									<col width="8%">
+									<col width="8%">
+									<col width="8%">
+									<col width="8%">
+								</colgroup>
+								<tbody>
+									<tr>
+										<th class="tcen">Desk Manager</th>
+										<th class="tnum">Sales</th>
+										<th class="tnum">Payalbe Gross</th>
+										<th class="tnum">Front</th>
+										<th class="tnum">Warranty Pen%</th>
+										<th class="tnum">Warranty Gross</th>
+										<th class="tnum">Gap Pen%</th>
+										<th class="tnum">Gap Gross</th>
+										<th class="tnum">Miscfin Pen%</th>
+										<th class="tnum">Miscfin Gross</th>
+										<th class="tnum">Back End</th>
+										<th class="tnum">Total Gross</th>
+									</tr>
+									{% for summary in deskmanagers['summarydata'] %}
+										<tr onclick="changeList('{{summary.id}}')" class="table-user-name">
+											<td colspan="12">{{summary.name}}</td>
+										</tr>
+										<tr>
+											<td colspan="12">
+												<table class="table table-striped display-show" id="summary-{{summary.id}}">
+													<colgroup>
+														<col width="10%">
+														<col width="4%">
+														<col width="10%">
+														<col width="8%">
+														<col width="10%">
+														<col width="10%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+													</colgroup>
+													<tr data-id="{{ summary.id }}">
+														<td class="tcen">{{summary.name}}</td>
+														<td class="tnum"><a>{{summary.deals}}</a></td>
+														{% if '-' in summary.payable_gross %}
+															<td class="tnum text-danger">
+															$({{summary.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.payable_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{% if '-' in summary.frontend %}
+															<td class="tnum text-danger">
+															$({{summary.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.frontend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum">{{(summary.warranty_perc * 100) | number_format(0)}}%</td>
+														{# <td class="tnum">${{summary.warranty_gross}}</td> #}
+														{# <td class="tnum">${{'-' in summary.warranty_gross ? "(#{summary.warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.warranty_gross  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in summary.warranty_gross %}
+															<td class="tnum text-danger">
+															$({{summary.warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.warranty_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum">{{(summary.gap_perc * 100 )| number_format(0, '.', ',')}}%</td>
+														{% if '-' in summary.gap_gross %}
+															<td class="tnum text-danger">
+															$({{summary.gap_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.gap_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum">{{(summary.miscfinance_perc * 100) | number_format(0)}}%</td>
+														{% if '-' in summary.miscfinance_gross %}
+															<td class="tnum text-danger">
+															$({{summary.miscfinance_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.miscfinance_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tcen">${{summary.backend}}</td> #}
+														{# <td class="tnum">${{'-' in summary.backend ? "(#{summary.backend | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.backend  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in summary.backend %}
+															<td class="tnum text-danger">
+															$({{summary.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.backend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{% if '-' in summary.total_gross %}
+															<td class="tnum text-danger">
+															$({{summary.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.total_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+													</tr>
+												</table>
+												<table id="deallist-{{summary.id}}" class="table table-striped display-hide report-duble-main  table-hover table-striped table-bordered sortable dataTable">
+													<colgroup>
+														<col width="10%">
+														<col width="4%">
+														<col width="10%">
+														<col width="8%">
+														<col width="10%">
+														<col width="10%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+													</colgroup>
+													<tr class="heading">
+														<th class="tcen">Date Sold</th>
+														<th class="tnum">Stock</th>
+														<th class="tnum">Payable Gross</th>
+														<th class="tnum">Front</th>
+														<th class="tnum">Warranty</th>
+														<th class="tnum">Warranty Gross</th>
+														<th class="tnum">Gap</th>
+														<th class="tnum">Gap Gross</th>
+														<th class="tnum"></th>
+														<th class="tnum">Miscfin Gross</th>
+														<th class="tnum">Back End</th>
+														<th class="tnum">Total Gross</th>
+													</tr>
+													{% for deal in deskmanagers['dealsdata'] %}
+														{% if deal.deskmanager_id == summary.id %}
+															<tr class="deal-row" data-id="{{ deal.deal_id }}">
+																<td class="tcen">{{deal.date_sold_f|date("m/d/Y")}}</td>
+																<td class="tnum"><a>{{deal.stock}}</a></td>
+																{# <td class="tnum">${{deal.payable_gross | number_format(2, "." , ",")}}</td> #}
+																{% if '-' in deal.payable_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.payable_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																{% if '-' in deal.frontend %}
+																	<td class="tnum text-danger">
+																	$({{deal.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.frontend | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																<td class="tnum">{{deal.warranty_provider}}</td>
+																{# <td class="tnum">${{deal.warranty_gross| number_format(2, "." , ",")}}</td> #}
+																{# <td class="tnum">${{'-' in deal.warranty_gross ? "(#{deal.warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  deal.warranty_gross  | number_format(2, '.', ',')  }}</td> #}
+																{% if '-' in deal.warranty_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.warranty_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																<td class="tnum">{{deal.gap_provider}}</td>
+																{% if '-' in deal.gap_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.gap_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.gap_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																<td class="tnum"></td>
+																{% if '-' in deal.miscfinance_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.miscfinance_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.miscfinance_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																{% if '-' in deal.backend %}
+																	<td class="tnum text-danger">
+																	$({{deal.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.backend | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																{% if '-' in deal.total_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.total_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+															</tr>
+														{% endif %}
+													{% endfor %}
+												</table>
+												<table id="subTotalList-{{summary.id}}" class="table table-striped display-hide report-duble-main table-hover table-striped table-bordered dataTable">
+													<colgroup>
+														<col width="10%">
+														<col width="4%">
+														<col width="10%">
+														<col width="8%">
+														<col width="10%">
+														<col width="10%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+														<col width="8%">
+													</colgroup>
+													<tr class="deal-row" style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">Total</td>
+														<td class="tnum">{{summary.deals}}</a></td>
+														{% if '-' in summary.payable_gross %}
+															<td class="tnum text-danger">
+															$({{summary.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.payable_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{summary.frontend | number_format(2, '.', ',')}}</td> #}
+														{# <td class="tnum">${{'-' in summary.frontend ? "(#{summary.frontend | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.frontend  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in summary.frontend %}
+															<td class="tnum text-danger">
+															$({{summary.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.frontend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum">{{(summary.warranty_perc * 100)| round(2)}}%</td>
+														{% if '-' in summary.warranty_gross %}
+															<td class="tnum text-danger">
+															$({{summary.warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.warranty_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum">{{(summary.gap_perc * 100) | round(2)}}%</td>
+														{# <td class="tnum">${{summary.gap_gross}}</td> #}
+														{# <td class="tnum">${{'-' in summary.gap_gross ? "(#{summary.gap_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.gap_gross  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in summary.gap_gross %}
+															<td class="tnum text-danger">
+															$({{summary.gap_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.gap_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum">{{(summary.miscfinance_perc * 100) | round(2)}}%</td>
+														{% if '-' in summary.miscfinance_gross %}
+															<td class="tnum text-danger">
+															$({{summary.miscfinance_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.miscfinance_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{% if '-' in summary.backend %}
+															<td class="tnum text-danger">
+															$({{summary.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.backend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{% if '-' in summary.total_gross %}
+															<td class="tnum text-danger">
+															$({{summary.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.total_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+													</tr>
+												
+													<tr class="deal-row" style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">Average</td>
+														<td class="tnum"></td>
+														{# <td class="tnum">${{summary.payable_gross_average_average | number_format(2, '.', ',')}}</td> #}
+														{# <td class="tnum">${{'-' in summary.payable_gross_average_average ? "(#{summary.payable_gross_average_average | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.payable_gross_average_average  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in (summary.payable_gross / summary.deals) %}
+															<td class="tnum text-danger">
+															$({{(summary.payable_gross / summary.deals) | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{(summary.payable_gross / summary.deals) | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{summary.frontend_average | number_format(2, '.', ',')}}</td> #}
+														{# <td class="tnum">${{'-' in summary.frontend_average ? "(#{summary.frontend_average | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.frontend_average  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in summary.frontend_average %}
+															<td class="tnum text-danger">
+															$({{summary.frontend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.frontend_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum"></td>
+														{% if '-' in summary.warranty_gross_average %}
+															<td class="tnum text-danger">
+															$({{summary.warranty_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.warranty_gross_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum"></td>
+														{# <td class="tnum">${{summary.gap_average | number_format(2, '.', ',')}}</td> #}
+														{# <td class="tnum">${{'-' in summary.gap_average ? "(#{summary.gap_average | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.gap_average  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in summary.gap_average %}
+															<td class="tnum text-danger">
+															$({{summary.gap_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.gap_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum"></td>
+														{% if '-' in summary.miscfinance_gross %}
+															<td class="tnum text-danger">
+															$({{(summary.miscfinance_gross / summary.deals) | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{(summary.miscfinance_gross / summary.deals) | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{summary.backend_average | number_format(2, '.', ',')}}</td> #}
+														{# <td class="tnum">${{'-' in summary.backend_average ? "(#{summary.backend_average | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.backend_average  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in summary.backend_average %}
+															<td class="tnum text-danger">
+															$({{summary.backend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.backend_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{summary.total_gross_average | number_format(2, '.', ',')}}</td> #}
+														{# <td class="tnum">${{'-' in summary.total_gross_average ? "(#{summary.total_gross_average | replace({'-': ''}) | number_format(2, '.', ',') })" :  summary.total_gross_average  | number_format(2, '.', ',')  }}</td> #}
+														{% if '-' in (summary.total_gross / summary.deals) %}
+															<td class="tnum text-danger">
+															$({{(summary.total_gross / summary.deals) | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{(summary.total_gross / summary.deals) | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+													</tr>
+													{% if summary.projected %}
+													<tr class="deal-row" style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">Projected</td>
+														<td class="tnum">{{summary.projected.stock}}</td>
+														{% if '-' in summary.projected.payable_gross %}
+															<td class="tnum text-danger">
+															$({{summary.projected.payable_gross | replace({'-': ''})  }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.projected.payable_gross }}
+															</td>
+														{% endif %}
+														{% if '-' in summary.projected.frontend %}
+															<td class="tnum text-danger">
+															$({{summary.projected.frontend | replace({'-': ''})  }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.projected.frontend }}
+															</td>
+														{% endif %}
+														<td class="tnum"></td>
+														{% if '-' in summary.projected.warranty_gross %}
+															<td class="tnum text-danger">
+															$({{summary.projected.warranty_gross | replace({'-': ''})  }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.projected.warranty_gross }}
+															</td>
+														{% endif %}
+														<td class="tnum"></td>
+														{% if '-' in summary.projected.gap_gross %}
+															<td class="tnum text-danger">
+															$({{summary.projected.gap_gross | replace({'-': ''})  }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.projected.gap_gross }}
+															</td>
+														{% endif %}
+														<td class="tnum"></td>
+														{% if '-' in summary.projected.miscfinance_gross %}
+															<td class="tnum text-danger">
+															$({{summary.projected.miscfinance_gross | replace({'-': ''})  }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.projected.miscfinance_gross }}
+															</td>
+														{% endif %}
+														{% if '-' in summary.projected.backend %}
+															<td class="tnum text-danger">
+															$({{summary.projected.backend | replace({'-': ''})  }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.projected.backend }}
+															</td>
+														{% endif %}
+														{% if '-' in summary.projected.total_gross %}
+															<td class="tnum text-danger">
+															$({{summary.projected.total_gross | replace({'-': ''})  }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{summary.projected.total_gross }}
+															</td>
+														{% endif %}
+													</tr>
+													{% endif %}
+												</table>
+											</td>
+										</tr>
+									{% endfor %}
+									<tr style="border-bottom: 1px solid #000000;">
+										<th class="tcen">Total</th>
+										<th class="tnum">{{deskmanagers['totalcompanydata'][0].deals}}</a></th>
+										{% if '-' in deskmanagers['totalcompanydata'][0].payable_gross %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['totalcompanydata'][0].payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['totalcompanydata'][0].payable_gross | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if '-' in deskmanagers['totalcompanydata'][0].frontend %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['totalcompanydata'][0].frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['totalcompanydata'][0].frontend | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{deskmanagers['totalcompanydata'][0].warranty_perc | number_format(2, '.', ',')}}%</th> #}
+										{# <th class="tnum">${{'-' in deskmanagers['totalcompanydata'][0].warranty_perc ? "(#{deskmanagers['totalcompanydata'][0].warranty_perc | replace({'-': ''}) | number_format(2, '.', ',') })" :  deskmanagers['totalcompanydata'][0].warranty_perc  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in deskmanagers['totalcompanydata'][0].warranty_perc %}
+											<th class="tnum text-danger">
+											{{deskmanagers['totalcompanydata'][0].warranty_perc | replace({'-': ''}) | number_format(2, '.', ',') }}%
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{deskmanagers['totalcompanydata'][0].warranty_perc | number_format(2, '.', ',')}}%
+											</th>
+										{% endif %}
+										{% if '-' in deskmanagers['totalcompanydata'][0].warranty_gross %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['totalcompanydata'][0].warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['totalcompanydata'][0].warranty_gross | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										<th class="tnum">{{deskmanagers['totalcompanydata'][0].gap_perc | round(2)}}%</th>
+										<th class="tnum">${{'-' in deskmanagers['totalcompanydata'][0].gap_gross ? "(#{deskmanagers['totalcompanydata'][0].gap_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  deskmanagers['totalcompanydata'][0].gap_gross  | number_format(2, '.', ',')  }}</th>
+										<th class="tnum">{{deskmanagers['totalcompanydata'][0].miscfinance_perc | number_format(2, '.', ',')}}%</th>
+										{# <th class="tnum">${{deskmanagers['totalcompanydata'][0].miscfinance_gross | number_format(2, '.', ',')}}</th> #}
+										{# <th class="tnum">${{'-' in deskmanagers['totalcompanydata'][0].miscfinance_gross ? "(#{deskmanagers['totalcompanydata'][0].miscfinance_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  deskmanagers['totalcompanydata'][0].miscfinance_gross  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in (deskmanagers['totalcompanydata'][0].miscfinance_gross) %}
+											<th class="tnum text-danger">
+											$({{(deskmanagers['totalcompanydata'][0].miscfinance_gross) | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{(deskmanagers['totalcompanydata'][0].miscfinance_gross) | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{deskmanagers['totalcompanydata'][0].backend | number_format(2, '.', ',')}}</th> #}
+										{# <th class="tnum">${{'-' in deskmanagers['totalcompanydata'][0].backend ? "(#{deskmanagers['totalcompanydata'][0].backend | replace({'-': ''}) | number_format(2, '.', ',') })" :  deskmanagers['totalcompanydata'][0].backend  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in deskmanagers['totalcompanydata'][0].backend %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['totalcompanydata'][0].backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['totalcompanydata'][0].backend | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{deskmanagers['totalcompanydata'][0].total_gross | number_format(2, '.', ',')}}</th> #}
+										{# <th class="tnum">${{'-' in deskmanagers['totalcompanydata'][0].total_gross ? "(#{deskmanagers['totalcompanydata'][0].total_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  deskmanagers['totalcompanydata'][0].total_gross  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in (deskmanagers['totalcompanydata'][0].total_gross) %}
+											<th class="tnum text-danger">
+											$({{(deskmanagers['totalcompanydata'][0].total_gross) | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{(deskmanagers['totalcompanydata'][0].total_gross) | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+									</tr>
+									<tr style="border-bottom: 1px solid #000000;">
+										<th class="tcen">Average</th>
+										<th class="tnum"></th>
+										<th class="tnum">${{deskmanagers['totalcompanydata'][0].payable_gross_average | number_format(2, '.', ',')}}</th>
+										{% if '-' in deskmanagers['totalcompanydata'][0].frontend_average %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['totalcompanydata'][0].frontend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['totalcompanydata'][0].frontend_average | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										<th class="tnum"></th>
+										{% if deskmanagers['totalcompanydata'][0].av_warranty_gross < 0 %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['totalcompanydata'][0].av_warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['totalcompanydata'][0].av_warranty_gross | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										<th class="tnum"></th>
+										{% if deskmanagers['totalcompanydata'][0].gap_average < 0 %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['totalcompanydata'][0].gap_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['totalcompanydata'][0].gap_average | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										<th class="tnum"></th>
+										{% if ( deskmanagers['totalcompanydata'][0].miscfinance_gross / deskmanagers['totalcompanydata'][0].deals) < 0 %}
+											<th class="tnum text-danger">
+											$({{( deskmanagers['totalcompanydata'][0].miscfinance_gross / deskmanagers['totalcompanydata'][0].deals) | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{( deskmanagers['totalcompanydata'][0].miscfinance_gross / deskmanagers['totalcompanydata'][0].deals) | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if '-' in deskmanagers['totalcompanydata'][0].backend_average %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['totalcompanydata'][0].backend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['totalcompanydata'][0].backend_average | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if '-' in (deskmanagers['totalcompanydata'][0].total_gross | abs() / deskmanagers['totalcompanydata'][0].deals | abs()) %}
+											<th class="tnum text-danger">
+											$({{(deskmanagers['totalcompanydata'][0].total_gross | abs() / deskmanagers['totalcompanydata'][0].deals  | abs()) | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{(deskmanagers['totalcompanydata'][0].total_gross | abs() / deskmanagers['totalcompanydata'][0].deals | abs()) | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+									</tr>
+									{% if deskmanagers['projected'] %}
+									<tr style="border-bottom: 1px solid #000000;">
+										<th class="tcen">Projected</th>
+										<th class="tnum">{{deskmanagers['projected'].deals | round(0, 'floor')}}</th>
+										{% if '-' in deskmanagers['projected'].payable_gross %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['projected'].payable_gross | replace({'-': ''})}})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['projected'].payable_gross}}
+											</th>
+										{% endif %}
+										{% if '-' in deskmanagers['projected'].frontend %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['projected'].frontend | replace({'-': ''})}})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['projected'].frontend}}
+											</th>
+										{% endif %}
+										<th class="tnum"></th>
+										{% if '-' in deskmanagers['projected'].warranty_gross %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['projected'].warranty_gross | replace({'-': ''}) }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['projected'].warranty_gross}}
+											</th>
+										{% endif %}
+										<th class="tnum"></th>
+										{% if '-' in deskmanagers['projected'].gap_gross %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['projected'].gap_gross | replace({'-': ''}) }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['projected'].gap_gross}}
+											</th>
+										{% endif %}
+										<th class="tnum"></th>
+										{% if '-' in deskmanagers['projected'].miscfinance_gross %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['projected'].miscfinance_gross | replace({'-': ''}) }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['projected'].miscfinance_gross}}
+											</th>
+										{% endif %}
+										{% if '-' in deskmanagers['projected'].backend %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['projected'].backend | replace({'-': ''}) }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['projected'].backend}}
+											</th>
+										{% endif %}
+										{% if '-' in deskmanagers['projected'].total_gross %}
+											<th class="tnum text-danger">
+											$({{deskmanagers['projected'].total_gross | replace({'-': ''}) }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{deskmanagers['projected'].total_gross}}
+											</th>
+										{% endif %}
+									</tr>
+									{% endif %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javaScript">
+
+		   function total_sales() {
+			   var ar_data = {{( total_sales_data | json_encode|raw)}};
+			   if(ar_data.length == 1) {  return;  }
+			   ar_data = strToNumber(ar_data);
+			   ar_data[0].push({role: "annotation"})
+
+			   var data = google.visualization.arrayToDataTable(ar_data);
+			   var options = {
+				   	isStacked: true,
+				   	height: ar_data.length * 20 + 100,
+				   	title: 'Total Sales per Salesperson',
+				   	legend: { position: 'top & right', maxLines: 3 },
+					fontSize: "12",
+				   	titleFontSize:25,
+					chartArea: {
+						height: ar_data.length * 20
+					}
+			   };
+			   var chart = new google.visualization.BarChart(document.getElementById('total_sales'));
+			   chart.draw(data, options);
+		   }
+
+		   function total_gross() {
+			   var ar_data = {{(total_gross_data | json_encode | raw)}}
+			   if(ar_data.length == 1) {
+				   return;
+			   }
+			   var new_ar = [];
+			   ar_data.map((values, index) => {
+				   new_ar[index] = [];
+				   values.map((value, ind) => {
+					   if(!isNaN(parseFloat(value))) {
+						   value = parseFloat(value);
+						   if(value < 0) {
+							   value = value * -1;
+						   }
+					   }
+					   new_ar[index].push(value);
+				   })
+			   })
+			   new_ar[0].push({ role: 'annotation' });
+			   var data = google.visualization.arrayToDataTable(new_ar);
+			   var options = {
+				   height: ar_data.length * 20 + 100,
+				   title: 'Total Gross per Desk Manager',
+				   titleFontSize:25,
+				   legend: { position: 'top & right', maxLines: 3 },
+				   bar: { groupWidth: '75%' },
+					fontSize: "12",
+				   hAxis: {
+						format: 'currency'
+					},
+				   isStacked: true,
+				   chartArea: {
+						height: ar_data.length * 20
+					}
+			   };
+			   var chart = new google.visualization.BarChart(document.getElementById('total_gross'));
+			   chart.draw(data, options);
+			   $("#total_gross").addClass("display-hide");
+		   }
+
+		   function average_gross() {
+			   var ar_data = {{( average_gross_data | json_encode | raw)}}
+			   if(ar_data.length == 1) {
+				   return;
+			   }
+			   var new_ar = [];
+			   ar_data.map((values, index) => {
+				   new_ar[index] = [];
+				   values.map((value, ind) => {
+					   if(!isNaN(parseFloat(value))) {
+						   value = parseFloat(value);
+						   if(value < 0) {
+							   value = value * -1;
+						   }
+					   }
+					   if(value === null) {
+						   value = 0
+					   }
+					   new_ar[index].push(value);
+				   })
+			   })
+			   new_ar[0].push({ role: 'annotation' });
+
+			   var data = google.visualization.arrayToDataTable(new_ar);
+			   var options = {
+				   height: ar_data.length * 20 + 100,
+				   title: 'Average Gross per Desk Manager',
+				   titleFontSize:25,
+				   legend: { position: 'top & right', maxLines: 3 },
+				   bar: { groupWidth: '75%' },
+				   axes: {
+					   x: {
+						   0: { side: 'top', label: 'White to move'} // Top x-axis.
+					   }
+				   },
+				   hAxis: {
+						format: 'currency'
+					},
+					fontSize: "12",
+				   isStacked: true,
+				   chartArea: {
+						height: ar_data.length * 20
+					}
+			   };
+			   var chart = new google.visualization.BarChart(document.getElementById('average_gross'));
+			   chart.draw(data, options);
+			   $("#average_gross").addClass("display-hide");
+		   }
+
+		   function total_backend() {
+			   var ar_data = {{(total_backend_data | json_encode | raw)}}
+			   if(ar_data.length == 1) {
+				   return;
+			   }
+			   var new_ar = [];
+			   ar_data.map((values, index) => {
+				   new_ar[index] = [];
+				   values.map((value, ind) => {
+					   if(!isNaN(parseFloat(value))) {
+						   value = parseFloat(value);
+						   if(value < 0) {
+							   value = value * -1;
+						   }
+					   }
+					   new_ar[index].push(value);
+				   })
+			   })
+			   new_ar[0].push({ role: 'annotation' });
+
+			   var data = google.visualization.arrayToDataTable(new_ar);
+			   var options = {
+				   height: ar_data.length * 20 + 100,
+				   title: 'Total Back End per Desk Manager',
+				   titleFontSize:25,
+				   legend: { position: 'top & right', maxLines: 3 },
+				   bar: { groupWidth: '75%' },
+				   hAxis: {
+						format: 'currency'
+					},
+					fontSize: "12",
+				   isStacked: true,
+				   chartArea: {
+						height: ar_data.length * 20
+					}
+			   };
+			   var chart = new google.visualization.BarChart(document.getElementById('total_backend'));
+			   chart.draw(data, options);
+			   $("#total_backend").addClass("display-hide");
+		   }
+		   function average_backend() {
+			   var ar_data = {{(average_backend_data | json_encode | raw)}};
+			   if(ar_data.length == 1) {
+				   return;
+			   }
+			   var new_ar = [];
+			   ar_data.map((values, index) => {
+				   new_ar[index] = [];
+				   values.map((value, ind) => {
+					   if(!isNaN(parseFloat(value))) {
+						   value = parseFloat(value);
+						   if(value < 0) {
+							   value = value * -1;
+						   }
+					   }
+					   new_ar[index].push(value);
+				   })
+			   })
+			   new_ar[0].push({ role: 'annotation' });
+
+			   var data = google.visualization.arrayToDataTable(new_ar);
+			   var options = {
+				   height: ar_data.length * 30 + 50,
+				   title: 'Average Back End per Desk Manager',
+				   titleFontSize:25,
+				   legend: { position: 'top & right', maxLines: 3 },
+				   bar: { groupWidth: '75%' },
+				   hAxis: {
+						format: 'currency'
+					},
+					fontSize: "12",
+				   isStacked: true
+			   };
+			   var chart = new google.visualization.BarChart(document.getElementById('average_backend'));
+			   chart.draw(data, options);
+			   $("#average_backend").addClass("display-hide");
+		   }
+		   function setTitleToCenter(selector) {
+			   var mainpanelWidth = $("#content-container").width();
+			   var titleWidth = $(selector)[0].getBoundingClientRect().width;;
+			   $(selector).attr("x", (mainpanelWidth / 2 - titleWidth / 2));
+		   }
+
+		   var chartSelectors = ['total_sales', "total_gross", 'average_gross', 'total_backend', 'average_backend'];
+
+		   function showChart(chartname) {
+			   $("#" + chartname).removeClass("display-hide");
+			   $("#" + chartname).addClass("display-show");
+			   chartSelectors.map((selector) => {
+				   if(selector != chartname) {
+					   $("#" + chartname).removeClass("display-show");
+					   $("#" + selector).addClass("display-hide")
+				   }
+			   })
+		   }
+		   function strToNumber(data_ar) {
+				for (let a in data_ar) {
+					data_ar[a].map((value, index) => {
+						if(!isNaN(parseFloat(value))) {
+							data_ar[a][index] = parseFloat(value);
+							if(data_ar[a][index] < 0) {
+								data_ar[a][index] *=  -1;
+							}
+						} else if(a != 0 && index != 0 && data_ar[a].length - 1 != index && value  != "") {
+							if (value == null) {
+								data_ar[a][index] = 0
+							} else {
+								data_ar[a][index] = parseFloat(value.replace(/[`~!@#$%^&*()_|+\-=?;:'",<>\{\}\[\]\\\/]/gi, ''));
+							}
+						}
+					})
+				}
+				return  data_ar;
+			}
+
+		   google.charts.setOnLoadCallback(total_sales);
+		   google.charts.setOnLoadCallback(total_gross);
+		   google.charts.setOnLoadCallback(average_gross);
+		   google.charts.setOnLoadCallback(total_backend);
+		   google.charts.setOnLoadCallback(average_backend);
+   </script>
+{% endblock %}

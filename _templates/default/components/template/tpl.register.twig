@@ -1,0 +1,61 @@
+{% extends 'tpl.container.twig' %}
+{% import 'forms/tpl.register.twig' as form %}
+
+{% block tpl_grid %}
+	<style>
+		@media (max-width: 550px) {
+			.funding, .tracker{
+				font-size:35px !important;
+			}
+			.login-welcome{
+				color: #ad273a;
+				margin: 0 auto 40px;
+				font-size: 20px;
+				font-weight: 100;
+			}
+			.login-welcome a{
+				color : #fff !important
+			}
+			#login {
+				width:300px !important;
+			}
+			.login_input{
+				width:140px !important;
+			}
+			.label_text_right{
+				text-align: left !important;
+			}
+		}
+	</style>
+	<div class="login-container">
+		<div class="container">
+			<div class="row">
+				<div class="login-logo">
+					<span class="funding">FUNDING</span>
+					<span class="tracker">TRACKER</span>
+				</div>
+			</div>
+			<div class="row error">
+				{% if error is defined %}
+					<div class="row">
+						<div class="login-error">
+							<i class="fas fa-exclamation-circle"></i> {{ error }}
+						</div>
+					</div>
+				{% endif %}
+			</div>
+			{% if(action == 'company') %}
+			{{ form.tpl_companyRegister }}
+			{% endif %}
+			{% if(action == 'captcha') %}
+			{{ form.tpl_robotCheck }}
+			{% endif %}
+			{% if(action == 'user') %}
+			{{ form.tpl_customerRegister }}
+			{% endif %}
+			{% if(action == 'subscription') %}
+			{{ form.tpl_paymentInfo }}
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% import 'tpl.meta.twig' as meta %}
+{% import 'tpl.head.link.twig' as head_link %}
+{% import 'tpl.script.twig' as script %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		  <base href="{{ URLBASE }}/?q=">
+		{# <base href="https://fundingtracker.net/?q=">  #}
+		{#<base href="http://localhost:81/?q=">#}
+		{{ meta.tpl_metaData }}
+		{{ head_link.tpl_linkTags }}
+		<style>
+			.borderTable tr {
+				border-bottom: 1px solid black !important;
+				border-collapse: collapse;
+			}
+
+		</style>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+		<script type="text/javascript">
+		digest = {};
+		</script>
+	</head>
+	<body>
+	
+		<div id="site-container">
+			{% block tpl_container %}{% endblock %}
+		</div>
+		{{ script.tpl_scriptTags }}
+	</body>
+</html>

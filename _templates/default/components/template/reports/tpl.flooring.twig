@@ -1,0 +1,294 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<script type = "text/javascript" src = "_templates/default/components/template/resources/js/loader.js"></script>
+        <script type = "text/javascript">
+                google.charts.load('current', {packages: ['corechart']});
+        </script>
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content table-responsive">
+					<div class="report-table">
+						{% if floorings %}
+								{% set front = 0 %}
+								{% set back = 0 %}
+								{% set total = 0 %}
+								{% set front1 = 0 %}
+								{% set back1 = 0 %}
+								{% set total1 = 0 %}
+								{% set allfront = 0 %}
+								{% set allback = 0 %}
+								{% set alltotal = 0 %}
+								{% for flooring in floorings %}
+									{% set front = flooring.payabel_gross + flooring.pack + flooring.doc_fee %}
+									{% set back = flooring.finance_gross + flooring.gap_gross + flooring.warranty_gross %}
+									{% set total = front + back %}
+									{% set allfront = allfront + front %}
+									{% set allback = allback + back %}
+									{% set alltotal = alltotal + total %}
+								{% endfor %}
+								{% set FinanaceTotal = 0 %}
+								{% set number = 0 %}
+								{% set average = 0 %}
+								{% for flooring in floorings %}
+									{% set FinanaceTotal = FinanaceTotal + flooring.financeamount %}
+									{% set number = number + 1 %}
+								{% endfor %}
+								{% set average = FinanaceTotal / number %}
+								{% set frontaverage = allfront / number %}
+								{% set backaverage = allback / number %}
+								{% set totalaverage = alltotal / number %}
+
+						<div class="header-content table-responsive">
+							<table class="top-table report-duble">
+								<tr>
+									<td class="tcen">Deals:</td>
+									<td class="tnum">{{companytotal.deals}}</td>
+									<td class="tcen">Total Gross:</td>
+									<td class="tnum">${{companytotal.total_gross| number_format(2, '.', ',')}}</td>
+									<td class="tcen">Front End Gross:</td>
+									<td class="tnum">${{companytotal.frontend| number_format(2, '.', ',')}}</td>
+									<td class="tcen">Back End Gross:</td>
+									<td class="tnum">${{companytotal.backend| number_format(2, '.', ',')}}</td>
+								</tr>
+							</table>
+						</div>
+						
+						<div>
+							<div id="container"></div>
+							<div class="chart-view-controller m-4">
+								<button id="button1" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Total Sales</button>
+								<button id="button2" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Total Gross</button>
+								<button id="button3" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Average Gross</button>
+							</div>
+						</div>
+						<br/>
+						<br/>
+						<div class="table-responsive">
+						<table class="table table-striped">
+								<tr>
+									<th class="txt-center">Floored By</th>
+									<th class="txt-center">Deals</th>
+									<th class="tnum">Front</th>
+									<th class="tnum">BackEnd</th>
+									<th class="tnum">Total Gross</th>
+								<tr>
+								{% for summary in summaries %}
+									<tr onclick="changeList({{summary.id}})" class="table-user-name">
+										<td colspan="12">{{summary.name}}</td>
+									</tr>
+									<tr>
+										<td colspan="12">
+											<table class="table table-striped display-show" id="summary-{{summary.id}}">
+												<colgroup>
+													<col width="20%">
+													<col width="20%">
+													<col width="20%">
+													<col width="20%">
+													<col width="20%">
+												</colgroup>
+												<tr>
+													<td class="txt-center">{{summary.name}}</td>
+													<td class="txt-center"><a href="#">{{ summary.deals }}</a></td>
+													<td class="tnum">${{summary.frontend}}</td>
+													<td class="tnum">${{summary.backend}}</td>
+													<td class="tnum">${{summary.total_gross}}</td>
+												</tr>
+											</table>
+											<table id="deallist-{{summary.id}}" class="table table-striped display-show report-duble-main  table-hover table-striped table-bordered sortable dataTable" >
+												<colgroup>
+													<col width="20%">
+													<col width="20%">
+													<col width="20%">
+													<col width="20%">
+													<col width="20%">
+												</colgroup>
+												<thead>
+													<tr class="heading">
+														<th class="txt-center">Date Sold</th>
+														<th class="txt-center">Stock</th>
+														<th class="tnum">Front</th>
+														<th class="tnum">BackEnd</th>
+														<th class="tnum">Total Gross</th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for flooring in floorings %}
+														{% if flooring.flooring_id == summary.id %}
+															<tr class="deal-row" data-id="{{ flooring.dealid }}">
+																<td class="txt-center">{{flooring.date_sold_f|date("m/d/Y")}}</td>
+																<td class="txt-center"><a href="deals/view?id={{ flooring.flooring_id }}">{{ flooring.stock }}</a></td>
+																<td class="tnum">${{flooring.frontend | number_format(2, '.', ',')}}</td>
+																<td class="tnum">${{flooring.backend | number_format(2, '.', ',')}}</td>
+																<td class="tnum">${{flooring.total_gross| number_format(2, '.', ',')}}</td>
+															</tr>
+														{% endif %}
+													{% endfor %}
+												</tbody>
+												<tfoot>
+													<tr style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="txt-center">TOTAL</td>
+														<td class="txt-center">{{summary.deals}}</td>
+														<td class="tnum">${{summary.frontend| number_format(2, '.', ',')}}</td>
+														<td class="tnum">${{summary.backend| number_format(2, '.', ',')}}</td>
+														<td class="tnum">${{summary.total_gross| number_format(2, '.', ',')}}</td>
+													</tr>
+													<tr style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="txt-center">Average</td>
+														<td></td>
+														<td class="tnum">${{summary.frontend_average|number_format(2)}}</td>
+														<td class="tnum">${{summary.backend_average|number_format(2)}}</td>
+														<td class="tnum">${{summary.total_gross_average|number_format(2)}}</td>
+													</tr>
+												</tfoot>
+											</table>
+										</td>
+									</tr>
+								{% endfor %}
+								<tr style="border-bottom: 1px solid #000000">
+									<th class="txt-center">TOTAL</th>
+									<th class="txt-center">{{companytotal.deals}}</th>
+									<th class="tnum">${{companytotal.frontend| number_format(2, '.', ',')}}</th>
+									<th class="tnum">${{companytotal.backend| number_format(2, '.', ',')}}</th>
+									<th class="tnum">${{companytotal.total_gross| number_format(2, '.', ',')}}</th>
+								</tr>
+								<tr style="border-bottom: 1px solid #000000">
+									<th class="txt-center">Average</th>
+									<th></th>
+									<th class="tnum">${{companytotal.frontend_average|number_format(2)}}</th>
+									<th class="tnum">${{companytotal.backend_average|number_format(2)}}</th>
+									<th class="tnum">${{companytotal.total_gross_average|number_format(2)}}</th>
+								</tr>
+						</table>
+						</div>
+						{% else %}
+						<p style="text-align: center;">No results found! </p>
+						{% endif %}
+						<div class="modal fade" id="myModal" role="dialog">
+							<div class="modal-dialog">
+							<!-- Modal content-->
+							<div class="modal-content">
+								<div class="modal-header">
+								<h3 class="modal-title1">Notes</h3>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								</div>
+								<div class="modal-body">
+								<p id = "NotesPanel">Some text in the modal.</p>
+								</div>
+								<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+							
+							</div>
+						</div>
+						<script>
+							function showModal (NotesString) {
+								document.getElementById("NotesPanel").innerHTML = NotesString;
+							}
+						</script>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script language = "JavaScript">
+		let ar_data = {{(totals|json_encode|raw)}};
+		let ar_data1 = {{(total1s|json_encode|raw)}};
+		let ar_data2 = {{(total2s|json_encode|raw)}};
+
+		ar_data = strToNumber(ar_data);
+		ar_data1 = strToNumber(ar_data1);
+		ar_data2 = strToNumber(ar_data2);
+
+		ar_data1[0].push({role: "annotation"})
+	
+		document.getElementById("button1").onclick = function(){
+			drawChart();
+		}
+		document.getElementById("button2").onclick = function(){
+			drawChart1();
+		}
+		document.getElementById("button3").onclick = function(){
+			drawChart2();
+		}
+
+		function drawChart() {
+			var data = google.visualization.arrayToDataTable(ar_data);
+			var options = {
+				height: ar_data.length * 30 + 150,
+				title: 'Total Sales per Flooring Company',
+				legend: {position: "none"},
+				titleFontSize:25,
+				fontSize: "12",
+				align: "center"
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+
+		function drawChart1() {
+			// var data = google.visualization.arrayToDataTable(ar_data);
+			var data = google.visualization.arrayToDataTable(ar_data1);
+
+			var options = {
+				height: ar_data1.length * 30 + 150,
+				title: 'Total Gross per Flooring Company',
+				legend: { position: 'top & right' },
+				bar: { groupWidth: '75%' },
+				titleFontSize:25,
+				hAxis: {
+					format: "currency",
+				},
+				fontSize: "12",
+				isStacked: true
+			}; 
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+
+		function drawChart2() {
+			var data = google.visualization.arrayToDataTable(ar_data2);
+
+			var options = {
+				title: 'Total Average per Flooring Company',
+				titleFontSize:25,
+				fontSize: "12",
+				hAxis: {
+					legend: { position: 'top & right'},
+					titleFontSize:25,
+					format: "currency",
+					minValue: 0,
+					displayAnnotations: true
+				},
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+		function strToNumber(data_ar) {
+			for (let a in data_ar) {
+				data_ar[a].map((value, index) => {
+					if(!isNaN(parseFloat(value))) {
+						data_ar[a][index] = parseFloat(value);
+						if(data_ar[a][index] < 0) {
+							data_ar[a][index] *=  -1;
+						}
+					} else if(a != 0 && index != 0 && data_ar[a].length - 1 != index && value  != "") {
+						if (value == null) {
+							data_ar[a][index] = 0
+						} else {
+							data_ar[a][index] = parseFloat(value.replace(/[`~!@#$%^&*()_|+\-=?;:'",<>\{\}\[\]\\\/]/gi, ''));
+						}
+					}
+				})
+			}
+			return  data_ar;
+		}
+		google.charts.setOnLoadCallback(drawChart);
+	</script>
+{% endblock %}

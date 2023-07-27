@@ -1,0 +1,712 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+        <script type = "text/javascript" src = "_templates/default/components/template/resources/js/loader.js"></script>
+        <script type = "text/javascript" src = "_templates/default/components/template/resources/js/common.js"></script>
+        <script type = "text/javascript">
+            google.charts.load('current', {packages: ['corechart']});
+        </script>
+
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="mb-1 p-23">
+						<div class="report-table header-content table-responsive">
+							<table class="top-table table table-striped">
+								<tr>
+									<td class="text-left">Deals: </td>
+									<td class="text-right">{{ totalcompanies[0].deals | round()}}</td>
+									<td class="text-left">Company Total:</td>
+									{# <td class="text-right">${{ totalcompanies[0].total_gross | number_format(2, '.', ',')}}</td> #}
+									{# <td class="tnum">${{'-' in totalcompanies[0].total_gross ? "(#{totalcompanies[0].total_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  totalcompanies[0].total_gross  | number_format(2, '.', ',')  }}</td> #}
+									{% if '-' in  totalcompanies[0].total_gross %}
+										<td class="tnum text-danger">
+										$({{ totalcompanies[0].total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{ totalcompanies[0].total_gross | number_format(2, '.', ',') }}
+										</td>
+									{% endif %}
+									<td class="text-left">Front End Total:</td>
+									{# <td class="text-right">${{ totalcompanies[0].frontend | number_format(2, '.', ',')}}</td> #}
+									{# <td class="tnum">${{'-' in totalcompanies[0].frontend ? "(#{totalcompanies[0].frontend | replace({'-': ''}) | number_format(2, '.', ',') })" :  totalcompanies[0].frontend  | number_format(2, '.', ',')  }}</td> #}
+									{% if '-' in  totalcompanies[0].frontend %}
+										<td class="tnum text-danger">
+										$({{ totalcompanies[0].frontend | replace({'-': ''})| number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{ totalcompanies[0].frontend | number_format(2, '.', ',') }}
+										</td>
+									{% endif %}
+									<td class="text-left">Back End Total:</td>
+									{# <td class="text-right">${{ totalcompanies[0].backend | number_format(2, '.', ',')}}</td> #}
+									{# <td class="tnum">${{'-' in totalcompanies[0].backend ? "(#{totalcompanies[0].backend | replace({'-': ''}) | number_format(2, '.', ',') })" :  totalcompanies[0].backend  | number_format(2, '.', ',')  }}</td> #}
+									{% if '-' in  totalcompanies[0].backend %}
+										<td class="tnum text-danger">
+										$({{ totalcompanies[0].backend | replace({'-': ''})| number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{ totalcompanies[0].backend| number_format(2, '.', ',') }}
+										</td>
+									{% endif %}
+								<tr>
+								{% if isProjected %}
+									<tr>
+										<td class="text-left">{{ projected.name}}: </td>
+										<td class="text-right">{{ projected.projected}}</td>
+										<td class="text-left">Projected Total:</td>
+										{# <td class="text-right">${{ projected.total_gross}}</td> #}
+										{% if '-' in projected.total_gross %}
+											<td class="tnum text-danger">
+											$({{projected.total_gross | replace({'-': ''}) }})
+											</td>
+										{% else %}
+											<td class="tnum">
+											${{projected.total_gross }}
+											</td>
+										{% endif %}
+										<td class="text-left">Projected Front End:</td>
+										{# <td class="text-right">${{ projected.frontend}}</td> #}
+										{% if '-' in projected.frontend %}
+											<td class="tnum text-danger">
+											$({{projected.frontend | replace({'-': ''}) }})
+											</td>
+										{% else %}
+											<td class="tnum">
+											${{projected.frontend }}
+											</td>
+										{% endif %}
+										<td class="text-left">Projected Back End:	</td>
+										{# <td class="text-right">${{ projected.backend}}</td> #}
+										{% if '-' in projected.backend %}
+											<td class="tnum text-danger">
+											$({{projected.backend | replace({'-': ''}) }})
+											</td>
+										{% else %}
+											<td class="tnum">
+											${{projected.backend }}
+											</td>
+										{% endif %}
+									<tr>
+								{% endif %}
+							</table>
+						</div>
+						<div class="chart">
+                            <div id="barchart" > </div>
+							<div id="multichart"> </div>
+							<div id="average_chart"> </div>
+							<div class="chart-view-controller m-4">
+								<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('barchart')">Total Sales</button>
+								<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('multichart')">Total Gross</button>
+								<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('average_chart')">Average Gross</button>
+							</div>
+						</div>
+						{% if totalcompanies[0].deals > 0 %}
+						<div class="report-table-duble table-responsive">
+							<table class="table table-striped">
+								<tbody>
+									<tr>
+										<th class="tcen">Salseperson</th>
+										<th class="tnum">Sales</th>
+										{% if isProjected %}
+											<th class="tnum">Projected</th>
+										{% endif %}
+										<th class="tnum">Payable Gross</th>
+										{% if isProjected %}
+											<th class="tnum">Projected Payable</th>
+										{% endif %}
+										<th class="tnum">Front End</th>
+										<th class="tnum">Back End</th>
+										<th class="tnum">Total Gross</th>
+									</tr>
+									{% for sale in sales %}
+										<tr onclick="changeList('{{sale.sales_id}}')" class="table-user-name">
+											<td colspan="9">{{sale.NAME}}</td>
+										</tr>
+										<tr>
+											<td colspan="12">
+												<table class="table table-striped display-show" id="summary-{{sale.sales_id}}">
+													<colgroup>
+													{% if isProjected %}
+														<col width="12%">
+														<col width="12%">
+														<col width="12%">
+														<col width="12%">
+														<col width="12%">
+														<col width="12%">
+														<col width="12%">
+													{% else %}
+														<col width="14%">														<col width="16%">
+														<col width="18%">
+														<col width="18%">
+														<col width="18%">
+														<col width="18%">
+														<col width="20%">
+													{% endif %}
+													</colgroup>
+													<tr data-id="{{ sale.sales_id }}">
+														<td class="tcen">{{sale.NAME}}</td>
+														<td class="tnum"><a>{{sale.deals  | round(1)}}</a></td>
+														{% if isProjected %}
+															<td class="tnum">{{sale.projected}}</td>
+														{% endif %}
+														{% if '-' in sale.payable_gross %}
+															<td class="tnum text-danger">
+															$({{sale.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{sale.payable_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{% if isProjected %}
+															<td class="tnum">${{sale.payable_gross_projected}}</td>
+														{% endif %}
+														{% if '-' in sale.frontend %}
+															<td class="tnum text-danger">
+															$({{sale.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{sale.frontend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{% if '-' in sale.backend %}
+															<td class="tnum text-danger">
+															$({{sale.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{sale.backend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{% if '-' in sale.total_gross %}
+															<td class="tnum text-danger">
+															$({{sale.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{sale.total_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+													</tr>
+												</table>
+												<table id="deallist-{{sale.sales_id}}" class="table table-striped display-hide report-duble-main  table-hover table-striped table-bordered sortable dataTable">
+													<colgroup>
+														<col width="10%">
+														<col width="8%">
+														<col width="8%">
+														<col width="10%">
+														<col width="8%">
+														<col width="8%">
+														<col width="14%">
+														<col width="14%">
+													</colgroup>
+													<thead>
+														<tr class="heading">
+															<th class="tcen">Date Sold</th>
+															<th class="tnum">Client</th>
+															<th class="tnum">Stock</th>
+															<th class="tnum">Split</th>
+															<th class="tnum">Payable Gross</th>
+															<th class="tnum">Warranty Gross</th>
+															<th class="tnum">Back End</th>
+															<th class="tnum">Total Gross</th>
+														</tr>
+													</thead>
+													<tbody>
+														{% for deal in deals %}
+															{% if deal.sales_id == sale.sales_id %}
+																<tr class="deal-row" data-id="{{ deal.deal_id }}">
+																	<td class="tcen">{{deal.date_sold_f|date("m/d/Y")}}</td>
+																	<td class="tcen"><a>{{deal.client_name}}</a></td>
+																	<td class="tnum">{{deal.stock | round(2)}}</td>
+																	<td class="tnum">
+																	{% if deal.salesperson_count > 1  %}
+																		S-{{deal.salesperson_count}}
+																	{% endif %}
+																	</td>
+																	{% if '-' in deal.payable_gross %}
+																		<td class="tnum text-danger">
+																		$({{deal.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																		</td>
+																	{% else %}
+																		<td class="tnum">
+																		${{deal.payable_gross | number_format(2, '.', ',')}}
+																		</td>
+																	{% endif %}
+																	{% if '-' in deal.frontend %}
+																		<td class="tnum text-danger">
+																		$({{deal.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																		</td>
+																	{% else %}
+																		<td class="tnum">
+																		${{deal.frontend | number_format(2, '.', ',')}}
+																		</td>
+																	{% endif %}
+																	{% if '-' in deal.backend %}
+																		<td class="tnum text-danger">
+																		$({{deal.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																		</td>
+																	{% else %}
+																		<td class="tnum">
+																		${{deal.backend | number_format(2, '.', ',')}}
+																		</td>
+																	{% endif %}
+																	{% if '-' in deal.total_gross %}
+																		<td class="tnum text-danger">
+																		$({{deal.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																		</td>
+																	{% else %}
+																		<td class="tnum">
+																		${{deal.total_gross | number_format(2, '.', ',')}}
+																		</td>
+																	{% endif %}
+																</tr>
+															{% endif %}
+														{% endfor %}
+													</tbody>
+													</tfoot>
+														<tr style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+															<td class="tcen">Total</td>
+															<td class="tcen"></td>
+															<td class="tnum"><a>{{sale.deals | round(1)}}</a></td>
+															<td class="tcen"></td>
+															{% if '-' in sale.payable_gross %}
+																<td class="tnum text-danger">
+																$({{sale.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.payable_gross | number_format(2, '.', ',')}}
+																</td>
+															{% endif %}
+															{% if '-' in sale.frontend %}
+																<td class="tnum text-danger">
+																$({{sale.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.frontend | number_format(2, '.', ',')}}
+																</td>
+															{% endif %}
+															{% if '-' in sale.backend %}
+																<td class="tnum text-danger">
+																$({{sale.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.backend | number_format(2, '.', ',')}}
+																</td>
+															{% endif %}
+															{% if '-' in sale.total_gross %}
+																<td class="tnum text-danger">
+																$({{sale.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.total_gross | number_format(2, '.', ',')}}
+																</td>
+															{% endif %}
+														</tr>
+														<tr style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+															<td class="tcen">Average</td>
+															<td class="tnum"></td>
+															<td class="tnum"></td>
+															<td class="tnum"></td>
+															{# <td class="tnum">${{sale.payable_gross_average | round(2)}}</td> #}
+															{# <td class="tnum">${{'-' in sale.payable_gross_average ? "(#{sale.payable_gross_average | replace({'-': ''}) | number_format(2, '.', ',') })" :  sale.payable_gross_average  | number_format(2, '.', ',')  }}</td> #}
+															{% if '-' in sale.payable_gross_average %}
+																<td class="tnum text-danger">
+																$({{sale.payable_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.payable_gross_average | number_format(2, '.', ',')}}
+																</td>
+															{% endif %}
+															{% if '-' in sale.frontend_average %}
+																<td class="tnum text-danger">
+																$({{sale.frontend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.frontend_average | number_format(2, '.', ',')}}
+																</td>
+															{% endif %}
+
+															{% if '-' in sale.backend_average %}
+																<td class="tnum text-danger">
+																$({{sale.backend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.backend_average | number_format(2, '.', ',')}}
+																</td>
+															{% endif %}
+															{% if '-' in sale.total_gross_average %}
+																<td class="tnum text-danger">
+																$({{sale.total_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.total_gross_average | number_format(2, '.', ',')}}
+																</td>
+															{% endif %}
+														</tr>
+														{% if isProjected %}
+														<tr style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+															<td class="tcen">Projected</td>
+															<td class="tnum"></td>
+															<td class="tnum">{{sale.projectedData.stock | round(0, 'floor')}}</td>
+															<td class="tnum"></td>
+															{# <td class="tnum">${{sale.projectedData.payable_gross}}</td> #}
+															{% if '-' in sale.projectedData.payable_gross %}
+																<td class="tnum text-danger">
+																$({{sale.projectedData.payable_gross | replace({'-': ''})  }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.projectedData.payable_gross }}
+																</td>
+															{% endif %}
+															{# <td class="tnum">${{sale.projectedData.frontend}}</td> #}
+															{% if '-' in sale.projectedData.frontend %}
+																<td class="tnum text-danger">
+																$({{sale.projectedData.frontend | replace({'-': ''})  }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.projectedData.frontend }}
+																</td>
+															{% endif %}
+															{# <td class="tnum">${{sale.projectedData.backend}}</td> #}
+															{% if '-' in sale.projectedData.backend %}
+																<td class="tnum text-danger">
+																$({{sale.projectedData.backend | replace({'-': ''})  }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.projectedData.backend }}
+																</td>
+															{% endif %}
+															{# <td class="tnum">${{sale.projectedData.total_gross}}</td> #}
+															{% if '-' in sale.projectedData.total_gross %}
+																<td class="tnum text-danger">
+																$({{sale.projectedData.total_gross | replace({'-': ''})  }})
+																</td>
+															{% else %}
+																<td class="tnum">
+																${{sale.projectedData.total_gross }}
+																</td>
+															{% endif %}
+														</tr>
+														{% endif %}
+													</tfoot>
+												</table>
+											</td>
+										</tr>
+									{% endfor %}
+									<tr style="border-bottom: 1px solid #000000;">
+										<th class="tcen">Total</th>
+										<th class="tnum">{{totalcompanies[0].deals}}</a></th>
+										{% if isProjected %}
+											<th class="tcen"></th>
+										{% endif %}
+										{# <th class="tnum">${{'-' in totalcompanies[0].payable_gross ? "(#{totalcompanies[0].payable_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  totalcompanies[0].payable_gross  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in totalcompanies[0].payable_gross %}
+											<th class="tnum text-danger">
+											$({{totalcompanies[0].payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{totalcompanies[0].payable_gross | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if isProjected %}
+											<th class="tcen"></th>
+										{% endif %}
+										{# <th class="tnum">${{'-' in totalcompanies[0].frontend ? "(#{totalcompanies[0].frontend | replace({'-': ''}) | number_format(2, '.', ',') })" :  totalcompanies[0].frontend  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in totalcompanies[0].frontend %}
+											<th class="tnum text-danger">
+											$({{totalcompanies[0].frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{totalcompanies[0].frontend | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{'-' in totalcompanies[0].backend ? "(#{totalcompanies[0].backend | replace({'-': ''}) | number_format(2, '.', ',') })" :  totalcompanies[0].backend  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in totalcompanies[0].backend %}
+											<th class="tnum text-danger">
+											$({{totalcompanies[0].backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{totalcompanies[0].backend | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{'-' in totalcompanies[0].total_gross ? "(#{totalcompanies[0].total_gross | replace({'-': ''}) | number_format(2, '.', ',') })" :  totalcompanies[0].total_gross  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in totalcompanies[0].total_gross %}
+											<th class="tnum text-danger">
+											$({{totalcompanies[0].total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{totalcompanies[0].total_gross | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+									</tr>
+									<tr style="border-bottom: 1px solid #000000;">
+										<th class="tcen">Average</th>
+										<th class="tnum"></th>
+										{% if isProjected %}
+											<th class="tnum"></th>
+										{% endif %}
+										{# <th class="tnum">${{'-' in totalcompanies[0].payable_gross_average ? "(#{totalcompanies[0].payable_gross_average | replace({'-': ''}) | number_format(2, '.', ',') })" :  totalcompanies[0].payable_gross_average  | number_format(2, '.', ',')  }}</th> #}
+										{% if '-' in totalcompanies[0].payable_gross_average %}
+											<th class="tnum text-danger">
+											$({{totalcompanies[0].payable_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{totalcompanies[0].payable_gross_average | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if isProjected %}
+											<th class="tnum"></th>
+										{% endif %}
+										{% if '-' in totalcompanies[0].frontend_average %}
+											<th class="tnum text-danger">
+											$({{totalcompanies[0].frontend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{totalcompanies[0].frontend_average | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if '-' in totalcompanies[0].backend_average %}
+											<th class="tnum text-danger">
+											$({{totalcompanies[0].backend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{totalcompanies[0].backend_average | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+										{% if '-' in totalcompanies[0].total_gross_average %}
+											<th class="tnum text-danger">
+											$({{totalcompanies[0].total_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+											</th>
+										{% else %}
+											<th class="tnum">
+											${{totalcompanies[0].total_gross_average | number_format(2, '.', ',')}}
+											</th>
+										{% endif %}
+									</tr>
+									{% if isProjected %}
+										<tr style="border-bottom: 1px solid #000000;">
+											<th class="tcen">{{projected.name}}</th>
+											<th class="tnum"></th>
+											<th class="tnum">{{projected.projected}}</th>
+											{% if '-' in projected.payable_gross %}
+												<th class="tnum text-danger">
+												$({{projected.payable_gross | replace({'-': ''})}})
+												</th>
+											{% else %}
+												<th class="tnum">
+												${{projected.payable_gross}}
+												</th>
+											{% endif %}
+											<th class="tnum"></th>
+											{% if '-' in projected.frontend %}
+												<th class="tnum text-danger">
+												$({{projected.frontend | replace({'-': ''})}})
+												</th>
+											{% else %}
+												<th class="tnum">
+												${{projected.frontend}}
+												</th>
+											{% endif %}
+											{% if '-' in projected.backend %}
+												<th class="tnum text-danger">
+												$({{projected.backend | replace({'-': ''})}})
+												</th>
+											{% else %}
+												<th class="tnum">
+												${{projected.backend}}
+												</th>
+											{% endif %}
+											{% if '-' in projected.total_gross %}
+												<th class="tnum text-danger">
+												$({{projected.total_gross | replace({'-': ''})}})
+												</th>
+											{% else %}
+												<th class="tnum">
+												${{projected.total_gross}}
+												</th>
+											{% endif %}
+										</tr>
+									{% endif %}
+								</tbody>
+							</table>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script language = "JavaScript">
+		   function drawChart() {
+			  	var ar_data = {{(total_deals| json_encode|raw)}};
+
+				if(ar_data.length == 1) {
+					return;
+				}
+				ar_data[0].push({role: "annotation"});
+
+				for (let a in ar_data) {
+					ar_data[a].map((value, index) => {
+						if(!isNaN(parseFloat(value))) {
+							ar_data[a][index] = parseFloat(value);
+						}
+					})
+				}
+				var data = google.visualization.arrayToDataTable(ar_data);
+				var options = {
+				   	height: ar_data.length * 20 + 100,
+					// heigh: 400,
+				   	title: 'Total Sales per Salesperson',
+				   	legend: { position: 'top & right'},
+				   	titleFontSize:20,
+				   	align: "bottom",
+					fontSize: "12",
+				   	isStacked: true,
+					chartArea: {
+						height: ar_data.length * 20
+					}
+			   	};
+				var chart = new google.visualization.BarChart(document.getElementById('barchart'));
+				chart.draw(data, options);
+		   }
+		   
+		   function multiChart() {
+			   var ar_data = {{(total_backend | json_encode | raw)}}
+			   if(ar_data.length == 1) {
+				   return;
+			   }
+			   var new_ar = [];
+			   ar_data.map((values, index) => {
+				   new_ar[index] = [];
+				   values.map((value, ind) => {
+					   if(!isNaN(parseFloat(value))) {
+						   value = parseFloat(value);
+						   if(value < 0) {
+							   value = value * -1;
+						   }
+					   }
+					   new_ar[index].push(value);
+				   })
+			   })
+			   new_ar[0].push({ role: 'annotation' });
+			   var data = google.visualization.arrayToDataTable(new_ar);
+			   var options = {
+				   	height: new_ar.length * 20 + 50,
+				   	title: 'Total Gross per Salesperson',
+				   	titleFontSize:25,
+				   	legend: { position: 'top & right', maxLines: 3 },
+				   	// bar: { groupWidth: '75%' },
+					fontSize: "12",
+				   	isStacked: true,
+					chartArea: {
+						height: ar_data.length * 20
+					},
+					hAxis: {
+						format: "currency"
+					},
+			   };
+			   var chart = new google.visualization.BarChart(document.getElementById('multichart'));
+			   chart.draw(data, options);
+			   $("#multichart").addClass("display-hide");
+		   }
+		   function average_backend() {
+			   var ar_data = {{( average_backend | json_encode | raw)}}
+			   if(ar_data.length == 1) {
+				   return;
+			   }
+			   var new_ar = [];
+			   ar_data.map((values, index) => {
+				   new_ar[index] = [];
+				   values.map((value, ind) => {
+					   if(!isNaN(parseFloat(value))) {
+						   value = parseFloat(value);
+						   if(value < 0) {
+							   value = value * -1;
+						   }
+					   }
+					   if(value === null) {
+						   value = 0
+					   }
+					   new_ar[index].push(value);
+				   })
+			   })
+			   new_ar[0].push({ role: 'annotation' });
+			   var data = google.visualization.arrayToDataTable(new_ar);
+			   var options = {
+				   	height: new_ar.length * 20 + 50,
+				   	title: 'Average Gross per Salesperson',
+				   	titleFontSize:25,
+				   	legend: { position: 'top & right', maxLines: 3 },
+				   	// bar: { groupWidth: '75%' },
+				   	axes: {
+						   x: {
+							   0: { side: 'top', label: 'White to move'} // Top x-axis.
+						   }
+				   	},
+					hAxis: {
+						format: "currency"
+					},
+					fontSize: "12",
+				   	isStacked: true,
+				   	chartArea: {
+						height: ar_data.length * 20
+					}
+			   };
+			   var chart = new google.visualization.BarChart(document.getElementById('average_chart'));
+			   chart.draw(data, options);
+			   $("#average_chart").addClass("display-hide");
+		   }
+
+		   function setTitleToCenter(selector) {
+			   var mainpanelWidth = $("#content-container").width();
+			   var titleWidth = $(selector)[0].getBoundingClientRect().width;;
+			   $(selector).attr("x", (mainpanelWidth / 2 - titleWidth / 2));
+		   }
+
+		   var chartSelectors = ['barchart', "multichart", 'average_chart'];
+
+		   function showChart(chartname) {
+			   $("#" + chartname).removeClass("display-hide");
+			   $("#" + chartname).addClass("display-show");
+			   chartSelectors.map((selector) => {
+				   if(selector != chartname) {
+					   $("#" + chartname).removeClass("display-show");
+					   $("#" + selector).addClass("display-hide")
+				   }
+			   })
+		   }
+		   google.charts.setOnLoadCallback(drawChart);
+		   google.charts.setOnLoadCallback(multiChart);
+		   google.charts.setOnLoadCallback(average_backend);
+   </script>
+{% endblock %}

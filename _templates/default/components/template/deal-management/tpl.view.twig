@@ -1,0 +1,220 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.deal-topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_deal_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="container-fluid content-header">
+						<div class="report-table table-responsive">
+						{# <table class="table table-striped table-bordered dt-responsive nowrap no-footer" id = "myTable"> #}
+						<table class="table table-striped table-bordered dt-responsive nowrap no-footer ViewDealsCustomTable" id = "myTable">
+							<thead class ="header">
+								<tr>
+									<th>Status</th>
+									<th>Date Sold</th>
+									<th>Lender</th>
+									<th>Client</th>
+									<th>Stock</th>
+									<th>Vehicle</th>
+									<th>Financed</th>
+									<th>Sales</th>
+									<th>Desk & Fin</th>
+									{# <th>Pending Documents</th> #}
+									{# <th>Lock & Unlock</th> #}
+									<th>Notes</th>
+									<th>Actions</th>
+								</tr>
+								{# <th onclick="sortTable($(this), 'status')">Status</th>
+								<th onclick="sortTable($(this), 'date_sold')">Date Sold</th>
+								<th onclick="sortTable($(this), 'lender')">Lender</th>
+								<th onclick="sortTable($(this), 'client_name')">Client</th>
+								<th onclick="sortTable($(this), 'stock')">Stock</th>
+								<th onclick="sortTable($(this), 'vehicle')">Vehicle</th>
+								<th onclick="sortTable($(this), 'amount_financed')" class="txt-right">Financed</th>
+								<th onclick="sortTable($(this), 'sales_team')">Sales</th>
+								<th onclick="sortTable($(this), 'deskteam')">Desk & Fin</th>
+								<th>Lock & Unlock</th>
+								<th>Notes</th>
+								<th>Actions</th> #}
+							</thead>
+							{# {% for deal in deals %}
+								<tr class="deal-row" data-id="{{ deal.dealid }}" data-permission="{% if deal.locked == 0 %}lock{% elseif deal.locked > 0 %}unlock{% endif %}">
+									<td>{{ deal.status }}</td>
+									<td>{{ deal.date_sold_f|date("m/d/Y") }}</td>
+									<td>{{ deal.lender }}</td>
+									<td>{{ deal.client_name }}</td>
+									<td class="txt-right">{{ deal.stock }}</td>
+									<td>{{ deal.vehicle }}</td>
+									<td class="txt-right">{{ deal.amount_financed }}</td>
+									<td>{{ deal.sales_team }}</td>
+									<td>{{ deal.deskteam }}</td> #}
+									{# <td class="txt-center" lang="action">
+										<a href="javascript:;" onclick="lockUnlockDeal({{ deal.dealid }})">
+											<input type="text" hidden id="{{deal.dealid}}_permission" {% if deal.locked == 0 %} value="lock" {% elseif deal.locked > 0 %} value = "unlock" {% endif %}>
+											<i {% if deal.locked == 0 %} class="fas fa-unlock" {% elseif deal.locked > 0 %} class="fas fa-lock" {% endif %}></i>
+										</a>
+									</td> #}
+									{# <td class="txt-center" lang="action">
+										<a href="javascript:;" onclick="viewNotes({{ deal.dealid }})">
+											<i class="fas fa-sticky-note"></i>
+										</a>
+									</td>
+									<td class="txt-center" lang="action">
+										<a href="javascript:;" onclick="lockUnlockDeal({{ deal.dealid }})" class="p-1">
+											<input type="text" hidden id="{{deal.dealid}}_permission" {% if deal.locked == 0 %} value="lock" {% elseif deal.locked > 0 %} value = "unlock" {% endif %}>
+											<i {% if deal.locked == 0 %} style="color:green" class="fas fa-unlock" {% elseif deal.locked > 0 %} style="color:red" class="fas fa-lock" {% endif %}></i>
+										</a>
+										<a href="javascript:;" onclick="deleteDeal({{ deal.dealid }})" class="p-1">
+											<i class="fas fa-trash"></i>
+										</a>
+									</td>
+								</tr>
+							{% endfor %} #}
+						</table>
+					</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+	{# changeTDStyle(); #}
+	{# var field = 'date_sold';
+	var direction = 'DESC';
+
+	$(document).ready(function(){
+		$("#content").scroll(function(){
+			var element = document.getElementById("content");
+			var element = event.target;
+			if (element.scrollHeight - element.scrollTop === element.clientHeight)
+			{
+				var row_count = $(".deal-row").length;
+				$.get("",
+					{
+						field : field,
+						direction : direction,
+						row_count : row_count,
+						type : 'pagination'
+					},
+					function(data){
+						data = JSON.parse(data);
+						if(data != null)
+						appendTable(data, 'pagination');
+				});
+			}
+		});
+	});
+	function appendTable(data, type) {
+		var content = "";
+		for(var i=0; i < data.length; i++){
+			content +=		`<tr class="deal-row" data-id="`+ data[i]['dealid'] + ` ">`+
+				`<td>`+ data[i]['status'] + `</td>`+
+				`<td>`+ data[i]['date_sold_f'] + ` </td>`+
+				`<td>`+ (data[i]['lender']==null?'':data[i]['lender']) + ` </td>`+
+				`<td>`+ data[i]['client_name'] + ` </td>`+
+				`<td class="txt-right">`+ data[i]['stock'] + ` </td>`+
+				`<td>`+ data[i]['vehicle'] + ` </td>`+
+				`<td class="txt-right">`+ data[i]['amount_financed'] + ` </td>`+
+				`<td>`+ (data[i]['sales_team']==null?'':data[i]['sales_team']) + ` </td>`+
+				`<td>`+ data[i]['deskteam'] + ` </td>`+
+				`<td class="txt-center" lang="action">
+					<a href="javascript:;" onclick="lockUnlockDeal(`+ data[i]['dealid'] + ` )">
+						<input type="text" hidden id="`+ data[i]['dealid'] + ` _permission" value="` + (data[i]['locked']==0?'lock':'unlock')`">
+						<i class="`(data[i]['locked']==0?'fas fa-unlock':'fas fa-lock')`"></i>
+					</a>
+				</td>` +
+				`<td class="txt-center" lang="action">`+
+					`<a href="javascript:;" onclick="viewNotes(`+ data[i]['dealid'] + ` )">`+
+						`<i class="fas fa-sticky-note"></i>`+
+					`</a>`+
+				`</td>`+
+				`<td class="txt-center" lang="action">`+
+					`<a href="javascript:;" onclick="deleteDeal(`+ data[i]['dealid'] + ` )">`+
+						`<i class="fas fa-trash"></i>`+
+					`</a>`+
+				`</td>`+
+			`</tr>`;
+		}
+		if(type == 'pagination'){
+			$("#myTable tbody").append(content);
+		}
+		else if(type == 'sort'){
+			$('.deal-row').remove();
+			$("#myTable tbody").append(content);
+		}
+		changeTDStyle();
+	}
+	function sortTable(td, n) {
+
+		field = n;
+		var data = td.children().first();
+		if(data.length == 0){
+			td.html(td.text() + ' ' + '<i class="fas "></i>');
+			data = td.children().first();
+		}
+		if(!data.hasClass('fa-caret-up') && !data.hasClass('fa-caret-down'))
+		{
+			$("#myTable .fa-caret-up, #myTable .fa-caret-down").each(function(){
+				$(this).removeClass('fa-caret-up');
+				$(this).removeClass('fa-caret-down');
+			});
+			data.addClass('fa-caret-down');
+			direction = 'DESC';
+		}else{
+			if(data.hasClass('fa-caret-up')) 
+			{
+				$("#myTable .fa-caret-up, #myTable .fa-caret-down").each(function(){
+					$(this).removeClass('fa-caret-up');
+					$(this).removeClass('fa-caret-down');
+				});
+				
+				data.removeClass('fa-caret-up'); 
+				data.addClass('fa-caret-down');
+				direction = 'DESC';
+
+			}
+			else 
+			{
+				$("#myTable .fa-caret-up, #myTable .fa-caret-down").each(function(){
+					$(this).removeClass('fa-caret-up');
+					$(this).removeClass('fa-caret-down');
+				});
+
+				data.removeClass('fa-caret-down');
+				data.addClass('fa-caret-up');
+				direction = 'ASC';
+			}
+		}
+
+			$.get("",
+				{
+					field : field,
+					direction : direction,
+					row_count : 0,
+					type : 'sort'
+				},
+				function(data){
+					data = JSON.parse(data);
+					console.log(data)
+					if(data != null)
+					appendTable(data, 'sort');
+			});
+	} #}
+
+	function changeDealStyle(value) {
+		{# var dataset = $(value)[0].dataset;
+		console.log(dataset.permission);
+			var id = dataset.id; #}
+			var id = value;
+			window.location.href = '/deals/view?id=' + id;
+			console.log("Yes");
+		
+	}
+</script>
+{% endblock %}

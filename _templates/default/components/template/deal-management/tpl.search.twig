@@ -1,0 +1,199 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					
+					<div class="report-table table-responsive">
+						{% if no_results %}
+						<table class="table table-striped">
+							<tr>
+								<th class="txt-center">{{ no_results }}</th>
+							<tr>
+						</table>
+						{% else %}
+						<table class="table table-striped"  id = "myTable">
+							<tr>
+								<th  onclick="sortTable($(this), 'status')">Status</th>
+								<th  onclick="sortTable($(this), 'date_sold')">Date Sold</th>
+								<th  onclick="sortTable($(this), 'lender')">Lender</th>
+								<th  onclick="sortTable($(this), 'client_name')">Client</th>
+								<th  onclick="sortTable($(this), 'stock')">Stock</th>
+								<th  onclick="sortTable($(this), 'vehicle')">Vehicle</th>
+								<th  onclick="sortTable($(this), 'amount_financed')" class="txt-right">Financed</th>
+								<th  onclick="sortTable($(this), 'sales_team')">Sales</th>
+								<th  onclick="sortTable($(this), 'deskteam')">Desk & Fin</th>
+								<th>Notes</th>
+								<th>Delete</th>
+							<tr>
+							{% for deal in deals %}
+								<tr class="deal-row" data-id="{{ deal.dealid }}">
+									<td>{% if deal.deleted %}Deleted{% elseif deal.closed_dms %}Closed{% elseif deal.funded %}Funded{% else %}Unfunded{% endif %}</td>
+									<td>{{ deal.date_sold_f|date("m/d/Y") }}</td>
+									<td>
+										<a href="#" onclick="viewLender({{ deal.lender_id }})">{{ deal.lender }}</a>
+									</td>
+									<td>{{ deal.client_name }}</td>
+									<td class="txt-right">{{ deal.stock }}</td>
+									<td>{{ deal.vehicle }}</td>
+									<td class="txt-right">{{ deal.amount_financed }}</td>
+									<td>{{ deal.sales_team }}</td>
+									<td>{{ deal.deskteam }}</td>
+									<td class="txt-center" lang="action">
+										<a href="javascript:;" onclick="viewNotes({{ deal.dealid }})">
+											<i class="fas fa-sticky-note"></i>
+										</a>
+									</td>
+									<td class="txt-center" lang="action">
+										<a href="javascript:;" onclick="deleteDeal({{ deal.dealid }})">
+											<i class="fas fa-trash"></i>
+										</a>
+									</td>
+								</tr>
+							{% endfor %}
+							<tr class="footer">
+								<td></td>
+								<td></td>
+								<td>Total</td>
+								<td></td>
+								<td class="txt-right">{{ deal_count }}</td>
+								<td></td>
+								<td class="txt-right">{{ deal_financed_total }}</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+						{% endif %}
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+	var field = 'date_sold';
+	var direction = 'DESC';
+
+	$(document).ready(function(){
+		$("#content").scroll(function(){
+			var element = document.getElementById("content");
+			var element = event.target;
+			if (element.scrollHeight - element.scrollTop === element.clientHeight)
+			{
+				var row_count = $(".deal-row").length;
+				$.get("",
+					{
+						row_count : row_count,
+						type : 'pagination'
+					},
+					function(data){
+						data = JSON.parse(data);
+						if(data != null)
+						appendTable(data, 'pagination');
+				});
+			}
+		});
+	});
+		
+		function appendTable(data, type) {
+			var content = "";
+			for(var i=0; i < data.length; i++){
+				content +=		`<tr class="deal-row" data-id="`+ data[i]['dealid'] + ` ">`+
+					`<td>`+ data[i]['status'] + ` </td>`+
+					`<td>`+ data[i]['date_sold_f'] + ` </td>`+
+					`<td>`+ (data[i]['lender']==null?'':data[i]['lender']) + ` </td>`+
+					`<td>`+ data[i]['client_name'] + ` </td>`+
+					`<td class="txt-right">`+ data[i]['stock'] + ` </td>`+
+					`<td>`+ data[i]['vehicle'] + ` </td>`+
+					`<td class="txt-right">`+ data[i]['amount_financed'] + ` </td>`+
+					`<td>`+ (data[i]['sales_team'] == null?'':data[i]['sales_team']) + ` </td>`+
+					`<td>`+ data[i]['deskteam'] + ` </td>`+
+					`<td class="txt-center" lang="action">`+
+						`<a href="javascript:;" onclick="viewNotes(`+ data[i]['dealid'] + ` )">`+
+							`<i class="fas fa-sticky-note"></i>`+
+						`</a>`+
+					`</td>`+
+					`<td class="txt-center" lang="action">`+
+						`<a href="javascript:;" onclick="deleteDeal(`+ data[i]['dealid'] + ` )">`+
+							`<i class="fas fa-trash"></i>`+
+						`</a>`+
+					`</td>`+
+				`</tr>`;
+			}
+			if(type == 'pagination'){
+				$("#myTable tbody .deal-row").last().after(content);
+			}
+			else if(type == 'sort'){
+				$('.deal-row').remove();
+				$("#myTable tbody .footer").first().before(content);
+			}
+			changeTDStyle();
+		}
+
+		function sortTable(td, n) {
+
+			field = n;
+			var data = td.children().first();
+			if(data.length == 0){
+				td.html(td.text() + ' ' + '<i class="fas "></i>');
+				data = td.children().first();
+			}
+			if(!data.hasClass('fa-caret-up') && !data.hasClass('fa-caret-down'))
+			{
+				$("#myTable .fa-caret-up, #myTable .fa-caret-down").each(function(){
+					$(this).removeClass('fa-caret-up');
+					$(this).removeClass('fa-caret-down');
+				});
+				data.addClass('fa-caret-down');
+				direction = 'DESC';
+			}else{
+				if(data.hasClass('fa-caret-up')) 
+				{
+					$("#myTable .fa-caret-up, #myTable .fa-caret-down").each(function(){
+						$(this).removeClass('fa-caret-up');
+						$(this).removeClass('fa-caret-down');
+					});
+					
+					data.removeClass('fa-caret-up'); 
+					data.addClass('fa-caret-down');
+					direction = 'DESC';
+
+				}
+				else 
+				{
+					$("#myTable .fa-caret-up, #myTable .fa-caret-down").each(function(){
+						$(this).removeClass('fa-caret-up');
+						$(this).removeClass('fa-caret-down');
+					});
+
+					data.removeClass('fa-caret-down');
+					data.addClass('fa-caret-up');
+					direction = 'ASC';
+				}
+			}
+				var search = $("#input_deal_search").val();
+				$.get("",
+					{
+						search : search,
+						field : field,
+						direction : direction,
+						row_count : 0,
+						type : 'sort'
+					},
+					function(data){
+						data = JSON.parse(data);
+						if(data != null)
+						appendTable(data, 'sort');
+				});
+		}
+</script>
+{% endblock %}

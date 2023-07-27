@@ -1,0 +1,59 @@
+{% extends 'tpl.container.twig' %}
+
+{% block tpl_grid %}
+	<div class="container-fluid login-container">
+		<div id="login">
+			<div class="row">
+				<div class="login-logo">
+					<span class="funding">FUNDING</span>
+					<span class="tracker">TRACKER</span>
+				</div>
+			</div>
+			<form name="login" action="/forgot" method="post">
+				{% if error is defined %}
+					<div class="row">
+						<div class="login-error">
+							<i class="fas fa-exclamation-circle"></i> {{ error }}
+						</div>
+					</div>
+				{% endif %}
+				<div class="row" style="margin-top:50px">
+					<div class="login-field">
+						<div class="login-label">Email</div>
+						<input class="login_input" id="forgot_email" type="text" name="username" placeholder="Enter your email" autocomplete="off"{% if username is defined %} value="{{ username }}"{% endif %}>
+					</div>
+				</div>
+				{# <div class="row">
+					<div class="login-field">
+						<div class="login-label">PASSWORD</div>
+						<input type="password" name="password" placeholder="Enter your password" autocomplete="off">
+					</div>
+				</div> #}
+				<style>
+					@media (max-width: 550px) {
+						.funding, .tracker{
+							font-size:35px !important;
+						}
+						.login-welcome{
+							color: #ad273a;
+							margin: 0 auto 40px;
+							font-size: 20px;
+							font-weight: 100;
+						}
+						#login {
+							width:300px !important;
+						}
+						.login_input{
+							width:140px !important;
+						}
+					}
+				</style>
+				<input type="hidden" name="type" value="login">
+				<input type="hidden" name="nonce" value="{{ nonce }}">
+				<div class="row">
+					<input class="login-btn " type="submit" value="Send Code">
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}

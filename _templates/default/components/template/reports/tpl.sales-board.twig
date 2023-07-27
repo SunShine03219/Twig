@@ -1,0 +1,51 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Salesman</i></th>
+									<th>Cars Out</th>
+									<th>On Pace For</th>
+									<th>Last Month</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% set count = 0 %}
+								{% set onPaceFor = 0 %}
+								{% for salesboard in salesboards %}
+									<tr class="deal-row1" data-id="{{ salesboard.dealid }}" style="border-bottom: 1px solid #dadada">
+										<td>{{ salesboard.name }}</td>
+										<td>{{ salesboard.deals | number_format(1, '.', ',')}}</td>
+										{% set count = count + salesboard.deals %}
+										{% set onPaceFor = onPaceFor + salesboard.projectcao %}
+										<td>{{ salesboard.projectcao }}</td>
+										<td>{{ salesboard.lastmonth }}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+							<tfoot>
+								<tr style="border-bottom: 1px solid #000000">
+									<th>TOTAL</th>
+									<th>{{count}}</th>
+									<th>{{onPaceFor}}</th>
+									<th>{{totalMesPassado}}</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

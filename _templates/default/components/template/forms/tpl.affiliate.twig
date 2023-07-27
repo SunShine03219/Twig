@@ -1,0 +1,126 @@
+{% macro tpl_affiliateForm() %}
+	<div class="form-ft">
+		<div class="container">
+
+		{% if company_switch %}
+			<div class="alert alert-success" role="alert">
+				You are now impersonating {{ company_name }}
+			</div>
+		{% endif %}
+
+			<form name="impersonate" action="superuser/affiliate" method="POST">
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="user_id" value="{{ hidden_input_array.user_id }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Select Affiliate company</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-md-6 col-xs-12 mt-3">
+						<label for="company_id" class="col-sm-6 col-md-4 col-form-label-sm">Company</label>
+						<div class="col-sm-12 col-md-8">
+							<select class="form-control form-control-btn form-control-sm" name="company_id" id="company_id">
+								{% for company in companies %}
+									<option value="{{ company.id }}" {% if session.company_id == company.id %} selected="selected"{% endif %}>{{ company.val }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class=" col-md-6 col-xs-12 mt-3">
+						<label for="affiliate" class="col-sm-6 col-md-4 col-form-label-sm">Affiliate Company</label>
+						<div class="col-sm-12 col-md-8">
+							<select class="form-control form-control-btn form-control-sm" name="affiliate" id="affiliate">
+								{% for company in companies %}
+									<option value="{{ company.id }}" >{{ company.val }}</option>
+									{# {% set break = false %}
+									{% for affiliate in affiliates %}
+										{% if company.id == affiliate.id %}
+											{% set break = true %}
+										{% endif %}
+									{% endfor %}
+									{% if break == false %}
+										<option value="{{ company.id }}" >{{ company.val }}</option>
+									{% endif %} #}
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<div class="row mt-4">
+					<div class="col-6 offset-2 offset-md-4 col-md-4 offset-xl-5 col-xl-2">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">Submit</button>
+					</div>
+
+				</div>
+			</form>
+		</div>
+		<div id="affiliate_panel" class="container" style="max-height: calc(100vh - 310px);">
+			<div class="report-table px-0 py-4 table-responsive">
+				{% set company_id = '' %}
+				{% for affiliate in affiliates %}
+					{% if company_id != affiliate.company_id %}
+						{% if company_id != '' %}
+							</tbody>
+						</table>
+						{% endif %}
+					{% set company_id = affiliate.company_id %}
+					{% set break = false %}
+					{% for company in companies %}
+						{% if company_id == company.id %}
+							<h4>{{ company.val }}</h4>
+							{% set break = true %}
+						{% endif %}
+					{% endfor %}
+					<table class="table table-striped">
+						<thead>
+							<th class="col-md-8">Affiliated Company</th>
+							<th class="col-md-4 text-center">Action</th>
+						</thead>
+						<tbody>
+					{% endif %}
+					<tr>
+						<td>{{ affiliate.val }}</td>
+						<td class="text-center">
+							<a href="/superuser/affiliate?delete={{ affiliate.affiliate_id }}" class="new-btn btn">
+								<i class="fas fa-trash-alt"></i>
+							</a>
+						</td>
+					</tr>
+				{% endfor %}
+				{% if company_id != '' %}
+					</tbody>
+				</table>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<script>
+	$(function(){
+		function afftoggleScrollButton() {
+			var h = $('#affiliate_panel').find('.report-table').eq(0).height();
+			var pH = $('#affiliate_panel').find('.report-table').eq(0).parent().height();
+			if(pH < h) {
+				$('.scroll-btn').fadeIn();
+			} else {
+				$('.scroll-btn').fadeOut();
+			}
+		}
+		
+		$('body').on('click', '#scroll-top-btn', function() {
+			$('#affiliate_panel').scrollTop(0);
+		});
+		
+		$('body').on('click', '#scroll-bottom-btn', function() {
+			$('#affiliate_panel').scrollTop(1000000000);
+		});
+		
+		$(window).resize(function(){
+			afftoggleScrollButton();
+		})
+		afftoggleScrollButton();
+	})
+	</script>
+{% endmacro %}

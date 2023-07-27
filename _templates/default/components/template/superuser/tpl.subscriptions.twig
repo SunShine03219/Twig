@@ -1,0 +1,182 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'forms/tpl.topbarNoPrint.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="container content-header m-2">
+						<div class="row">
+							<div class="col-sm-8 col-md-4 col-xl-3 mt-2">
+								<a href="/superuser/subscriptions?action=new" class="btn btn-primary">
+									<i class="fas fa-plus-circle"></i> New Subscription
+								</a>
+							</div>
+							<div class="col-sm-4 col-md-3 col-xl-2 mt-2">
+								<a href="javascript:void(0)" class="btn btn-primary" id="customize"> Customize</a>
+							</div>
+							<form class="col-12 col-md-6 col-xl-4 mt-2" action="/superuser/subscriptions" id="customize_form" method="GET" style="display:none">
+								<div class="d-flex">
+									<label class="col-form-label-sm mx-2 my-0 mt-1">Active</label>
+									<select class="form-control mx-4" name="status" value="{{ status }}">
+										<option value="1" {{status=='1' ? 'selected' : '' }}>Active</option>
+										<option value="0" {{status=='0' ? 'selected' : '' }}>InActive</option>
+										<option value="" {{status=='' ? 'selected' : '' }}>All Items</option>
+									</select>
+									<button type="submit" class="btn btn-xs btn-primary h-75">Submit</button>
+								</div>
+								
+							</form>
+						</div>
+					</div>
+					
+					<div class="report-table table-responsive">
+						<table class="table table-striped" id = "myTable">
+							<tr>
+								<th>Edit</th>
+								<th onclick="sortTable($(this), 0)">Name</th>
+								<th onclick="sortTable($(this), 1)">Payment Amount</th>
+								<th onclick="sortTable($(this), 2)">Interval</th>
+								<th onclick="sortTable($(this), 3)">Occurances</th>
+								<th onclick="sortTable($(this), 4)">Trial Length</th>
+								<th onclick="sortTable($(this), 5)">Status</th>
+							<tr>
+							{% for subscription in subscriptions %}
+								{% if(status=='') %}
+								<tr class="subscription-row" data-id="{{ subscription.id }}">
+									<td class="text-center">
+										<a href="/superuser/subscriptions?delete={{ subscription.id }}" class="new-btn btn">
+											<i class="fas fa-trash-alt"></i>
+										</a>
+									</td>
+									<td>{{ subscription.name }}</td>
+									<td>{{ subscription.payment_amount }}</td>
+									<td>{{ subscription.payment_interval_length }} {{ subscription.interval_unit }}</td>
+									<td>{{ subscription.total_occurances}}</td>
+									<td>{{ subscription.trial_days }}</td>
+									<td>
+										<a href="/superuser/subscriptions?toggle={{ subscription.id }}" class="new-btn btn">
+											{{ subscription.active=="1" ? "active" : "inactive" }}
+										</a>
+									</td>
+								</tr>
+								{% elseif(status==subscription.active) %}
+								<tr class="subscription-row" data-id="{{ subscription.id }}">
+									<td class="text-center">
+										<a href="/superuser/subscriptions?delete={{ subscription.id }}" class="new-btn btn">
+											<i class="fas fa-trash-alt"></i>
+										</a>
+									</td>
+									<td>{{ subscription.name }}</td>
+									<td>{{ subscription.payment_amount }}</td>
+									<td>{{ subscription.payment_interval_length }} {{ subscription.interval_unit }}</td>
+									<td>{{ subscription.total_occurances}}</td>
+									<td>{{ subscription.trial_days }}</td>
+									<td>
+										<a href="/superuser/subscriptions?toggle={{ subscription.id }}" class="new-btn btn">
+											{{ subscription.active=="1" ? "active" : "inactive" }}
+										</a>
+									</td>
+								</tr>
+								{% endif %}
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$("#customize").click(function(){
+			$('#customize_form').toggle();
+		});
+		$('.subscription-row').click(function() {
+			var id = $(this).data('id');
+			location.href = '/superuser/subscriptions?id='+id;
+		})
+	</script>
+	<script>
+function sortTable(td, n) {
+
+	var data = td.children().first();
+	if(data.length == 0){
+		td.html(td.text() + ' ' + '<i class="fas "></i>');
+		data = td.children().first();
+	}
+	if(!data.hasClass('fa-caret-up') && !data.hasClass('fa-caret-down'))
+	{
+		data.addClass('fa-caret-down');
+	}else{
+		if(data.hasClass('fa-caret-up')) 
+		{
+			data.removeClass('fa-caret-up'); 
+			data.addClass('fa-caret-down');
+
+		}
+		else 
+		{
+			data.removeClass('fa-caret-down');
+			data.addClass('fa-caret-up');
+		}
+	}
+
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("myTable");
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc"; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 2; i < (rows.length - 3); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+</script>
+{% endblock %}

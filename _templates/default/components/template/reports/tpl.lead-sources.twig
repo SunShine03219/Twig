@@ -1,0 +1,89 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+<script type = "text/javascript" src = "_templates/default/components/template/resources/js/loader.js"></script>
+	<script type = "text/javascript">
+			google.charts.load('current', {packages: ['corechart']});
+	</script>
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table table-responsive">
+						{% if leads %}
+						{% set chartdata = [] %}
+						<div>
+							<div id = "container" style = "width: 100%; height: 100%; margin: 0 auto"></div>
+							<button class="btn btn-primary">Total Using</button>
+						</div>
+						<br/>
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th class="txt-center">Lead Source</th>
+									<th class="txt-center">Quantity Used</th>
+								<tr>
+							</thead>
+							<tbody>
+								{% for lead in leads %}
+									{% set chartdata = ['Year', 'Asia'] %}
+									<tr class="deal-row1" style="border-bottom: 1px solid #dadada">
+										<td class="txt-center">{{ lead.NAME }}</td>
+										<td class="txt-center">{{ lead.total_lead }}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+							<tfoot>
+								{% set number = 0 %}
+								{% for lead in leads %}
+									{% set number = number + lead.total_lead %}
+								{% endfor %}
+								<tr>
+									<th class="txt-center">TOTAL</th>
+									<th class="txt-center">{{number}}</th>
+								</tr>
+							</tfoot>
+						</table>
+						{% else %}
+						<p style="text-align:center">No results found!</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script language = "JavaScript">
+		let ar_data = {{(totals|json_encode|raw)}};
+		for (let a in ar_data) {
+			if(!isNaN(parseFloat(ar_data[a][1])))
+				ar_data[a][1] = parseFloat(ar_data[a][1]);					
+		}
+		function drawChart() {
+			var data = google.visualization.arrayToDataTable(ar_data);
+			var options = {
+				title: 'Total Using per Lead Source',
+				titleFontSize: 25,
+				fontSize: "12",
+				legend: { position: 'top & right', maxLines: 3 },
+				bar: { groupWidth: '75%' },
+				hAxis: {
+						format: 'currency'
+					},
+				fontSize: "12",
+				isStacked: true,
+				height: ar_data.length * 20 + 100,
+				chartArea: {
+					height: ar_data.length * 20
+				}
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+		google.charts.setOnLoadCallback(drawChart);
+	</script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% macro tpl_sidebar() %}
+	<div id="nav-sidebar" class="d-none d-lg-block">
+		<div style="display:block; padding-bottom:20px" id="hideSideBar">
+			<span class="navbar-toggler-icon" style="font-size:30px; float:right">   
+				<i class="fas fa-window-close"></i>			
+			</span>
+		</div>
+		<div class="sidebar-logo">
+			<span class="funding">FUNDING</span>
+			<span class="tracker">TRACKER</span>
+		</div>
+		<div class="category">Navigation</div>
+		<div class="primary">
+			<a class="primary-link deals" href="javascript:;">
+				<i class="nav-icon fas fa-file-signature"></i>Deal Management<i class="nav-caret fas {% if navigationSection == "deals" %}fa-caret-down{% else %}fa-caret-right{% endif %}"></i>
+			</a>
+			<div class="deals-links secondary{% if navigationSection != "deals" %} hidden{% endif %}">
+				<a href="/deals/new"{% if navigation == 'deals/new' or navigation == 'deals/new' %} class="selected"{% endif %}>Add New Deal</a>
+				<a href="/deals/view"{% if navigation == 'deals/view' %} class="selected"{% endif %}>View Deals</a>
+				<a href="/deals/unfunded"{% if navigation == 'deals/unfunded' or navigation == 'deals' %} class="selected"{% endif %}>Unfunded Deals</a>
+				<a href="/deals/funded"{% if navigation == 'deals/funded' %} class="selected"{% endif %}>Funded Deals</a>
+				<a href="/deals/pending"{% if navigation == 'deals/pending' or navigation == 'deals/pending' %} class="selected"{% endif %}>Pending Documents</a>
+				{% if session.SEC_SUPPORT == true or session.SEC_ADMIN == true or session.SEC_MANAGER == true %}
+					<a href="/deals/close"{% if navigation == 'deals/close' %} class="selected"{% endif %}>Closed Deals</a>
+				{#{% endif %}#}
+				
+				{#{% if session.SEC_ADMIN == true %}#}
+					<a href="/deals/delete"{% if navigation == 'deals/delete' %} class="selected"{% endif %}>Deleted Deals</a>
+				{% endif %}
+				<a href="/deals/floored"{% if navigation == 'deals/floored' %} class="selected"{% endif %}>Floored Deals</a>
+				<a href="/deals/deferred"{% if navigation == 'deals/deferred' %} class="selected"{% endif %}>Deferred Payments</a>
+				<a href="/deals/approved"{% if navigation == 'deals/approved' %} class="selected"{% endif %}>Approved Deals</a>
+				<a href="/deals/imported"{% if navigation == 'deals/imported' %} class="selected"{% endif %}>Imported Deals</a>
+			</div>
+		</div>
+		<div class="primary">
+			<a class="primary-link reports" href="javascript:;">
+				<i class="nav-icon fas fa-chart-area"></i>Reports<i class="nav-caret fas {% if navigationSection == "reports" %}fa-caret-down{% else %}fa-caret-right{% endif %}"></i>
+			</a>
+			<div class="reports-links secondary{% if navigationSection != "reports" %} hidden{% endif %}">
+				{% if session.SEC_ADMIN == true %}
+					{% for menu in menus_view %}
+						{% if menu.url == 'sales-board' %}
+							{% if session.SEC_SUPPORT == true or session.SEC_ADMIN == true or session.SEC_MANAGER == true %}
+								<a href="/reports/sales-board"{% if navigation == 'reports/sales-board' %} class="selected"{% endif %}>Sales Board</a>
+							{% endif %}
+						{% else %}
+							<a href="{{menu.full_url}}" {% if navigation == menu.url %} class="selected"{% endif %}>{{menu.name}}</a>
+						{% endif %}
+					{% endfor %}
+				{% else %}
+					{% for menu in menus_view %}
+						{% if menu.status == 1 %}
+							{% if menu.url == 'sales-board' %}
+								{% if session.SEC_SUPPORT == true or session.SEC_ADMIN == true or session.SEC_MANAGER == true %}
+									<a href="/reports/sales-board"{% if navigation == 'reports/sales-board' %} class="selected"{% endif %}>Sales Board</a>
+								{% endif %}
+							{% else %}
+								<a href="{{menu.full_url}}" {% if navigation == menu.url %} class="selected"{% endif %}>{{menu.name}}</a>
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+				{# <a href="/reports/company-gross?mode=mtd&deleted=0" {% if navigation == 'reports/company-gross' %} class="selected"{% endif %}>Company Gross</a>
+				<a href="/reports/desk-manager?mode=mtd"{% if navigation == 'reports/desk-manager' %} class="selected"{% endif %}>Desk Manager</a>
+				<a href="/reports/sales-people?mode=mtd&deleted=0"{% if navigation == 'reports/sales-people' %} class="selected"{% endif %}>Sales People</a>
+				<a href="/reports/finance?mode=mtd&deleted=0"{% if navigation == 'reports/finance' %} class="selected"{% endif %}>Finance</a>
+				<a href="/reports/lenders"{% if navigation == 'reports/lenders' %} class="selected"{% endif %}>Lenders</a>
+				<a href="/reports/flooring?mode=mtd&deleted=0"{% if navigation == 'reports/flooring' %} class="selected"{% endif %}>Flooring</a>
+				<a href="/reports/funded?mode=mtd&deleted=0"{% if navigation == 'reports/funded' %} class="selected"{% endif %}>Funded</a>
+				{% if session.SEC_SUPPORT == true or session.SEC_ADMIN == true or session.SEC_MANAGER == true %}
+					<a href="/reports/sales-board"{% if navigation == 'reports/sales-board' %} class="selected"{% endif %}>Sales Board</a>
+				{% endif %}
+				<a href="/reports/gross-w-vehicle?mode=mtd"{% if navigation == 'reports/gross-w-vehicle' %} class="selected"{% endif %}>Gross with Vehicle</a>
+				<a href="/reports/lead-sources?mode=mtd&deleted=0"{% if navigation == 'reports/lead-sources' %} class="selected"{% endif %}>Lead Sources</a>
+				<a href="/reports/finance-approval?mode=mtd"{% if navigation == 'reports/finance-approval' %} class="selected"{% endif %}>Finance Approval</a>
+				<a href="/reports/time-to-fund"{% if navigation == 'reports/time-to-fund' %} class="selected"{% endif %}>Time to Fund</a>
+				<a href="/reports/finance-penetration?mode=mtd"{% if navigation == 'reports/finance-penetration' %} class="selected"{% endif %}>Finance Penetration</a>
+				<a href="/reports/gross-new?mode=mtd"{% if navigation == 'reports/gross-new' %} class="selected"{% endif %}>Gross New Cars</a>
+				<a href="/reports/gross-used?mode=mtd"{% if navigation == 'reports/gross-used' %} class="selected"{% endif %}>Gross Used Cars</a>
+				<a href="/reports/trade-in"{% if navigation == 'reports/trade-in' %} class="selected"{% endif %}>Trade In</a>				 #}
+			</div>
+		</div>
+		{% if session.SEC_ADMIN == true %}
+			<div class="primary">
+				<a class="primary-link admin" href="javascript:;">
+					<i class="nav-icon fas fa-user-cog"></i>Administration<i class="nav-caret fas {% if navigationSection == "admin" %}fa-caret-down{% else %}fa-caret-right{% endif %}"></i>
+				</a>
+				<div class="secondary{% if navigationSection != "admin" %} hidden{% endif %}">
+					<a href="/admin/company"{% if navigation == 'admin/company' %} class="selected"{% endif %}>Company</a>
+					<a href="/admin/users"{% if navigation == 'admin/users' %} class="selected"{% endif %}>Users</a>
+					<a href="/admin/sales"{% if navigation == 'admin/sales' %} class="selected"{% endif %}>Sales People</a>
+					<a href="/admin/desk"{% if navigation == 'admin/desk' %} class="selected"{% endif %}>Desk Managers</a>
+					<a href="/admin/finance"{% if navigation == 'admin/finance' %} class="selected"{% endif %}>Finance People</a>
+					<a href="/admin/lending"{% if navigation == 'admin/lending' %} class="selected"{% endif %}>Lending Sources</a>
+					<a href="/admin/flooring"{% if navigation == 'admin/flooring' %} class="selected"{% endif %}>Flooring Companies</a>
+					<a href="/admin/gap"{% if navigation == 'admin/gap' %} class="selected"{% endif %}>Gap Providers</a>
+					<a href="/admin/warranty"{% if navigation == 'admin/warranty' %} class="selected"{% endif %}>Warranty Providers</a>
+					<a href="/admin/settings"{% if navigation == 'admin/settings' %} class="selected"{% endif %}>Company Settings</a>				
+					<a href="/admin/payment"{% if navigation == 'admin/payment' %} class="selected"{% endif %}>Billing System</a>	
+					<a href="/admin/manage-menu"{% if navigation == 'admin/manage-menu' %} class="selected"{% endif %}>Menu Management</a>			
+				</div>
+			</div>
+		{% endif %}
+		{% if session.SEC_SUPPORT == true %}
+			<div class="primary">
+				<a class="primary-link support" href="javascript:;">
+					<i class="nav-icon fas fa-bolt"></i>Superuser<i class="nav-caret fas {% if navigationSection == "superuser" %}fa-caret-down{% else %}fa-caret-right{% endif %}"></i>
+				</a>
+				<div class="secondary{% if navigationSection != "superuser" %} hidden{% endif %}">
+				    <a href="/superuser/impersonate"{% if navigation == 'superuser/impersonate' %} class="selected"{% endif %}>Impersonate</a>
+					<a href="/superuser/affiliate"{% if navigation == 'superuser/affiliate' %} class="selected"{% endif %}>Affiliate</a>
+					<a href="/superuser/customers"{% if navigation == 'superuser/customers' %} class="selected"{% endif %}>Customers</a>
+					<a href="/superuser/customers_bill"{% if navigation == 'superuser/customers_bill' %} class="selected"{% endif %}>Costumers Bill</a>
+					<a href="/superuser/subscriptions"{% if navigation == 'superuser/subscriptions' %} class="selected"{% endif %}>Subscriptions</a>	<a href="/superuser/coupons"{% if navigation == 'superuser/coupons' %} class="selected"{% endif %}>Coupon</a>
+					<a href="/superuser/imported" {% if navigation == 'superuser/imported' %} class="selected"{% endif %}>Import Deal</a>
+					<a href="/superuser/subscriptions"{% if navigation == 'superuser/customers_subscription' %} class="selected"{% endif %}>Customers Subscription</a>
+				</div>
+			</div>
+		{% endif %}
+	</div>
+
+	<span id="scroll-top-btn" class="btn btn-info scroll-btn">
+		<i class="fa fa-arrow-up"></i>
+	</span>
+	<style>
+		@media (max-width: 992px) {
+			.d-lg-block {
+				position:absolute !important;
+				z-index:999;
+			}
+		}
+		@media (min-width: 992px) {
+			#hideSideBar {
+				display:none !important
+			}
+		}
+	</style>
+{% endmacro %}

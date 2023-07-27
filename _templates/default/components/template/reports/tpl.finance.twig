@@ -1,0 +1,755 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<script type = "text/javascript" src = "_templates/default/components/template/resources/js/loader.js"></script>
+	<script type = "text/javascript">
+			google.charts.load('current', {packages: ['corechart']});
+	</script>
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table header-content table-responsive">
+						<table class="top-table report-duble">
+							<tr>
+								<td class="theader">Deals:</td>
+								<td class="tnum">{{companytotal.deals}}</td>
+								<td class="theader">Back End Gross:</td>
+								<td class="tnum">${{companytotal.backend | number_format(2, '.', ',')}}</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td class="theader">Unfunded Deals:</td>
+								<td class="tnum">{{companytotal.unfunded_count}}</td>
+								<td class="theader">Unfunded Amount:</td>
+								<td class="tnum">${{companytotal.unfunded_total | number_format(2, '.', ',')}}</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td class="theader">Warranties Sold:</td>
+								<td class="tnum">{{companytotal.warranty_count}}</td>
+								<td class="theader">Warranty Gross:</td>
+								<td class="tnum">${{companytotal.warranty_gross | number_format(2, '.', ',')}}</td>
+								<td class="theader">Warranty Penetration:</td>
+								<td class="tnum">({{companytotal.warranty_count}}){{companytotal.warranty_perc * 100}}%</td>
+								<td class="theader">Warranty Average:</td>
+								<td class="tnum">${{companytotal.warranty_average| number_format(2, '.', ',')}}</td>
+							</tr>
+							<tr>
+								<td class="theader">Gap Plans Sold:</td>
+								<td class="tnum">{{companytotal.gap_count}}</td>
+								<td class="theader">Gap Gross:</td>
+								<td class="tnum">${{companytotal.gap_gross| number_format(2, '.', ',')}}</td>
+								<td class="theader">Gap Penetration:</td>
+								<td class="tnum">({{companytotal.gap_count}}){{companytotal.gap_perc * 100}}%</td>
+								<td class="theader">Gap Average:</td>
+								<td class="tnum">${{companytotal.gap_average| number_format(2, '.', ',')}}</td>
+							</tr>
+							<tr>
+								<td class="theader">MiscFin Sold:</td>
+								<td class="tnum">{{companytotal.miscfinance_count}}</td>
+								<td class="theader">MiscFin Gross:</td>
+								<td class="tnum">${{companytotal.miscfinance_gross| number_format(2, '.', ',')}}</td>
+								<td class="theader">MiscFin Penetration:</td>
+								<td class="tnum">({{companytotal.miscfinance_count}}){{companytotal.miscfinance_perc * 100}}%</td>
+								<td class="theader">MiscFin Average:</td>
+								<td class="tnum">${{companytotal.miscfinance_average| number_format(2, '.', ',')}}</td>
+							</tr>
+						</table>
+					</div>
+					<br>
+					<div class="chart">
+						<div id="barchart" > </div>
+						<div id="multichart"> </div>
+						<div id="average_chart"> </div>
+						<div class="chart-view-controller m-4">
+							<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('barchart')">Total Deals</button>
+							<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('multichart')">Total Back End</button>
+							<button type="button" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button" onClick="javascript: showChart('average_chart')">Average Back End</button>
+						</div>
+					</div>
+					<div class="report-table table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<colgroup>
+									<col width="9%">
+									<col width="9%">
+									<col width="9%">
+									<col width="9%">
+									<col width="9%">
+									<col width="9%">
+									<col width="10%">
+									<col width="9%">
+									<col width="9%">
+									<col width="9%">
+									<col width="9%">
+								</colgroup>
+								<tr>
+									<th class="tcen">Finance Person</th>
+									<th class="tcen">Sales</th>
+									<th class="tcen">Warranty<br>Total &amp; Pen%</th>
+									<th class="tnum">Warranty<br>Gross</th>
+									<th class="tcen">Gap<br>Total &amp; Pen%</th>
+									<th class="tcen">Gap Gross</th>
+									<th class="tcen">Miscfinance<br>Total &amp; Pen%</th>
+									<th class="tnum">Miscfinance<br>Gross</th>
+									<th class="tnum">Reserve</th>
+									<th class="tnum">Back End</th>
+									<th class="tnum">FP %</th>
+								</tr>
+							</thead>
+							<tbody>
+								{# main table #}
+								{% for lend in salessummary %}
+									<tr onclick="changeList({{lend.id}})" class="table-user-name">
+										<td colspan="12">{{lend.name}}</td>
+									</tr>
+									<tr>
+										<td colspan="12">
+											<table class="table table-striped display-show" id="summary-{{lend.id}}">
+												<colgroup>
+													<col width="9%">
+													<col width="9%">
+													<col width="9%">
+													<col width="9%">
+													<col width="9%">
+													<col width="9%">
+													<col width="10%">
+													<col width="9%">
+													<col width="9%">
+													<col width="9%">
+													<col width="9%">
+												</colgroup>
+												<tr>
+													<td></td>
+													<td class="tcen">{{lend.deals}}</td>
+													<td class="tcen">({{lend.warranty_count }}) {{(lend.warranty_perc * 100) | number_format(1, '.', ',')}}%</td>
+													{# <td class="tnum">${{lend.warranty_gross  | number_format(2, '.', ',')}}</td> #}
+													{% if '-' in lend.warranty_gross %}
+														<td class="tnum text-danger">
+														$({{lend.warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+														</td>
+													{% else %}
+														<td class="tnum">
+														${{lend.warranty_gross | number_format(2, '.', ',')}}
+														</td>
+													{% endif %}
+													<td class="tnum">({{lend.gap_count}}){{lend.gap_perc * 100 | round(1, 'floor')}}%</td>
+													{# <td class="tnum">${{lend.gap_gross | number_format(2, '.', ',')}}</td> #}
+													{% if '-' in lend.gap_gross %}
+														<td class="tnum text-danger">
+														$({{lend.gap_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+														</td>
+													{% else %}
+														<td class="tnum">
+														${{lend.gap_gross | number_format(2, '.', ',')}}
+														</td>
+													{% endif %}
+													<td class="tnum">({{lend.miscfinance_count}}){{lend.miscfinance_perc * 100}}%</td>
+													{# <td class="tnum">${{lend.miscfinance_gross | number_format(2, '.', ',')}}</td> #}
+													{% if '-' in lend.miscfinance_gross %}
+														<td class="tnum text-danger">
+														$({{lend.miscfinance_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+														</td>
+													{% else %}
+														<td class="tnum">
+														${{lend.miscfinance_gross | number_format(2, '.', ',')}}
+														</td>
+													{% endif %}
+													{# <td class="tnum">${{lend.reserve | round(2, "floor")}}</td> #}
+													{% if '-' in lend.reserve %}
+														<td class="tnum text-danger">
+														$({{lend.reserve | replace({'-': ''}) | number_format(2, '.', ',') }})
+														</td>
+													{% else %}
+														<td class="tnum">
+														${{lend.reserve | number_format(2, '.', ',')}}
+														</td>
+													{% endif %}
+													{# <td class="tnum">${{lend.backend | number_format(2, '.', ',')}}</td> #}
+													{% if '-' in lend.backend %}
+														<td class="tnum text-danger">
+														$({{lend.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+														</td>
+													{% else %}
+														<td class="tnum">
+														${{lend.backend | number_format(2, '.', ',')}}
+														</td>
+													{% endif %}
+													<td class="tnum">{{(lend.financed_deals / lend.deals * 100) | round(2, 'floor')}}%</td>
+												</tr>
+											</table>
+											<table id="deallist-{{lend.id}}" class="table table-striped display-hide report-duble-main  table-hover table-striped table-bordered sortable dataTable">
+												<colgroup>
+													<col width="7%">
+													<col width="9%">
+													<col width="9%">
+													<col width="9%">
+													<col width="9%">
+													<col width="7%">
+													<col width="10%">
+													<col width="9%">
+													<col width="8%">
+													<col width="8%">
+													<col width="8%">
+													<col width="7%">
+												</colgroup>
+												<thead>
+													<tr>
+														<th class="tcen">Lender</th>
+														<th class="tcen">Stk No</th>
+														<th class="tcen">Client</th>
+														<th class="tcen">Warrenty</th>
+														<th class="tcen">Warrenty Gross</th>
+														<th class="tcen">Gap</th>
+														<th class="tcen">Gap Gross</th>
+														<th class="tcen">Miscfinance<br>Total &amp; Pen%</th>
+														<th class="tnum">Miscfinance<br>Gross</th>
+														<th class="tnum">Reserve</th>
+														<th class="tnum">Back End</th>
+														<th class="tnum">FP %</th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for deal in deals %}
+														{% if deal.finance_id == lend.id %}
+															<tr class="deal-row" data-id="{{ deal.deal_id }}">
+																<td class="tcen">{{deal.lender}}</td>
+																<td class="tcen">{{deal.stock}}</td>
+																<td class="tcen">{{deal.client_name}}</td>
+																<td class="tcen">{{deal.warranty_provider}}</td>
+																{# <td class="tnum">${{deal.warranty_gross | number_format(2, '.', ',')}}</td> #}
+																{% if '-' in deal.warranty_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.warranty_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																<td class="tcen">{{deal.gap_provider}}</td>
+																{# <td class="tnum">${{deal.gap_gross | number_format(2, '.', ',')}}</td> #}
+																{% if '-' in deal.gap_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.gap_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.gap_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																<td class="tnum"></td>
+																{# <td class="tnum">${{deal.miscfinance_gross  | number_format(2, '.', ',')}}</td> #}
+																{% if '-' in deal.miscfinance_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.miscfinance_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.miscfinance_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																{# <td class="tnum">${{deal.reserve | number_format(2, '.', ',')}}</td> #}
+																{% if '-' in deal.reserve %}
+																	<td class="tnum text-danger">
+																	$({{deal.reserve | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.reserve | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																{# <td class="tnum">${{deal.backend | number_format(2, '.', ',')}}</td> #}
+																{% if '-' in deal.backend %}
+																	<td class="tnum text-danger">
+																	$({{deal.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.backend | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																<td class="tnum"></td>
+															</tr>
+														{% endif %}
+													{% endfor %}
+												</tbody>
+												<tfoot>
+													<tr style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">{{lend.date_sold_f}}</td>
+														<td class="tnum"></td>
+														<td class="tcen">{{lend.deals}}</td>
+														<td class="tcen">({{lend.warranty_count}}){{(lend.warranty_perc * 100) | number_format(1, '.', ',') }}%</td>
+														{# <td class="tnum">(${{lend.warranty_gross | number_format(2, '.', ',')}})</td> #}
+														{% if '-' in lend.warranty_gross %}
+															<td class="tnum text-danger">
+															$({{lend.warranty_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.warranty_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum">({{lend.gap_count}}){{(lend.gap_perc * 100) | round(2, 'floor')}}%</td>
+														{# <td class="tnum">${{lend.gap_gross | number_format(2, '.', ',')}}</td> #}
+														{% if '-' in lend.gap_gross %}
+															<td class="tnum text-danger">
+															$({{lend.gap_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.gap_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tcen">({{lend.miscfinance_count}}){{lend.miscfinance_perc * 100}}%</td>
+														{# <td class="tnum">${{lend.miscfinance_gross | number_format(2, '.', ',')}}</td> #}
+														{% if '-' in lend.miscfinance_gross %}
+															<td class="tnum text-danger">
+															$({{lend.miscfinance_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.miscfinance_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.reserve | number_format(2, '.', ',')}}</td> #}
+														{% if '-' in lend.reserve %}
+															<td class="tnum text-danger">
+															$({{lend.reserve | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.reserve | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.backend | number_format(2, '.', ',')}}</td> #}
+														{% if '-' in lend.backend %}
+															<td class="tnum text-danger">
+															$({{lend.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.backend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tnum">{{(lend.financed_deals / lend.deals * 100 )|number_format(0, '.', ',')}}%</td>
+													</tr>
+													<tr style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">Average</td>
+														<td class="tcen"></td>
+														<td class="tcen"></td>
+														<td class="tcen"></td>
+														{# <td class="tnum">${{lend.warranty_average |number_format(2, '.', ',')}}</td>0 #}
+														{% if '-' in lend.warranty_average %}
+															<td class="tnum text-danger">
+															$({{lend.warranty_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.warranty_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td class="tcen"></td>
+														{# <td class="tnum">${{lend.gap_average | number_format(2, '.', ',')}}</td> #}
+														{% if '-' in lend.gap_average %}
+															<td class="tnum text-danger">
+															$({{lend.gap_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.gap_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td></td>
+														{# <td class="tnum">${{lend.miscfinance_average | number_format(2, '.', ',')}}</td> #}
+														{% if '-' in lend.miscfinance_average %}
+															<td class="tnum text-danger">
+															$({{lend.miscfinance_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.miscfinance_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.av_reserve | number_format(2, '.', ',')}}</td> #}
+														{% if '-' in lend.av_reserve %}
+															<td class="tnum text-danger">
+															$({{lend.av_reserve | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.av_reserve | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.backend_average | number_format(2, '.', ',')}}</td> #}
+														{% if '-' in lend.backend_average %}
+															<td class="tnum text-danger">
+															$({{lend.backend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.backend_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														<td></td>
+													</tr>
+													{% if lend.projected %}
+													<tr  style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">Projected</td>
+														<td class="tcen">{{lend.projected.stock}}</td>
+														<td class="tcen"></td>
+														<td class="tcen"></td>
+														{# <td class="tnum">${{lend.projected.backend}}</td> #}
+														{% if '-' in lend.projected.backend %}
+															<td class="tnum text-danger">
+															$({{lend.projected.backend | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.backend}}
+															</td>
+														{% endif %}
+														<td class="tnum"></td>
+														{# <td class="tnum">${{lend.projected.gap_gross}}</td> #}
+														{% if '-' in lend.projected.gap_gross %}
+															<td class="tnum text-danger">
+															$({{lend.projected.gap_gross | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.gap_gross}}
+															</td>
+														{% endif %}
+														<td class="tcen"></td>
+														{# <td class="tnum">${{lend.projected.miscfinance_gross}}</td> #}
+														{% if '-' in lend.projected.miscfinance_gross %}
+															<td class="tnum text-danger">
+															$({{lend.projected.miscfinance_gross | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.miscfinance_gross}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.projected.reserve}}</td> #}
+														{% if '-' in lend.projected.reserve %}
+															<td class="tnum text-danger">
+															$({{lend.projected.reserve | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.reserve}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.projected.backend}}</td> #}
+														{% if '-' in lend.projected.backend %}
+															<td class="tnum text-danger">
+															$({{lend.projected.backend | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.backend}}
+															</td>
+														{% endif %}
+														<td class="tnum"></td>
+													</tr>
+													{% endif %}
+												</tfoot>
+											</table>
+										</td>
+									</tr>
+								{% endfor %}
+								{# total and average #}
+								<tr style="border-bottom: 1px solid #000000">
+									<th class="tcen">{{companytotal.name}}</th>
+									<th class="tcen">{{companytotal.deals}}</th>
+									<th class="tcen">({{companytotal.warranty_count}}) {{(companytotal.warranty_perc * 100) | number_format(1, '.', ',')}}%</th>
+									{# <th class="tnum">${{companytotal.warranty_gross | number_format(2, '.', ',')}}</th> #}
+									{% if '-' in companytotal.warranty_gross %}
+										<th class="tnum text-danger">
+										$({{companytotal.warranty_gross | replace({'-': ''})| number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.warranty_gross| number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									<th class="tnum">({{companytotal.gap_count}}){{(companytotal.gap_perc * 100) | number_format(1, '.', '')}}%</th>
+									{# <th class="tnum">${{companytotal.gap_gross | number_format(2, '.', ',')}}</th> #}
+									{% if '-' in companytotal.gap_gross %}
+										<th class="tnum text-danger">
+										$({{companytotal.gap_gross | replace({'-': ''})| number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.gap_gross| number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									<th class="tnum">({{companytotal.miscfinance_count}}){{(companytotal.miscfinance_perc * 100) | number_format(0, '.', ',')}}%</th>
+									{# <th class="tnum">${{companytotal.miscfinance_gross  | number_format(2, '.', ',')}}</th> #}
+									{% if '-' in companytotal.miscfinance_gross %}
+										<th class="tnum text-danger">
+										$({{companytotal.miscfinance_gross | replace({'-': ''})| number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.miscfinance_gross| number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{# <th class="tnum">${{companytotal.reserve | number_format(2, '.', ',')}}</th> #}
+									{% if '-' in companytotal.reserve %}
+										<th class="tnum text-danger">
+										$({{companytotal.reserve | replace({'-': ''})| number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.reserve| number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{# <th class="tnum">${{companytotal.backend | number_format(2, '.', ',')}}</th> #}
+									{% if '-' in companytotal.backend %}
+										<th class="tnum text-danger">
+										$({{companytotal.backend | replace({'-': ''})| number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.backend| number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									<th class="tnum"></th>
+								</tr>
+								<tr style="border-bottom: 1px solid #000000">
+									<th class="tcen">Average</th>
+									<th class="tcen"></th>
+									<th class="tcen"></th>
+									{# <th class="tnum">${{companytotal.warranty_average}}</th> #}
+									{% if '-' in companytotal.warranty_average %}
+										<th class="tnum text-danger">
+										$({{companytotal.warranty_average | replace({'-': ''})}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.warranty_average}}
+										</th>
+									{% endif %}
+									<th class="tcen"></th>
+									{# <th class="tnum">${{companytotal.gap_average}}</th> #}
+									{% if '-' in companytotal.gap_average %}
+										<th class="tnum text-danger">
+										$({{companytotal.gap_average | replace({'-': ''}) | number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.gap_average | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									<th class="tcen"></th>
+									{# <th class="tnum">{{companytotal.miscfinance_average | round(2, 'floor')}}</th> #}
+									{% if '-' in companytotal.miscfinance_average %}
+										<th class="tnum text-danger">
+										$({{companytotal.miscfinance_average | replace({'-': ''}) | number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.miscfinance_average | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{# <th class="tnum">${{companytotal.av_reserve}}</th> #}
+									{% if '-' in companytotal.av_reserve %}
+										<th class="tnum text-danger">
+										$({{companytotal.av_reserve | replace({'-': ''}) | number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.av_reserve | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{# <th class="tnum">${{companytotal.backend_average}}</th> #}
+									{% if '-' in companytotal.backend_average %}
+										<th class="tnum text-danger">
+										$({{companytotal.backend_average | replace({'-': ''}) | number_format(2, '.', ',')}})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.backend_average | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									<th class="tnum">{{(companytotal.financed_deals / companytotal.deals * 100 )|number_format(0, '.', ',')}}%</th>
+								</tr>
+								{% if companytotal.projected %}
+								<tr style="border-bottom: 1px solid #000000">
+									<th class="tcen">Projected</th>
+									<th class="tcen">{{companytotal.projected.deals}}</th>
+									<th class="tcen"></th>
+									{# <th class="tnum">(${{companytotal.projected.warranty_gross}})</th> #}
+									{% if '-' in companytotal.projected.warranty_gross %}
+										<th class="tnum text-danger">
+										$({{companytotal.projected.warranty_gross | replace({'-': ''}) }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.projected.warranty_gross }}
+										</th>
+									{% endif %}
+									<th class="tcen"></th>
+									<th class="tnum">${{companytotal.projected.gap_gross}}</th>
+									<th class="tcen"></th>
+									<th class="tnum">${{companytotal.projected.miscfinance_gross}}</th>
+									<th class="tnum">${{companytotal.projected.reserve}}</th>
+									<th class="tnum">${{companytotal.projected.backend}}</th>
+									<th class="tnum"></th>
+								</tr>
+								{% endif %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	 <script language = "JavaScript">
+			function drawChart() {
+				var ar_data = {{(total_deals| json_encode|raw)}};
+				if(ar_data.length == 1) {
+					return;
+				}
+				ar_data[0].push({role: "annotation"})
+				for (let a in ar_data) {
+					if(!isNaN(parseFloat(ar_data[a][1])))
+						ar_data[a][1] = parseFloat(ar_data[a][1]);					
+				}
+
+				var data = google.visualization.arrayToDataTable(ar_data);
+				var options = {
+					height: ar_data.length * 20 + 100,
+					title: 'Total Deals Per Finance Manager',
+					legend: {position: "top & right"},
+					titleFontSize:25,
+					fontSize: "12",
+					align: "center",
+					chartArea: {
+						height: ar_data.length * 20
+					}
+				};
+				var chart = new google.visualization.BarChart(document.getElementById('barchart'));
+				chart.draw(data, options);
+			}
+			function multiChart() {
+				var ar_data = {{(total_backend | json_encode | raw)}}
+				if(ar_data.length == 1) {
+					return;
+				}
+				var new_ar = [];
+				ar_data.map((values, index) => {
+					new_ar[index] = [];
+					values.map((value, ind) => {
+						if(!isNaN(parseFloat(value))) {
+							value = parseFloat(value);
+							if(value < 0) {
+								value = value * -1;
+							}
+						}
+						new_ar[index].push(value);
+					})
+				})
+				new_ar[0].push({ role: 'annotation' });
+				var data = google.visualization.arrayToDataTable(new_ar);
+				var options = {
+					height: new_ar.length * 20 + 100,
+					title: 'Backend Gross Per Finance Manager',
+					titleFontSize:25,
+					legend: { position: 'top & right', maxLines: 3 },
+					bar: { groupWidth: '75%' },
+					hAxis: {
+						format: 'currency'
+					},
+					fontSize: "12",
+					isStacked: true,
+					chartArea: {
+						height: ar_data.length * 20
+					}
+				};
+				var chart = new google.visualization.BarChart(document.getElementById('multichart'));
+				chart.draw(data, options);
+				$("#multichart").addClass("display-hide");
+			}
+			function average_backend() {
+				var ar_data = {{(average_backend | json_encode | raw)}}
+				if(ar_data.length == 1) {
+					return;
+				}
+				var new_ar = [];
+				ar_data.map((values, index) => {
+					new_ar[index] = [];
+					values.map((value, ind) => {
+						if(!isNaN(parseFloat(value))) {
+							value = parseFloat(value);
+							if(value < 0) {
+								value = value * -1;
+							}
+						}
+						if(value === null) {
+							value = 0
+						}
+						new_ar[index].push(value);
+					})
+				})
+				new_ar[0].push({ role: 'annotation' });
+				var data = google.visualization.arrayToDataTable(new_ar);
+				var options = {
+					height: new_ar.length * 20 + 100,
+					title: 'Average Backend Gross Per Finance Manager',
+					titleFontSize:25,
+					legend: { position: 'top & right', maxLines: 3 },
+					bar: { groupWidth: '75%' },
+					axes: {
+						x: {
+							0: { side: 'top', label: 'White to move'} // Top x-axis.
+						}
+					},
+					hAxis: {
+						format: 'currency'
+					},
+					fontSize: "12",
+					isStacked: true,
+					chartArea: {
+						height: ar_data.length * 20
+					}
+				};
+				var chart = new google.visualization.BarChart(document.getElementById('average_chart'));
+				chart.draw(data, options);
+				$("#average_chart").addClass("display-hide");
+			}
+			function setTitleToCenter(selector) {
+				var mainpanelWidth = $("#content-container").width();
+				var titleWidth = $(selector)[0].getBoundingClientRect().width;;
+				$(selector).attr("x", (mainpanelWidth / 2 - titleWidth / 2));
+			}
+			var chartSelectors = ['barchart', "multichart", 'average_chart'];
+			function showChart(chartname) {
+				$("#" + chartname).removeClass("display-hide");
+				$("#" + chartname).addClass("display-show");
+				chartSelectors.map((selector) => {
+					if(selector != chartname) {
+						$("#" + chartname).removeClass("display-show");
+						$("#" + selector).addClass("display-hide")
+					}
+				})
+			}
+			google.charts.setOnLoadCallback(drawChart);
+			google.charts.setOnLoadCallback(multiChart);
+			google.charts.setOnLoadCallback(average_backend);
+	</script>
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'forms/tpl.topbarNoPrint.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content" class="container">
+					<div class="form-group col-12">
+						<label for="" class="w-100 form-section-heading">Credit Card Info</label>
+						<div class="col-6">
+						{% if company.card_type !='' %}
+
+							<span class="w-100 form-section-heading">
+								<span id = "card_type">{{ company.card_type }}</span> : &times;&times;&times;&times;&nbsp;&times;&times;&times;&times;&nbsp;&times;&times;&times;&times;&nbsp;<span id = "card_digit">{{ company.card_digit }}</span>
+							</span>
+						{% endif %}
+
+							<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal">Update Card</button>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-6">
+							<label for="" class="w-100 form-section-heading">Package</label>
+							<select class=" ml-3 form-control" id="subscription">
+								{% for subscription in subscriptions %}
+									<option value="{{ subscription.id }}" {% if selected_subs.id==subscription.id %} selected {% endif %}>{{ subscription.name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						{% if selected_subs!='' %}
+						<div class="row pl-4">
+							<div class="col-6 pl-4">Billing Date</div>
+							<div class="col-6">{{start|date("m/d/Y")}}</div>
+						</div>
+						<div class="row pl-4">
+							<div class="col-6 pl-4">Billing Amount</div>
+							<div class="col-6">${{selected_subs.payment_amount}}</div>
+						</div>
+						{% endif %}
+					</div>
+					<div class="col-12">
+						<div class="form-group">
+							<div class="w-100 form-section-heading">Billing History</div>
+						</div>
+						<div class="report-table table-responsive">
+							<table class="table table-striped" id = "myTable">
+								<tr>
+									<th onclick="sortTable($(this), 0)">Title</th>
+									<th onclick="sortTable($(this), 1)">Date</th>
+									<th onclick="sortTable($(this), 2)">Description</th>
+									<th onclick="sortTable($(this), 4)">Status</th>
+									<th onclick="sortTable($(this), 3)">Amount</th>
+								<tr>
+								{% for bill in billings %}
+									<td>{{ bill.subscription_name }}</td>
+									<td>{{ bill.billing_start_date|date("m/d/Y") }}</td>
+									<td>{{ bill.subscription_description }}</td>
+									<td>{{ bill.subscription_status }}</td>
+									<td>${{ bill.subscription_payment_amount }}&nbsp;<button style="height:40px !important" class="btn btn-warning text-white my-2 m-2">pay</button></td>
+								{% endfor %}
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script src="https://js.stripe.com/v3/"></script>
+
+<!-- Trigger the modal with a button -->
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
+
+<!-- Modal -->
+<form name="register" id="paymentFrm" action="" method="POST" class="text-black">
+
+	<div id="myModal" class="modal fade" role="dialog">
+		<div class="modal-dialog modal-lg">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Update Card Info</h4>
+			</div>
+			<div class="modal-body">
+
+				<div class="form-group row required">
+					<label for="card_number" class="col-sm-6 col-md-3 col-xl-3 col-form-label-sm">Card Number</label>
+					<div class="col-sm-12 col-md-8 col-xl-8">
+						<div id="card_number" class="field" style = "padding: 5px; border: 1px solid #ccc;"></div>
+						<div id="paymentResponse" style = "color: #eb1c26; ">{{error}}</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary">Submit</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</form>
+
+	<script>
+	$(document).ready(function(){
+		var global_card_type = "";
+		var global_card_digit = "";
+		var stripeKey = '{{ stripe_key }}';
+		
+		var stripe = Stripe(`${stripeKey}`);
+
+		// Create an instance of elements
+		var elements = stripe.elements();
+		var style = {
+			base: {
+				padding: '10px',
+				fontSize: '16px',
+				lineHeight: '1.4',
+			},
+			invalid: {
+				color: '#eb1c26',
+			}
+		};
+
+		var cardElement = elements.create('card', {
+			style: style
+		});
+		cardElement.mount('#card_number');
+
+		// Validate input of the card elements
+		var resultContainer = document.getElementById('paymentResponse');
+		cardElement.addEventListener('change', function(event) {
+			if (event.error) {
+				resultContainer.innerHTML = '<p>'+event.error.message+'</p>';
+			} else {
+				resultContainer.innerHTML = '';
+			}
+		});
+
+		// Get payment form element
+		var form = document.getElementById('paymentFrm');
+
+		// Create a token when the form is submitted.
+		form.addEventListener('submit', function(e) {
+			e.preventDefault();
+		//	if(document.querySelectorAll('[name=subscription]:checked').length === 0){
+		//		resultContainer.innerHTML = "Please select a subscription";
+		//		return;
+		//	}
+			createToken();
+		});
+
+		// Create single-use token to charge the user
+		function createToken() {
+			stripe.createToken(cardElement).then(function(result) {
+				if (result.error) {
+					// Inform the user if there was an error
+					resultContainer.innerHTML = '<p>'+result.error.message+'</p>';
+				} else {
+					// Send the token to your server
+					stripeTokenHandler(result.token);
+				}
+			});
+		}
+
+		// Callback to handle the response from stripe
+		function stripeTokenHandler(token) {
+			global_card_type = token.card.brand;
+			global_card_digit = token.card.last4;
+			$.post(
+				"admin/payment",
+				{
+					action : "subscription",
+					stripeToken : token.id,
+					cardtype : token.card.brand,
+					last4 : token.card.last4,
+					expriation : token.card.exp_year+'-'+(token.card.exp_month < 10 ? '0' : '')+token.card.exp_month
+				}, 
+				function(data){
+					if(data == "success"){
+						$("#card_type").html(global_card_type);
+						$("#card_digit").html(global_card_digit);
+						$("#myModal").modal("hide");
+
+					}else{
+						$("#paymentResponse").html(data);
+					}
+
+			});
+
+		}
+
+		$("#subscription").change(function(e){
+			$.ajax({
+				type:'POST',
+				url: "admin/payment",
+				data: {
+					update: this.value
+				},
+				success: function(data) {
+					setTimeout(function(){
+						window.location.reload()
+					}, 500)
+				},
+				error: function(data){
+					console.log(data)
+				}
+			})
+		})
+	});
+
+	</script>
+
+	<script>
+function sortTable(td, n) {
+
+	var data = td.children().first();
+	if(data.length == 0){
+		td.html(td.text() + ' ' + '<i class="fas "></i>');
+		data = td.children().first();
+	}
+	if(!data.hasClass('fa-caret-up') && !data.hasClass('fa-caret-down'))
+	{
+		data.addClass('fa-caret-down');
+	}else{
+		if(data.hasClass('fa-caret-up')) 
+		{
+			data.removeClass('fa-caret-up'); 
+			data.addClass('fa-caret-down');
+
+		}
+		else 
+		{
+			data.removeClass('fa-caret-down');
+			data.addClass('fa-caret-up');
+		}
+	}
+
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("myTable");
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc"; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 2; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+</script>
+{% endblock %}

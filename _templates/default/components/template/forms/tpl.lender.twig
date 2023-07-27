@@ -1,0 +1,122 @@
+{% macro tpl_lenderForm() %}
+	<div class="form-ft">
+		<div class="container">
+			<form name="{% if action == 'insert' %}new_lender{% else %}edit_lender{% endif %}" action="admin/lending" method="POST">
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="company_id" value="{{ hidden_input_array.company_id }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+				{% if action != 'insert' %}
+					<input type="hidden" name="id" value="{{ hidden_input_array.id }}">
+				{% endif %}
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Lender Information</div>
+				</div>
+
+				<div class="form-group row">
+
+					<label for="name" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Name</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="name" id="name" value="{{ lender.name }}">
+					</div>
+
+				</div>
+
+				{% if action != 'insert' %}
+					<div class="form-group row">
+	
+						<label for="active" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Active</label>
+						<div class="col-6 col-md-3 col-xl-2">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="active" id="active" value="active" checked>
+							</div>
+						</div>
+	
+					</div>
+				{% endif %}
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Contact Information</div>
+				</div>
+
+				<div class="form-group row">
+
+					<label for="contact" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Main Contact</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="contact" id="contact" value="{{ lender.contact }}">
+					</div>
+
+					<label for="phone_contact" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Contact Phone</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="phone_contact" id="phone_contact" value="{{ lender.phone_contact }}">
+					</div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<label for="phone_main" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Main Phone</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="phone_main" id="phone_main" value="{{ lender.phone_main }}">
+					</div>
+
+					<label for="phone_fax" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Fax Number</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="phone_fax" id="phone_fax" value="{{ lender.phone_fax }}">
+					</div>
+
+					<label for="website" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Website</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="website" id="website" value="{{ lender.website }}">
+					</div>
+
+				</div>
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Address</div>
+				</div>
+
+				<div class="form-group row">
+
+					<label for="address1" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Address 1</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="address1" id="address1" value="{{ lender.address1 }}">
+					</div>
+
+					<label for="address2" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Address 2</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="address2" id="address2" value="{{ lender.address2 }}">
+					</div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<label for="city" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">City</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="city" id="city" value="{{ lender.city }}">
+					</div>
+
+					<label for="state" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">State</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="state" id="state" value="{{ lender.state }}">
+					</div>
+
+					<label for="zip" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Zip Code</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="zip" id="zip" value="{{ lender.zip }}">
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-2 offset-xl-2">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">Submit</button>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+{% endmacro %}

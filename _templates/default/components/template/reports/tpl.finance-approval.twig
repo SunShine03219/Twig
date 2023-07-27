@@ -1,0 +1,760 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<script type = "text/javascript" src = "_templates/default/components/template/resources/js/loader.js"></script>
+	<script type = "text/javascript">
+		google.charts.load('current', {packages: ['corechart']});
+	</script>
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table header-content table-responsive">
+						<table class="top-table report-duble">
+							<tr>
+								<td>Deals:</td>
+								<td>{{companytotal.deals}}</td>
+								<td>Company Total:</td>
+								{# <td>${{companytotal.total_gross | number_format(2, '.', ',')}}</td> #}
+								{% if '-' in companytotal.total_gross %}
+									<td class="tnum text-danger">
+									$({{companytotal.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+									</td>
+								{% else %}
+									<td class="tnum">
+									${{companytotal.total_gross | number_format(2, '.', ',')}}
+									</td>
+								{% endif %}
+								<td>Front End Total:</td>
+								{# <td>${{companytotal.frontend | number_format(2, '.', ',')}}</td> #}
+								{% if '-' in companytotal.frontend %}
+									<td class="tnum text-danger">
+									$({{companytotal.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+									</td>
+								{% else %}
+									<td class="tnum">
+									${{companytotal.frontend | number_format(2, '.', ',')}}
+									</td>
+								{% endif %}
+								<td>Back End Total:</td>
+								{# <td>${{companytotal.backend | number_format(2, '.', ',')}}</td> #}
+								{% if '-' in companytotal.backend %}
+									<td class="tnum text-danger">
+									$({{companytotal.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+									</td>
+								{% else %}
+									<td class="tnum">
+									${{companytotal.backend | number_format(2, '.', ',')}}
+									</td>
+								{% endif %}
+							</tr>
+							{% if companytotal.projected %}
+							<tr>
+								<td>Projected Sales:</td>
+								<td>{{companytotal.projected.projected}}</td>
+								<td>Projected Total:</td>
+								{# <td>${{companytotal.projected.total_gross}}</td> #}
+								{% if '-' in companytotal.projected.total_gross %}
+									<td class="tnum text-danger">
+									$({{companytotal.projected.total_gross | replace({'-': ''})}})
+									</td>
+								{% else %}
+									<td class="tnum">
+									${{companytotal.projected.total_gross}}
+									</td>
+								{% endif %}
+								<td>Projected Front End:</td>
+								{# <td>${{companytotal.projected.frontend}}</td> #}
+								{% if '-' in companytotal.projected.frontend %}
+									<td class="tnum text-danger">
+									$({{companytotal.projected.frontend | replace({'-': ''})}})
+									</td>
+								{% else %}
+									<td class="tnum">
+									${{companytotal.projected.frontend}}
+									</td>
+								{% endif %}
+								<td>Projected Back End:</td>
+								{# <td>${{companytotal.projected.backend}}</td> #}
+								{% if '-' in companytotal.projected.backend %}
+									<td class="tnum text-danger">
+									$({{companytotal.projected.backend | replace({'-': ''})}})
+									</td>
+								{% else %}
+									<td class="tnum">
+									${{companytotal.projected.backend}}
+									</td>
+								{% endif %}
+							</tr>
+							{% endif %}
+						</table>
+					</div>
+					<div class="chart">							
+						<div id = "container"></div>
+						<div class="chart-view-controller m-4">
+							<button id="total_sales" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Total Sales</button>
+							<button id="total_gross" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Total Gross</button>
+							<button id="average_gross" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Average Gross</button>
+						</div>
+					</div>
+					<div class="report-table table-responsive">
+						<table class="report-duble">
+							<thead>
+								{% if companytotal.projected %}
+								<colgroup>
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+									<col width="10%">
+								</colgroup>
+								{% else %}
+								<colgroup>
+									<col width="12.5%">
+									<col width="12.5%">
+									<col width="12.5%">
+									<col width="12.5%">
+									<col width="12.5%">
+									<col width="12.5%">
+									<col width="12.5%">
+									<col width="12.5%">
+								</colgroup>
+								{% endif %}
+								<tr>
+									<th class="text-left">Salesperson</th>
+									<th class="text-center">Sales</th>
+									<th class="text-center">Total Approved</th>
+									<th class="text-center">(%) Approved</th>
+									{% if companytotal.projected %}
+									<th class="text-left">Projected</th>
+									{% endif %}
+									<th class="text-right">Payable Gross</th>
+									{% if companytotal.projected %}
+									<th class="text-left">Projected Payable</th>
+									{% endif %}
+									<th class="text-center">Front End</th>
+									<th class="text-center">Back End</th>
+									<th class="text-center">Total Gross</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for lend in sales %}
+									{% if lend|length == 0 %}
+									<tr onclick="changeList({{lend.sales_id}})" class="table-user-name">
+										<td colspan="12">Unassigned</td>
+									</tr>
+									{% else %}
+									<tr onclick="changeList({{lend.sales_id}})" class="table-user-name">
+										<td colspan="12">{{lend.NAME}}</td>
+									</tr>
+									{% endif %}
+									<tr>
+										<td colspan="12">
+											<table id="summary-{{lend.sales_id}}" class="report-duble display-show">
+												{% if companytotal.projected %}
+												<colgroup>
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+												</colgroup>
+												{% else %}
+												<colgroup>
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+												</colgroup>
+												{% endif %}
+												
+												<tbody>
+													<tr>
+														<td>{{lend.NAME}}</td>
+														<td class="text-center">
+															<a>{{lend.deals| round(2, 'floor')}}</a>
+														</td>
+														<td></td>
+														<td></td>
+														{% if companytotal.projected %}
+														<td class="text-left"></td>
+														{% endif %}
+														{# <td class="text-right">${{lend.payable_gross | number_format(2, ".", ",")}}</td> #}
+														{% if '-' in lend.payable_gross %}
+															<td class="tnum text-danger">
+															$({{lend.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.payable_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{% if companytotal.projected %}
+														<td></td>
+														{% endif %}
+														{# <td class="text-right">${{lend.frontend| number_format(2, ".", ",")}}</td> #}
+														{% if '-' in lend.frontend %}
+															<td class="tnum text-danger">
+															$({{lend.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.frontend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="text-right">${{lend.backend| number_format(2, ".", ",")}}</td> #}
+														{% if '-' in lend.backend %}
+															<td class="tnum text-danger">
+															$({{lend.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.backend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="text-right">${{lend.total_gross| number_format(2, ".", ",")}}</td> #}
+														{% if '-' in lend.total_gross %}
+															<td class="tnum text-danger">
+															$({{lend.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.total_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+													</tr>
+												</tbody>
+											</table>
+											<table id="deallist-{{lend.sales_id}}" class="table report-duble display-hide report-duble-main  table-hover table-striped table-bordered sortable dataTable">
+												<colgroup>
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+													<col width="12.5%">
+												</colgroup>
+												<thead>
+													<tr class="heading">
+														<th class="text-center">Date Sold</th>
+														<th class="text-center">Client</th>
+														<th class="text-center">Stock</th>
+														<th class="text-center">Split</th>
+														<th class="tnum">Payable Gross</th>
+														<th class="tnum">Front End</th>
+														<th class="tnum">Back End</th>
+														<th class="tnum">Total Gross</th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for deal in deals %}
+														{% if deal.sales_id == lend.sales_id %}
+															<tr class="deal-row" data-id="{{ deal.deal_id }}">
+																<td class="tcen">{{deal.date_sold_f|date("m/d/Y")}}</td>
+																<td class="tcen">{{deal.client_name}}</td>
+																<td class="tcen">{{deal.stock}}</td>
+																{% if deal.salesperson_count > 1 %}
+																<td class="tcen">S-{{deal.salesperson_count}}</td>
+																{% else %}
+																<td class="tcen"></td>
+																{% endif %}
+																{# <td class="tnum">${{deal.payable_gross}}</td> #}
+																{% if '-' in deal.payable_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.payable_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																{# <td class="tnum">${{deal.frontend}}</td> #}
+																{% if '-' in deal.frontend %}
+																	<td class="tnum text-danger">
+																	$({{deal.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.frontend | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																{# <td class="tnum">${{deal.backend}}</td> #}
+																{% if '-' in deal.backend %}
+																	<td class="tnum text-danger">
+																	$({{deal.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.backend | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+																{# <td class="tnum">${{deal.total_gross}}</td> #}
+																{% if '-' in deal.total_gross %}
+																	<td class="tnum text-danger">
+																	$({{deal.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+																	</td>
+																{% else %}
+																	<td class="tnum">
+																	${{deal.total_gross | number_format(2, '.', ',')}}
+																	</td>
+																{% endif %}
+															</tr>
+														{% endif %}
+													{% endfor %}
+												</tbody>
+												<tfoot>
+													<tr class="deal-row" style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">{{ lend.date_sold_f }}</td>
+														<td class="tcen"></td>
+														<td class="">{{ lend.deals| round(2, 'floor') }}</td>
+														<td class="tcen"></td>
+														{# <td class="tnum">${{lend.payable_gross| number_format(2, '.', ",")}}</td> #}
+														{% if '-' in lend.payable_gross %}
+															<td class="tnum text-danger">
+															$({{lend.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.payable_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.frontend| number_format(2, '.', ",")}}</td> #}
+														{% if '-' in lend.frontend %}
+															<td class="tnum text-danger">
+															$({{lend.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.frontend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.backend| number_format(2, '.', ",")}}</td> #}
+														{% if '-' in lend.backend %}
+															<td class="tnum text-danger">
+															$({{lend.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.backend | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.total_gross| number_format(2, '.', ",")}}</td> #}
+														{% if '-' in lend.total_gross %}
+															<td class="tnum text-danger">
+															$({{lend.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.total_gross | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+													</tr>
+													<tr class="deal-row" style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">Average</td>
+														<td class="tcen"></td> 	
+														<td class="tcen"></td>
+														<td class="tcen"></td>
+														{# <td class="tnum">${{lend.payable_gross_average| number_format(2, '.', ",")}}</td> #}
+														{% if '-' in lend.payable_gross_average %}
+															<td class="tnum text-danger">
+															$({{lend.payable_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.payable_gross_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.frontend_average| number_format(2, '.', ",")}}</td> #}
+														{% if '-' in lend.frontend_average %}
+															<td class="tnum text-danger">
+															$({{lend.frontend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.frontend_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.backend_average| number_format(2, '.', ",")}}</td> #}
+														{% if '-' in lend.backend_average %}
+															<td class="tnum text-danger">
+															$({{lend.backend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.backend_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.total_gross_average| number_format(2, '.', ",")}}</td> #}
+														{% if '-' in lend.total_gross_average %}
+															<td class="tnum text-danger">
+															$({{lend.total_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.total_gross_average | number_format(2, '.', ',')}}
+															</td>
+														{% endif %}
+													</tr>
+													{% if lend.projected %}
+													<tr class="deal-row" style="background: rgb(0 123 255 / 50%); border-bottom: 1px solid #555555;">
+														<td class="tcen">Projected</td>
+														<td class="tcen"></td>
+														<td class="">{{lend.projected.stock}}</td>
+														<td class="tcen"></td>
+														{# <td class="tnum">${{lend.projected.payable_gross}}</td> #}
+														{% if '-' in lend.projected.payable_gross %}
+															<td class="tnum text-danger">
+															$({{lend.projected.payable_gross | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.payable_gross}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.projected.frontend}}</td> #}
+														{% if '-' in lend.projected.frontend %}
+															<td class="tnum text-danger">
+															$({{lend.projected.frontend | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.frontend}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.projected.backend}}</td> #}
+														{% if '-' in lend.projected.backend %}
+															<td class="tnum text-danger">
+															$({{lend.projected.backend | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.backend}}
+															</td>
+														{% endif %}
+														{# <td class="tnum">${{lend.projected.total_gross}}</td> #}
+														{% if '-' in lend.projected.total_gross %}
+															<td class="tnum text-danger">
+															$({{lend.projected.total_gross | replace({'-': ''})}})
+															</td>
+														{% else %}
+															<td class="tnum">
+															${{lend.projected.total_gross}}
+															</td>
+														{% endif %}
+													</tr>
+													{% endif %}
+												</tfoot>
+											</table>
+										</td>
+									</tr>
+								{% endfor %}
+								<tr style="border-bottom: 1px solid #000000">
+									<th>{{companytotal.NAME}}</th>
+									<th class="text-center">{{companytotal.deals}}</th>
+									<th></th>
+									<th></th>
+									{% if companytotal.projected %}
+									<th class="text-left"></th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.payable_gross}}</th> #}
+									{% if '-' in companytotal.payable_gross %}
+										<th class="tnum text-danger">
+										$({{companytotal.payable_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.payable_gross | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{% if companytotal.projected %}
+									<th></th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.frontend}}</th> #}
+									{% if '-' in companytotal.frontend %}
+										<th class="tnum text-danger">
+										$({{companytotal.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.frontend | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.backend}}</th> #}
+									{% if '-' in companytotal.backend %}
+										<th class="tnum text-danger">
+										$({{companytotal.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.backend | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.total_gross}}</th> #}
+									{% if '-' in companytotal.total_gross %}
+										<th class="tnum text-danger">
+										$({{companytotal.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.total_gross | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+								</tr>
+								<tr style="border-bottom: 1px solid #000000">
+									<th>Average</th>
+									<th></th>
+									<th></th>
+									<th></th>
+									{% if companytotal.projected %}
+									<th class="text-left"></th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.payable_gross_average| round(2, 'floor')}}</th> #}
+									{% if '-' in companytotal.payable_gross_average %}
+										<th class="tnum text-danger">
+										$({{companytotal.payable_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.payable_gross_average | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{% if companytotal.projected %}
+									<th></th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.frontend_average| round(2, 'floor')}}</th> #}
+									{% if '-' in companytotal.frontend_average %}
+										<th class="tnum text-danger">
+										$({{companytotal.frontend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.frontend_average | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.backend_average| round(2, 'floor')}}</th> #}
+									{% if '-' in companytotal.backend_average %}
+										<th class="tnum text-danger">
+										$({{companytotal.backend_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.backend_average | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.total_gross_average| round(2, 'floor')}}</th> #}
+									{% if '-' in companytotal.total_gross_average %}
+										<th class="tnum text-danger">
+										$({{companytotal.total_gross_average | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.total_gross_average | number_format(2, '.', ',')}}
+										</th>
+									{% endif %}
+								</tr>
+								{% if companytotal.projected %}
+								<tr style="border-bottom: 1px solid #000000">
+									<th>Projected</th>
+									<th></th>
+									<th></th>
+									{# <th class="text-right">${{companytotal.projected.projected}}</th> #}
+									{% if '-' in companytotal.projected.projected %}
+										<th class="tnum text-danger">
+										$({{companytotal.projected.projected | replace({'-': ''}) }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.projected.projected}}
+										</th>
+									{% endif %}
+									<th></th>
+									{# <th class="text-right">${{companytotal.projected.payable_gross}}</th> #}
+									{% if '-' in companytotal.projected.payable_gross %}
+										<th class="tnum text-danger">
+										$({{companytotal.projected.payable_gross | replace({'-': ''}) }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.projected.payable_gross}}
+										</th>
+									{% endif %}
+									<th></th>
+									{# <th class="text-right">${{companytotal.projected.frontend}}</th> #}
+									{% if '-' in companytotal.projected.frontend %}
+										<th class="tnum text-danger">
+										$({{companytotal.projected.frontend | replace({'-': ''}) }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.projected.frontend}}
+										</th>
+									{% endif %}
+									{# <th class="text-right">(${{companytotal.projected.backend}})</th> #}
+									{% if '-' in companytotal.projected.backend %}
+										<th class="tnum text-danger">
+										$({{companytotal.projected.backend | replace({'-': ''}) }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.projected.backend}}
+										</th>
+									{% endif %}
+									{# <th class="text-right">${{companytotal.projected.total_gross}}</th> #}
+									{% if '-' in companytotal.projected.total_gross %}
+										<th class="tnum text-danger">
+										$({{companytotal.projected.total_gross | replace({'-': ''}) }})
+										</th>
+									{% else %}
+										<th class="tnum">
+										${{companytotal.projected.total_gross}}
+										</th>
+									{% endif %}
+								</tr>
+								{% endif %}
+							</tbody>
+						</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script language = "JavaScript">
+		let ar_data = {{(totals|json_encode|raw)}};
+		let ar_data1 = {{(totals1|json_encode|raw)}};
+		let ar_data2 = {{(totals2|json_encode|raw)}};
+
+		ar_data[0].push({role: "annotation"})
+		ar_data1[0].push({role: "annotation"})
+		ar_data2[0].push({role: "annotation"})
+
+		for (let a in ar_data) {
+			ar_data[a].map((value, index) => {
+				if(!isNaN(parseFloat(value))) {
+					ar_data[a][index] = parseFloat(value);
+					if(ar_data[a][index] < 0) {
+						ar_data[a][index] *=  -1;
+					}
+				}
+			})
+		}
+
+		for (let a in ar_data1) {
+			ar_data1[a].map((value, index) => {
+				if(!isNaN(parseFloat(value))) {
+					ar_data1[a][index] = parseFloat(value);
+					if(ar_data1[a][index] < 0) {
+						ar_data1[a][index] *=  -1;
+					}
+				}
+			})
+		}
+		for (let a in ar_data2) {
+			ar_data2[a].map((value, index) => {
+				if(!isNaN(parseFloat(value))) {
+					ar_data2[a][index] = parseFloat(value);
+					if(ar_data2[a][index] < 0) {
+						ar_data2[a][index] *=  -1;
+					}
+				}
+			})
+		}
+		
+		document.getElementById("total_sales").onclick = function(){
+			TotalSalesChart();
+		}
+		document.getElementById("total_gross").onclick = function(){
+			TotalGrossChart();
+		}
+		document.getElementById("average_gross").onclick = function(){
+			AverageGrossChart();
+		}
+			
+		function TotalSalesChart() {
+			var data = google.visualization.arrayToDataTable(ar_data);
+			if(ar_data.length <= 1) { return; }
+			var options = {
+				height: ar_data.length * 20 + 100,
+				title: 'Total Sales per Salesperson',
+				titleFontSize: 25,
+				legend: { position: 'top & right', maxLines: 4 },
+				vAxis: {
+					fontSize: "10px"
+				},
+				isStacked: true,
+				fontSize: "12",
+				chartArea: {
+					height: ar_data.length * 20
+				}
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+
+		function TotalGrossChart() {
+			var data = google.visualization.arrayToDataTable(ar_data1);
+
+			if(ar_data1.length <= 1) { return; }
+
+			var options = {
+				height: ar_data1.length * 20 + 100,
+				title: 'Total Gross per Salesperson',
+				titleFontSize: 25,
+				legend: { position: 'top & right', maxLines: 4 },
+				bar: { groupWidth: '75%' },
+				hAxis: {
+					format: 'currency'
+				},
+				fontSize: "12",
+				isStacked: true,
+				chartArea: {
+					height: ar_data.length * 20
+				}
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+		function AverageGrossChart() {
+			var data = google.visualization.arrayToDataTable(ar_data2);
+			if(ar_data2.length <= 1) { return; }
+
+			var options = {
+				height: ar_data2.length * 20 + 100,
+				title: 'Average Gross per Salesperson',
+				titleFontSize: 25,
+				legend: { position: 'top & right', maxLines: 4 },
+				bar: { groupWidth: '75%' },
+				hAxis: {
+					format: 'currency'
+				},
+				fontSize: "12",
+				isStacked: true,
+				chartArea: {
+					height: ar_data.length * 20
+				}
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+		google.charts.setOnLoadCallback(TotalSalesChart);
+	</script>
+{% endblock %}

@@ -1,0 +1,403 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<script type = "text/javascript" src = "_templates/default/components/template/resources/js/loader.js"></script>
+	<script type = "text/javascript">
+		google.charts.load('current', {packages: ['corechart']});
+	</script>
+	<style>
+		.top-table {
+			width: 100%;
+		}
+		.top-table td {
+			padding-right: 2%
+		}
+	</style>
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table table-responsive">
+						<table class="top-table">
+							<tr>
+								<td>Deals:</td>
+								<td class="text-right">{{ companyTotals.deals }}</td>
+								<td>Back End Gross:</td>
+								<td class="text-right">{{ companyTotals.backend }}</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>Unfunded Deals:</td>
+								<td class="text-right">{{ companyTotals.unfunded_count }}</td>
+								<td>Unfunded Amount:</td>
+								<td class="text-right">{{ companyTotals.unfunded_total }}</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>Warranties Sold:</td>
+								<td class="text-right">{{ companyTotals.warranty_count }}</td>
+								<td>Warranty Gross:</td>
+								<td class="text-right">{{ companyTotals.warranty_gross }}</td>
+								<td>Warranty Penetration:</td>
+								<td class="text-right">{{ companyTotals.warranty_perc }}</td>
+								<td>Warranty Average:</td>
+								<td class="text-right">${{ companyTotals.warranty_average |number_format(2, ".") }}</td>
+							</tr>
+							<tr>
+								<td>Gap Plans Sold:</td>
+								<td class="text-right">{{ companyTotals.gap_count }}</td>
+								<td>Gap Gross:</td>
+								<td class="text-right">{{ companyTotals.gap_gross }}</td>
+								<td>Gap Penetration:</td>
+								<td class="text-right">{{ companyTotals.gap_perc }}</td>
+								<td>Gap Average:</td>
+								<td class="text-right">${{ companyTotals.gap_average | number_format(2, ".")}}</td>
+							</tr>
+							<tr>
+								<td>MiscFin Sold:</td>
+								<td class="text-right">{{ companyTotals.miscfinance_count }}</td>
+								<td>MiscFin Gross:</td>
+								<td class="text-right">{{ companyTotals.miscfinance_gross }}</td>
+								<td>MiscFin Penetration:</td>
+								<td class="text-right">{{ companyTotals.miscfinance_perc }}</td>
+								<td>MiscFin Average:</td>
+								<td class="text-right">${{ companyTotals.miscfinance_average | number_format(2, ".") }}</td>
+							</tr>
+						</table>
+					</div>
+					<div id = "container" style = "width: 100%; height: auto; margin: 0 auto"></div>
+					<div class="chart-view-controller m-4">
+						<button id="total_deals" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Total Deals</button>
+						<button id="total_back_end" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Total Back End</button>
+						<button id="average_back_end" class="btn btn-primary col-sm-6 col-md-2 col-xl-2 mt-2 chat_button">Average Back End</button>
+					</div>
+					<div class="report-table table-responsive">
+						<table class="table table-striped">
+							<colgroup>
+								<col width="10%">
+								<col width="7%">
+								<col width="5%">
+								<col width="7%">
+								<col width="9%">
+								<col width="7%">
+								<col width="10%">
+								<col width="9%">
+								<col width="10%">
+								<col width="10%">
+								<col width="8%">
+								<col width="8%">
+							</colgroup>
+							<thead>
+								<th>Finance Person</th>
+								<th>Sales</th>
+								<th>Approved</th>
+								<th>Approved(%)</th>
+								<th class="text-right">Warranty <br>Total & Pen%</th>
+								<th class="text-right">Warrant <br> Gross</th>
+								<th class="text-center">Gap <br> Total & Pen%</th>
+								<th class="text-right">Gap <br> Gross</th>
+								<th class="text-right">Miscfinance <br> Total & Pen%</th>
+								<th class="text-right">Miscfinance <br> Gross</th>
+								<th>Reserve</th>
+								<th>Back End</th>
+							</thead>
+							<tbody>
+								{% for lend in salessummaries %}
+									<tr onclick="changeList({{lend.id}})" style="background: #82C3ED">
+										<td colspan="12">{{lend.NAME}}</td>
+									</tr>
+									<tr>
+										<td colspan="12">
+											<table id="summary-{{lend.id}}" class="table table-striped display-show">
+												<colgroup>
+													<col width="10%">
+													<col width="7%">
+													<col width="5%">
+													<col width="7%">
+													<col width="9%">
+													<col width="7%">
+													<col width="10%">
+													<col width="9%">
+													<col width="10%">
+													<col width="10%">
+													<col width="8%">
+													<col width="8%">
+												</colgroup>
+												<tr>
+													<td class="tcen"></td>
+													<td class="tnum">{{lend.deals}}</td>
+													<td class="tcen">{{lend.approved}}</td>
+													<td class="tnum">{{lend.approved_percent}}</td>
+													<td class="tnum">{{lend.warranty_perc}}</td>
+													<td class="tnum">{{lend.warranty_gross}}</td>
+													<td class="tnum">{{lend.gap_perc}}</td>
+													<td class="tnum">{{lend.gap_gross}}</td>
+													<td class="tcen">{{lend.miscfinance_perc}}</td>
+													<td class="tnum">{{lend.miscfinance_gross}}</td>
+													<td class="tnum">{{lend.reserve}}</td>
+													<td class="tnum">{{lend.backend}}</td>
+												</tr>
+											</table>
+											<table id="deallist-{{lend.id}}" class="table table-striped display-hide report-duble-main  table-hover table-striped table-bordered sortable dataTable">
+												<colgroup>
+													<col width="9%">
+													<col width="9%">
+													<col width="10%">
+													<col width="9%">
+													<col width="10%">
+													<col width="9%">
+													<col width="9%">
+													<col width="5%">
+													<col width="10%">
+													<col width="10%">
+													<col width="10%">
+												</colgroup>
+												<thead>
+													<tr class="heading">
+														<th class="tcen">Lender</th>
+														<th class="tcen">Stk No</th>
+														<th class="tcen">Client</th>
+														<th class="tcen">Warranty</th>
+														<th class="tnum">Warranty <br> Gross</th>
+														<th class="tcen">Gap</th>
+														<th class="tnum">Gap Gross</th>
+														<th></th>
+														<th class="tnum">Miscfinance <br> Gross</th>
+														<th class="tnum">Reserve</th>
+														<th class="tnum">Back End</th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for deal in deals %}
+														{% if deal.finance_id == lend.id %}
+															<tr class="deal-row" data-id="{{ deal.deal_id }}">
+																<td class="tcen">{{deal.lender}}</td>
+																<td class="tcen"><a>{{deal.stock}}</a></td>
+																<td class="tcen">{{deal.client_name}}</td>
+																<td class="tcen">{{deal.warranty_provider}}</td>
+																<td class="tnum">${{deal.warranty_gross| number_format(2, ".", ",")}}</td>
+																<td class="tcen">{{deal.gap_provider}}</td>
+																<td class="tnum">${{deal.gap_gross| number_format(2, ".", ",")}}</td>
+																<td class="tnum"></td>
+																<td class="tnum">${{deal.miscfinance_gross| number_format(2, ".", ",")}}</td>
+																<td class="tnum">${{deal.reserve| number_format(2, ".", ",")}}</td>
+																<td class="tnum">${{deal.backend| number_format(2, ".", ",")}}</td>
+															</tr>
+														{% endif %}
+													{% endfor %}
+												</tbody>
+												<tfoot>
+													<tr style="background: #688496; border-bottom: 1px solid #000000;">
+														<td class="tcen">{{ lend.date_sold_f }}</td>
+														<td class="tcen"></td>
+														<td class="tcen">{{ lend.deals }}</td>
+														<td class="tcen">{{lend.warranty_perc}}</td>
+														<td class="tnum">{{lend.warranty_gross}}</td>
+														<td class="tcen">{{lend.gap_perc}}</td>
+														<td class="tnum">{{lend.gap_gross}}</td>
+														<td class="tnum">{{lend.miscfinance_perc}}</td>
+														<td class="text-right">{{lend.miscfinance_gross}}</td>
+														<td class="text-right">{{lend.reserve}}</td>
+														<td class="text-right">{{lend.backend}}</td>
+													</tr>
+													<tr style="background: #688496; border-bottom: 1px solid #000000;">
+														<td class="tcen">Average</td>
+														<td class="tcen"></td>
+														<td class="tcen"></td>
+														<td class="tcen"></td>
+														<td class="tnum">${{lend.warranty_average | number_format(2, ".", ",")}}</td>
+														<td class="tcen"></td>
+														<td class="tnum">${{lend.gap_average | number_format(2, ".", ",")}}</td>
+														<td class="tcen"></td>
+														<td class="tnum">${{lend.miscfinance_average  | number_format(2, ".", ",")}}</td>
+														<td class="tnum">${{lend.reserve_average | number_format(2, ".", ",") }}</td>
+														<td class="tnum">${{lend.backend_average  | number_format(2, ".", ",")}}</td>
+													</tr>
+													{% if lend.projected %}
+													<tr style="background: #688496; border-bottom: 1px solid #000000;">
+														<td class="tcen">Projected</td>
+														<td class="tcen">{{lend.projected.stock}}</td>
+														<td class="tcen"></td>
+														<td class="tnum"></td>
+														<td class="tnum">{{lend.projected.warranty_gross}}</td>
+														<td class="tnum"></td>
+														<td class="tnum">{{lend.projected.gap_gross}}</td>
+														<td class="tnum"></td>
+														<td class="tnum">{{lend.projected.miscfinance_gross}}</td>
+														<td class="tnum">{{lend.projected.reserve}}</td>
+														<td class="tnum">{{lend.projected.backend}}</td>
+													</tr>
+													{% endif %}
+												</tfoot>
+											</table>
+										</td>
+									</tr>
+								{% endfor %}
+								<tr class="border-bottom">
+									<th>{{companyTotals.NAME}}</th>
+									<th class="text-right">{{companyTotals.deals}}</th>
+									<th></th>
+									<th></th>
+									<th class="text-right">{{companyTotals.warranty_perc}}</th>
+									<th class="text-right">{{companyTotals.warranty_gross}}</th>
+									<th class="text-right">{{companyTotals.gap_perc}}</th>
+									<th class="text-right">{{companyTotals.gap_gross}}</th>
+									<th class="text-right">{{companyTotals.miscfinance_perc}}</th>
+									<th class="text-right">{{companyTotals.miscfinance_gross}}</th>
+									<th class="text-right">{{companyTotals.reserve}}</th>
+									<th class="text-right">{{companyTotals.backend}}</th>
+								</tr>
+								<tr class="border-bottom">
+									<th>Average</th>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th class="text-right"></th>
+									<th class="text-right">${{companyTotals.warranty_average| number_format(2, '.', ',')}}</th>
+									<th class="text-right"></th>
+									<th class="text-right">${{companyTotals.gap_average| number_format(2, '.', ',')}}</th>
+									<th class="text-right"></th>
+									<th class="text-right">${{companyTotals.miscfinance_average| number_format(2, '.', ',')}}</th>
+									<th class="text-right"></th>
+									<th class="text-right">${{companyTotals.backend_average| number_format(2, '.', ',')}}</th>
+								</tr>
+								{% if companyTotals.projected %}
+								<tr class="border-bottom"	>
+									<th>Projected</th>
+									<th class="text-right">{{companyTotals.projected.deals}}</th>
+									<th></th>
+									<th></th>
+									<th class="text-right"></th>
+									<th class="text-right">{{companyTotals.projected.warranty_gross}}</th>
+									<th class="text-right"></th>
+									<th class="text-right">{{companyTotals.projected.gap_gross}}</th>
+									<th class="text-right"></th>
+									<th class="text-right">{{companyTotals.projected.miscfinance_gross}}</th>
+									<th class="text-right">{{companyTotals.projected.reserve}}</th>
+									<th class="text-right">{{companyTotals.projected.backend}}</th>
+								</tr>
+								{% endif %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script language = "JavaScript">
+		let ar_data = {{(totals|json_encode|raw)}};
+		let ar_data1 = {{(totals1|json_encode|raw)}};
+		let ar_data2 = {{(totals2|json_encode|raw)}};
+
+
+		ar_data = strToNumber(ar_data);
+		ar_data1 = strToNumber(ar_data1);
+		ar_data2 = strToNumber(ar_data2);
+			
+		ar_data[0].push({role: "annotation"})
+		ar_data1[0].push({role: "annotation"})
+		ar_data2[0].push({role: "annotation"});
+
+		function TotalDealsChart() {
+			var data = google.visualization.arrayToDataTable(ar_data);
+			if(ar_data.length == 1) { return; }
+
+			var options = {
+				title: 'Total Deals per Finance Manager',
+				titleFontSize: 25,
+				height: ar_data.length * 20 + 100,
+				chartArea: {
+					height: ar_data.length * 20
+				}
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+
+		function TotalBackEndChart() {
+			var data = google.visualization.arrayToDataTable(ar_data1);
+			if(ar_data1.length == 1) { return; }
+
+			var options = {
+				title: 'Back End Gross per Finance Manager',
+				titleFontSize: 25,
+				legend: { position: 'top & right', maxLines: 4 },
+				bar: { groupWidth: '75%' },
+				height: ar_data1.length * 20 + 100,
+				hAxis: {
+					format: 'currency'
+				},
+				fontSize: "12",
+				isStacked: true,
+				chartArea: {
+					height: ar_data.length * 20
+				}
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+		function AverageBackEndChart() {
+			var data = google.visualization.arrayToDataTable(ar_data2);
+			if(ar_data2.length == 1) { return; }
+
+			var options = {
+				height: ar_data2.length * 20 + 100,
+				title: 'Average Back End Gross per Finance Manager',
+				titleFontSize: 25,
+				legend: { position: 'top & right', maxLines: 4 },
+				bar: { groupWidth: '75%' },
+				hAxis: {
+					format: 'currency'
+				},
+				fontSize: "12",
+				isStacked: true,
+				chartArea: {
+					height: ar_data.length * 20
+				}
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('container'));
+			chart.draw(data, options);
+		}
+		function strToNumber(data_ar) {
+			for (let a in data_ar) {
+				data_ar[a].map((value, index) => {
+					if(!isNaN(parseFloat(value))) {
+						data_ar[a][index] = parseFloat(value);
+						if(data_ar[a][index] < 0) {
+							data_ar[a][index] *=  -1;
+						}
+					} else if(a != 0 && index != 0 && data_ar[a].length - 1 != index && value  != "") {
+						if (value == null) {
+							data_ar[a][index] = 0
+						} else {
+							data_ar[a][index] = parseFloat(value.replace(/[`~!@#$%^&*()_|+\-=?;:'",<>\{\}\[\]\\\/]/gi, ''));
+						}
+					}
+				})
+			}
+			return  data_ar;
+		}
+
+		document.getElementById("total_deals").onclick = function(){
+			TotalDealsChart();
+		}
+		document.getElementById("total_back_end").onclick = function(){
+			TotalBackEndChart();
+		}
+		document.getElementById("average_back_end").onclick = function(){
+			AverageBackEndChart();
+		}
+		google.charts.setOnLoadCallback(TotalDealsChart);
+	</script>
+{% endblock %}

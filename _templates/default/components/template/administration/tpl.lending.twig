@@ -1,0 +1,176 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'forms/tpl.topbarNoPrint.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="container content-header">
+					{% if error != '' %}
+							<div class="col-12">
+								<div class="login-error">
+									<i class="fas fa-exclamation-circle"></i> {{ error }}
+								</div>
+							</div>
+						{% endif %}
+						{% if success != '' %}
+							<div class="col-12">
+								<div class="login-success">
+									<i class="fas fa-exclamation-circle"></i> {{ success }}
+								</div>
+							</div>
+						{% endif %}
+						<div class="row">
+
+							<div class="col-md-9 col-sm-9 col-xl-9" style="margin-right:auto">
+								<a href="/admin/lending?action=new" class="btn btn-primary">
+									<i class="fas fa-plus-circle"></i> New Lender
+								</a>
+							</div>
+
+							<div class="col-md-3 col-xl-3">
+								<select class="form-control" id="lendingDropdownStatus">
+									<option value="active" {% if lender_dropdown == "active" %} selected="selected"{% endif %}>Active</option>
+									<option value="inactive" {% if lender_dropdown == "inactive" %} selected="selected"{% endif %}>InActive</option>
+									<option value="all" {% if lender_dropdown == "all" %} selected="selected"{% endif %}>All</option>
+								</select>
+							</div>
+
+							<div class="col-sm-9 col-md-9 col-xl-9" style="margin-top: 10px;">
+								<div class="search">
+									<input type="text" id="myInputTextField" name="name" placeholder="Search..."/>
+									<i class="fas fa-search"></i>
+								</div>
+
+							</div>
+						</div>
+
+					</div>
+
+					<div class="report-table table-responsive">
+						<table class="table table-striped table-bordered dt-responsive nowrap no-footer LendingTable" id = "myTable">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Status</th>
+									<th>Actions</th>
+									{# <th></th> #}
+								</tr>
+							</thead>
+						{#<table class="table table-striped" id = "myTable">
+							<tr>
+								<th onclick="sortTable($(this), 0)">Name</th>
+								<th onclick="sortTable($(this), 1)">Status</th>
+								<th onclick="sortTable($(this), 2)"></th>
+								<th onclick="sortTable($(this), 3)"></th>
+							<tr>
+							{% for lender in lenders %}
+								<tr class="lender-rows" >
+									<td>{{ lender.name }}</td>
+									<td style="vertical-align: middle"><i class="fas fa-circle" style="color: {% if lender.status == 'Active' %} green {% else %} red {% endif %}"></i></td>
+									<td style="width: 40px; vertical-align: middle">
+										<a style="color: {{ lender.status=="Active" ? "red" : "green" }}" href="admin/lending?id={{ lender.id }}&action=toggle" class="new-btn btn">
+											{{ lender.status=="Active" ? "<i class='fas fa-ban'></i>" : "<i class='fas fa-check'></i>" }}
+										</a>
+									</td>
+									<td style="vertical-align: middle" >
+										<a href="/admin/lending?id={{ lender.id }}" class="new-btn btn">
+											<i class="fas fa-edit"></i>
+										</a>
+									</td>
+									
+								</tr>
+							{% endfor %} #}
+						</table>
+						</table>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+function sortTable(td, n) {
+
+	var data = td.children().first();
+	if(data.length == 0){
+		td.html(td.text() + ' ' + '<i class="fas "></i>');
+		data = td.children().first();
+	}
+	if(!data.hasClass('fa-caret-up') && !data.hasClass('fa-caret-down'))
+	{
+		data.addClass('fa-caret-down');
+	}else{
+		if(data.hasClass('fa-caret-up')) 
+		{
+			data.removeClass('fa-caret-up'); 
+			data.addClass('fa-caret-down');
+
+		}
+		else 
+		{
+			data.removeClass('fa-caret-down');
+			data.addClass('fa-caret-up');
+		}
+	}
+
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("myTable");
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc"; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 2; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+</script>
+{% endblock %}

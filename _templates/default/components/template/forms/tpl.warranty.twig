@@ -1,0 +1,48 @@
+{% macro tpl_warrantyForm() %}
+	<div class="form-ft">
+		<div class="container">
+			<form name="{% if action == 'insert' %}new_warranty{% else %}edit_warranty{% endif %}" action="admin/warranty" method="POST">
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="company_id" value="{{ hidden_input_array.company_id }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+				{% if action != 'insert' %}
+					<input type="hidden" name="id" value="{{ hidden_input_array.id }}">
+				{% endif %}
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Warranty Provider Information</div>
+				</div>
+
+				<div class="form-group row">
+
+					<label for="name" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Name</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="name" id="name" value="{{ warrantyProvider.name }}">
+					</div>
+
+				</div>
+
+				{% if action != 'insert' %}
+					<div class="form-group row">
+
+						<label for="active" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Active</label>
+						<div class="col-6 col-md-3 col-xl-2">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="active" id="active" value="active" checked>
+							</div>
+						</div>
+
+					</div>
+				{% endif %}
+
+				<div class="row">
+
+					<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-2 offset-xl-2">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">Submit</button>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+{% endmacro %}

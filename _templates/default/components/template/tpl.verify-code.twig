@@ -1,0 +1,58 @@
+{% extends 'tpl.container.twig' %}
+
+{% block tpl_grid %}
+	<div class="container-fluid login-container">
+		<div id="login">
+			<div class="row">
+				<div class="login-logo">
+					<span class="funding">FUNDING</span>
+					<span class="tracker">TRACKER</span>
+				</div>
+			</div>
+			<style>
+				@media (max-width: 550px) {
+					.funding, .tracker{
+						font-size:35px !important;
+					}
+					.login-welcome{
+						color: #ad273a;
+						margin: 0 auto 40px;
+						font-size: 20px;
+						font-weight: 100;
+					}
+					#login {
+						width:300px !important;
+					}
+					.login_input{
+						width:140px !important;
+					}
+				}
+			</style>
+			<form name="reset_password" action="verify" method="POST">
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="id" value="{{ hidden_input_array.id }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+				{% if error is defined %}
+					<div class="row">
+						<div class="login-error">
+							<i class="fas fa-exclamation-circle"></i> {{ error }}
+						</div>
+					</div>
+				{% endif %}
+				<div class="row">
+					<div class="w-100 form-section-heading">Enter your code</div>
+				</div>
+				<div class="row" style="margin-top:20px">
+					<div class="login-field">
+						<div class="login-label">Verify Code</div>
+						<input class="login_input" type="text" name="verify_code" placeholder="Enter Code">
+					</div>
+				</div>
+
+				<div class="row">
+					<input class="login-btn" type="submit" value="Verify">
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}

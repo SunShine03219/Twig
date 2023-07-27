@@ -1,0 +1,55 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'forms/tpl.topbarNoPrint.twig' as topbar %}
+
+
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="container content-header">
+
+						<div class="row">
+
+						
+
+						</div>
+
+					</div>
+
+					<div class="report-table table-responsive">
+						<table class="table table-striped" id = "myTable">
+							<tr>
+								<th>Id</th>
+								<th>Inport Time</th>
+								<th>Title</th>
+								{# <th onclick="sortTable($(this), 1)">Status</th> #}
+							<tr>
+							{% for deal in deal_result %}	
+								<tr>
+									<td>{{ deal.id }}</td>
+									<td>{{ deal.date|date("m/d/Y") }}</td>
+									<td>{{ deal.title }}</td>
+									{# <td>{{ }}</td>
+									<td>{{  }}</td>
+									<td>{{  }}</td>
+									<td>{{  }}</td> #}
+									{# <td>
+										<a class="link" href="admin/desk?id={{ user.id }}&action=toggle">{{ deal.active ? 'Active' : 'Inactive' }}</a>
+									</td> #}
+								</tr>
+							{% endfor %}
+						</table>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

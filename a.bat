@@ -1,0 +1,1 @@
+\home1\betafund\public_html\cron.php

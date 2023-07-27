@@ -1,0 +1,115 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table table-responsive">
+						{% if fundeds %}
+						<table class="table table-striped report-duble-main  table-hover table-striped sortable dataTable">
+							<thead>
+								<tr>
+									<th class="txt-center">Status</th>
+									<th class="txt-center sorttable_sorted_reverse">Date Sold <span id="sorttable_sortrevind">&nbsp;▴</span></th>
+									<th class="txt-center">Lender</th>
+									<th class="txt-center">Client</th>
+									<th>Stock</th>
+									<th class="txt-center">Vehicle</th>
+									<th class="txt-center">Amount SFinanced</th>
+									<th class="txt-center">Sales</th>
+									<th class="txt-center">Desk & Fin</th>
+									<th>Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for funded in fundeds %}
+									<tr class="deal-row1" style="border-bottom: 1px solid #dadada">
+										<td class="txt-center">{{ funded.status }}</td>
+										<td class="txt-center">{{ funded.date_sold_f|date("m/d/Y") }}</td>
+										<td class="txt-center">{{ funded.lender }}</td>
+										<td class="txt-center"><a href="deals/view?id={{funded.dealid}}" onclick="viewLender({{ funded.lender_id }})">{{ funded.client_name }}</a></td>
+										<td class="txt-center">{{ funded.stock }}</td>
+										<td class="txt-center">{{ funded.vehicle }}</td>
+										<td class="tnum">{{ funded.amount_financed }}</td>
+										<td class="txt-center">{{ funded.sales_team }}</td>
+										<td class="txt-center">{{ funded.deskteam }}</td> 
+										<td class="txt-center">
+											<a onclick = "showModal({{ funded.dealid }})" class="" data-toggle="modal" data-target="#myModal">
+												<i class="fas fa-sticky-note"></i>
+											</a>
+										</td> 
+									</tr>
+								{% endfor %}
+								{% set FinanaceTotal = 0 %}
+								{% set number = 0 %}
+								{% set average = 0 %}
+								{% for funded in fundeds %}
+									{% set FinanaceTotal = FinanaceTotal + funded.financeamount %}
+									{% set number = number + 1 %}
+								{% endfor %}
+							<tbody>
+							<tfoot>
+								{% set average = FinanaceTotal / number %}
+								<tr style="border-bottom: 1px solid #000000">
+									<th></th>
+									<th></th>
+									<th class="txt-center">TOTAL</th>
+									<th></th>
+									<th class="txt-center">{{number}}</th>
+									<th></th>
+									<th></th>
+									<th class="tnum">${{FinanaceTotal| number_format(2, '.', ',')}}</th>
+									<th></th>
+									<th></th>
+								</tr>
+								<tr style="border-bottom: 1px solid #000000">
+									<th></th>
+									<th></th>
+									<th class="txt-center">Average</th>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th class="tnum">${{average|number_format(2)}}</th>
+									<th></th>
+									<th></th>
+								</tr>
+							</tfoot>
+						</table>
+						{% else %}
+						<p style="text-align:center">No results found!</p>
+						{% endif %}
+						<div class="modal fade" id="myModal" role="dialog">
+							<div class="modal-dialog">
+								<!-- Modal content-->
+								<div class="modal-content">
+									<div class="modal-header">
+									<h3 class="modal-title1">Notes</h3>
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									</div>
+									<div class="modal-body">
+									<p id = "NotesPanel">Some text in the modal.</p>
+									</div>
+									<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<script>
+							function showModal (NotesString) {
+								document.getElementById("NotesPanel").innerHTML = NotesString;
+							}
+						</script>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

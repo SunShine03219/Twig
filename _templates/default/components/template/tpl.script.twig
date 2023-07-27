@@ -1,0 +1,37 @@
+{% macro tpl_scriptTags() %}
+	<script src="_templates/default/components/plugins/resources/js/popper.min.js"></script>
+	<script src="_templates/default/components/bootstrap/resources/js/bootstrap.bundle.min.js"></script>
+	<script src="_templates/default/components/plugins/resources/js/gijgo.min.js"></script>
+	<script defer src="_templates/default/components/template/resources/js/common.js"></script>
+	<script type="text/JavaScript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script type="text/JavaScript" src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+	<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+	<script>
+	
+	$(function(){
+		
+		function toggleScrollButton() {
+			var pH = $('#content').height();
+			var h = $('#content').find('.report-table').eq(0).height();
+			if(pH < h) {
+				$('.scroll-btn').fadeIn();
+			} else {
+				$('.scroll-btn').fadeOut();
+			}
+		}
+		
+		$('body').on('click', '#scroll-top-btn', function() {
+			$('#content').scrollTop(0);
+		});
+		
+		$('body').on('click', '#scroll-bottom-btn', function() {
+			$('#content').scrollTop(1000000000);
+		});
+		
+		$(window).resize(function(){
+			toggleScrollButton();
+		})
+		toggleScrollButton();
+	})
+	</script>
+{% endmacro %}

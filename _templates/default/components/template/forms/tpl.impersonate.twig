@@ -1,0 +1,41 @@
+{% macro tpl_impersonateForm() %}
+	<div class="form-ft">
+		<div class="container">
+
+		{% if company_switch %}
+			<div class="alert alert-success" role="alert">
+				You are now impersonating {{ company_name }}
+			</div>
+		{% endif %}
+
+			<form name="impersonate" action="superuser/impersonate" method="POST">
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="user_id" value="{{ hidden_input_array.user_id }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Change your active company</div>
+				</div>
+
+				<div class="form-group row">
+
+					<label for="company_id" class="col-sm-6 col-md-3 col-xl-2 col-form-label-sm">Company</label>
+					<div class="col-sm-12 col-md-6 col-xl-4">
+						<select class="form-control form-control-btn form-control-sm" name="company_id" id="company_id">
+							{% for company in companies %}
+								<option value="{{ company.id }}" {% if session.company_id == company.id %} selected="selected"{% endif %}>{{ company.val }}</option>
+							{% endfor %}
+						</select>
+					</div>
+
+				</div>
+
+				<div class="row">
+					<div class="col-sm-6 col-md-3 offset-md-3 col-xl-2 offset-xl-2 mt-3">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">Submit</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endmacro %}

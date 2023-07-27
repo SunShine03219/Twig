@@ -1,0 +1,49 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table table-responsive">
+					{% if(deals) %}
+						<table class="table table-striped report-duble-main  table-hover table-striped table-bordered sortable dataTable">
+							<tr>
+								<th>Stock</th>
+								<th>Customer name</th>
+								<th>Year</th>
+								<th>Make</th>
+								<th>Model</th>
+								<th>ACV</th>
+								<th>Miles</th>
+								<th>Payoff</th>
+								<th>Funded</th>
+							<tr>
+							{% for deal in deals %}
+								<tr class="deal-row" data-id="{{ deal.dealid }}" style="border-bottom: 1px solid #dadada">
+									<td>{{deal.stock}}</td>
+									<td>{{ deal.client_name }}</td>
+									<td>{{ deal.year }}</td>
+									<td>{{ deal.make }}</td>
+									<td>{{ deal.model }}</td>
+									<td>{{ deal.finance_acv }}</td>
+									<td>{{ deal.finance_miles }}</td>
+									<td>{{ deal.finance_payoff }}</td>
+									<td>{{ deal.funded }}</td>
+								</tr>
+							{% endfor %}
+						</table>
+					{% else %}
+					<p style="text-align:center">No results found!</p>
+					{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

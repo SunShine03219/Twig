@@ -1,0 +1,21 @@
+{% macro tpl_manageMenuForm() %}
+	<div class="form-ft">
+		<div class="container">
+			<table class="table table-striped" id = "myTable">
+            {{'Reports Menu'}}
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                <tr>
+                    {% for menu in menus %}
+                        <tr>
+                            <td>{{ menu.name }}</td>
+                            <td>
+                                <a class="link" href="admin/manage-menu?id={{ menu.id }}">{{ menu.status ? 'Show' : 'Hide'}}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+            </table>
+		</div>
+	</div>
+{% endmacro %}

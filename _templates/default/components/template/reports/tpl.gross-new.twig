@@ -1,0 +1,270 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table">
+						<div class="header-content table-responsive">
+							<table class="top-table report-duble">
+								<tr>
+									<td class="text-left">Deals:</td>
+									<td class="text-right">{{companytotal.deals}}</td>
+									<td class="text-left">Total Gross:</td>
+									<td class="text-right">{{companytotal.total_gross}}</td>
+									<td class="text-left">Front End:</td>
+									<td class="text-right">{{companytotal.frontend}}</td>
+									<td class="text-left">Back End:</td>
+									<td class="text-right">{{companytotal.backend}}</td>
+								</tr>
+								<tr>
+									<td class="text-left">Finance Deals:</td>
+									<td class="text-right">{{companytotal.financed_deals}}</td>
+									<td class="text-left">Amount Financed:</td>
+									<td class="text-right">{{companytotal.financed_total}}</td>
+									<td class="text-left">Funded:</td>
+									<td class="text-right">{{companytotal.funded_total}}</td>
+									<td class="text-left">Unfunded:</td>
+									<td class="text-right">{{companytotal.unfunded_total}}</td>
+								</tr>
+								{% if projects.deals %}
+									<tr>
+										<td class="text-left">Projected Deals:</td>
+										<td class="text-right">{{projects.deals}}</td>
+										<td class="text-left">Projected Gross:</td>
+										<td class="text-right">{{projects.total_gross}}</td>
+										<td class="text-left">Projected Front End:</td>
+										<td class="text-right">{{projects.frontend}}</td>
+										<td class="text-left">Projected Back End:</td>
+										<td class="text-right">{{projects.backend}}</td>
+									</tr>
+								{% endif %}
+							</table>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped report-duble-main  table-hover table-striped sortable dataTable">
+								<thead>
+									<tr class="heading">
+										<th class="txt-center sorttable_sorted_reverse">Date Sold <span id="sorttable_sortrevind">&nbsp;▴</span></th>
+										<th class="txt-center">Client</th>
+										<th class="txt-center">Stock</th>
+										<th class="txt-center">Desk Manager</th>
+										<th class="txt-center">Finance Person</th>
+										<th class="tnum">Payable Gross</th>
+										<th class="tnum">Front End</th>
+										<th class="tnum">Back End</th>
+										<th class="tnum">Holdback</th>
+										<th class="tnum">Total Gross</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for vehicle in vehicles %}
+										{% set total1 = front1 + back1 %}
+										<tr class="deal-row" data-id="{{ vehicle.deal_id }}" style="border-bottom: 1px solid #dadada">
+											<td class="txt-center">{{ vehicle.date_sold_f }}</td>
+											<td class="txt-center"><a href="deals/view?id={{vehicle.dealid}}" onclick="viewLender({{ vehicle.lender_id }})">{{ vehicle.client_name }}</a></td>
+											<td class="txt-center">{{ vehicle.stock }}</td>
+											<td class="txt-center">{{ vehicle.deskmanager }}</td>
+											<td class="txt-center">{{ vehicle.financeperson }}</td> 
+											{# <td class="tnum">{{ vehicle.payabel_gross}}</td> #}
+											{% if '(' in vehicle.payable_gross %}
+												<td class="tnum text-danger">
+												{{vehicle.payable_gross }}
+												</td>
+											{% else %}
+												<td class="tnum">
+												{{vehicle.payable_gross}}
+												</td>
+											{% endif %}
+											{# <td class="txt-center">{{ vehicle.frontend}}</td> #}
+											{% if '(' in vehicle.frontend %}
+												<td class="tnum text-danger">
+												{{vehicle.frontend }}
+												</td>
+											{% else %}
+												<td class="tnum">
+												{{vehicle.frontend}}
+												</td>
+											{% endif %}
+											{# <td class="txt-center">{{ vehicle.backend}}</td> #}
+											{% if '(' in vehicle.backend %}
+												<td class="tnum text-danger">
+												{{vehicle.backend }}
+												</td>
+											{% else %}
+												<td class="tnum">
+												{{vehicle.backend}}
+												</td>
+											{% endif %}
+											{# <td class="txt-center">{{ vehicle.holdback}}</td> #}
+											{% if '(' in vehicle.holdback %}
+												<td class="tnum text-danger">
+												{{vehicle.holdback }}
+												</td>
+											{% else %}
+												<td class="tnum">
+												{{vehicle.holdback}}
+												</td>
+											{% endif %}
+											{# <td class="txt-center">{{ vehicle.total_gross}}</td>  #}
+											{% if '(' in vehicle.total_gross %}
+												<td class="tnum text-danger">
+												{{vehicle.total_gross }}
+												</td>
+											{% else %}
+												<td class="tnum">
+												{{vehicle.total_gross}}
+												</td>
+											{% endif %}
+										</tr>
+									{% endfor %}
+								</tbody>
+								<tfoot>
+									<tr style="border-bottom: 1px solid #000000">
+										<th class="txt-center">TOTAL</th>
+										<th></th>
+										<th class="txt-center">{{companytotal.deals}}</th>
+										<th></th>
+										<th></th>
+										{% if '(' in companytotal.payable_gross %}
+											<th class="tnum text-danger">
+											{{companytotal.payable_gross }}
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{companytotal.payable_gross}}
+											</th>
+										{% endif %}
+										{% if '(' in companytotal.frontend %}
+											<th class="tnum text-danger">
+											{{companytotal.frontend }}
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{companytotal.frontend}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{allback| number_format(2, '.', ',')}}</th> #}
+										{% if '(' in companytotal.backend %}
+											<th class="tnum text-danger">
+											{{companytotal.backend }}
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{companytotal.backend}}
+											</th>
+										{% endif %}
+										<th></th>
+										{# <th class="tnum">${{alltotal| number_format(2, '.', ',')}}</th> #}
+										{% if '(' in companytotal.total_gross %}
+											<th class="tnum text-danger">
+											{{companytotal.total_gross }}
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{companytotal.total_gross}}
+											</th>
+										{% endif %}
+									</tr>
+									<tr style="border-bottom: 1px solid #000000">
+										<th class="txt-center">Average</th>
+										<th></th>
+										<th class="txt-center"></th>
+										<th></th>
+										<th></th>
+										{# <th class="tnum">${{average| number_format(2, '.', ',')}}</th> #}
+										{% if '(' in companytotal.payable_gross_average %}
+											<th class="tnum text-danger">
+											{{companytotal.payable_gross_average }}
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{companytotal.payable_gross_average}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{frontaverage| number_format(2, '.', ',')}}</th> #}
+										{% if '(' in companytotal.frontend_average %}
+											<th class="tnum text-danger">
+											{{companytotal.frontend_average }}
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{companytotal.frontend_average}}
+											</th>
+										{% endif %}
+										{# <th class="tnum">${{backaverage| number_format(2, '.', ',')}}</th> #}
+										{% if '(' in companytotal.backend_average %}
+											<th class="tnum text-danger">
+											{{companytotal.backend_average }}
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{companytotal.backend_average}}
+											</th>
+										{% endif %}
+										<th></th>
+										{# <th class="tnum">${{totalaverage| number_format(2, '.', ',')}}</th> #}
+										{% if '(' in companytotal.total_gross_average %}
+											<th class="tnum text-danger">
+											{{companytotal.total_gross_average }}
+											</th>
+										{% else %}
+											<th class="tnum">
+											{{companytotal.total_gross_average}}
+											</th>
+										{% endif %}
+									</tr>
+									{% if projects.deals %}
+										<tr style="border-bottom: 1px solid #000000">
+											<th class="txt-center">Projected</th>
+											<th></th>
+											<th class="txt-center">{{projects.deals}}</th>
+											<th></th>
+											<th></th>
+											<th class="tnum">{{projects.payable_gross}}</th>
+											<th class="tnum">{{projects.frontend}}</th>
+											<th class="tnum">{{projects.backend}}</th>
+											<th></th>
+											<th class="tnum">{{projects.total_gross}}</th>
+										</tr>
+									{% endif %}
+								</tfoot>
+							</table>
+						</div>
+						{# {% endif %} #}
+						<div class="modal fade" id="myModal" role="dialog">
+							<div class="modal-dialog">
+							
+							<!-- Modal content-->
+							<div class="modal-content">
+								<div class="modal-header">
+								<h3 class="modal-title1">Notes</h3>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								</div>
+								<div class="modal-body">
+								<p id = "NotesPanel">Some text in the modal.</p>
+								</div>
+								<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+							
+							</div>
+						</div>
+						<script>
+							function showModal (NotesString) {
+								document.getElementById("NotesPanel").innerHTML = NotesString;
+							}
+						</script>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

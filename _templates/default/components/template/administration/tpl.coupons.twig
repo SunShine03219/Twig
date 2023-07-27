@@ -1,0 +1,130 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'forms/tpl.topbarNoPrint.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="container-fluid content-header">
+                        {% if error != '' %}
+						<div class="col-12">
+							<div class="login-error">
+								<i class="fas fa-exclamation-circle"></i> {{ error }}
+							</div>
+						</div>
+						{% endif %}
+						<div class="col-12 pt-2">
+							<div class="row" p-0 m-0>
+
+								<div class="col-md-9 col-sm-9 col-xl-9" style="margin-right:auto">
+									<a href="/superuser/coupons?action=new" class="btn btn-primary">
+										<i class="fas fa-plus-circle"></i> New Coupon
+									</a>
+								</div>
+
+								<div class="col-md-3 col-xl-3">
+									<select class="form-control" id="couponStatus">
+										<option value="active" {% if coupons_dropdown == "active" %} selected="selected"{% endif %}>Active</option>
+										<option value="inactive" {% if coupons_dropdown == "inactive" %} selected="selected"{% endif %}>InActive</option>
+										<option value="all" {% if coupons_dropdown == "all" %} selected="selected"{% endif %}>All</option>
+									</select>
+								</div>
+								<div class="col-sm-9 col-md-9 col-xl-9" style="margin-top: 10px;">
+									<div class="search">
+										<input type="text" id="myInputTextField" name="name" placeholder="Search..."/>
+										<i class="fas fa-search"></i>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="container-fluid content-header">
+						<div class="report-table table-responsive">
+							<table class="table table-striped table-bordered dt-responsive nowrap no-footer CouponCustomTable" id = "myTable">
+								<thead>
+									<tr>
+										<th>Title</th>
+										<th>Date</th>
+										<th>Used</th>
+										<th>Value</th>
+										<th>Status</th>
+										<th style="text-align:center">Actions</th>
+									</tr>
+								</thead>
+								{# <tr>
+									<th>Title</th>
+									<th>Date</th>
+									<th>Used</th>
+									<th>CouponValue</th>
+									<th>Status</th>
+									<th>Action</th>
+								<tr>
+								{% for coupon in coupons %}
+									<tr class="users-row">
+										<td>{{ coupon.title }} </td>
+										<td>{{ coupon.coupon }}</td>
+										<td>{{ coupon.startDate|date("m/d/Y") }}</td>
+										<td>{{ coupon.endDate|date("m/d/Y") }}</td>
+										<td>{{ coupon.userAllowed }}</td>
+										<td>{{ coupon.userUsed }}</td>
+										<td>{{ coupon.noLimit }}</td>
+										<td>{{ coupon.couponType=="1" ? "Fix" : "Percent" }}</td>
+										<td>{{ coupon.couponValue }}</td>
+										<td>
+											<a style="color: {{ coupon.status=="2" ? "red" : "green" }}" href="superuser/coupons?id={{ coupon.id }}&action=delete" class="new-btn btn">
+												<i class='fas fa-circle'></i>
+											</a>
+										</td>
+										<td style="width: 40px; vertical-align: middle">
+											<a style="color: {{ coupon.status=="Active" ? "red" : "green" }}" href="superuser/coupons?id={{ coupon.id }}&action=delete" class="new-btn btn">
+												<i class='fas fa-trash'></i>
+											</a>
+										</td>
+										<td style="vertical-align: middle" >
+											<a href="/superuser/coupons?id={{ coupon.id }}" class="new-btn btn">
+												<i class="fas fa-edit"></i>
+											</a>
+										</td>
+									</tr>
+								{% endfor %}#}
+							</table>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	function deleteCoupon(id) {
+
+		$("#note_id").val(id);
+		if(confirm("Are you sure you want to delete this coupon?"))
+		{
+			$.post('/superuser/coupons', 
+			{
+				type: 'deleteCoupon',
+				id: id
+			}, function(data) {
+				if(JSON.parse(data) == "success"){
+					alert("The coupon has been deleted!");
+					location.reload();
+				}else if(JSON.parse(data) == 403){
+					toastr.error("Failed: You don't have enough permission", "error");
+				}else{
+					alert("Delete failed!");
+				}
+			});
+		}
+
+	}
+	</script>
+	
+{% endblock %}

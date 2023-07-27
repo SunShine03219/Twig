@@ -1,0 +1,427 @@
+{% macro tpl_userForm() %}
+	<div class="form-ft">
+		<div class="container">
+			<form name="{% if action == 'insert' %}new_user{% else %}edit_user{% endif %}" id="user_form" action="" >
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="company_id" value="{{ hidden_input_array.company_id }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+				{% if action != 'insert' %}
+					<input type="hidden" name="id" value="{{ user.id }}" id="user_id">
+				{% endif %}
+
+				{% if action == 'insert' %}
+					<div class="row">
+						<div class="w-100 form-section-heading">Login Information</div>
+					</div>
+
+					<div class="form-group required row">
+
+						<label for="username" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Username</label>
+						<div class="col-6 col-md-3 col-xl-2">
+							<input type="text" class="form-control form-control-sm" name="username" id="username" required>
+							{% if error is defined %}
+								<div class="row">
+									<div class="login-error">
+										<i class="fas fa-exclamation-circle"></i> {{ error }}
+									</div>
+								</div>
+							{% endif %}
+						</div>
+						
+					
+				
+						<label for="password" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Password</label>
+						<div class="col-6 col-md-3 col-xl-2">
+							<input type="password" class="form-control form-control-sm" name="password" id="password" required>
+						</div>
+
+					</div>
+				{% endif %}
+
+				<div class="row">
+					<div class="w-100 form-section-heading">User Information</div>
+				</div>
+
+				<div class="form-group required row">
+
+					<label for="name_first" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">First Name</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="name_first" id="name_first" value="{{ user.name_first }}" required>
+					</div>
+
+					<label for="name_last" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Last Name</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="name_last" id="name_last" value="{{ user.name_last }}" required>
+					</div>
+
+				</div>
+
+				<div class="form-group required row">
+					<label for="position" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Position</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="position" id="position" value="{{ user.position }}" required>
+					</div>
+				</div>
+
+				<div class="form-group required row">
+
+					<label for="email" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">E-Mail</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="email" id="email" value="{{ user.email }}" required>
+					</div>
+
+				</div>
+
+				<div class="form-group row">
+
+					<label for="phone" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Phone</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="phone" id="phone" value="{{ user.phone }}">
+					</div>
+
+					<label for="fax" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">Fax</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="text" class="form-control form-control-sm" name="fax" id="fax" value="{{ user.fax }}">
+					</div>
+
+				</div>
+
+				<div class="row">
+				</div>
+
+				<div class="row security">
+				{# <div class="form-group row">
+
+					<label for="sec_support" class="col-6 col-md-6 col-xl-6 col-form-label-sm txt-right">SuperUser</label>
+					<div class="col-6 col-md-6 col-xl-6">
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" name="sec_support" id="sec_admin" value="sec_support" {% if user.sec_support == 1 %} checked{% endif %}>
+						</div>
+					</div>
+
+				</div> #}
+					<div class="col-12 col-md-6">
+					{% if (sec_support == 1) or (sec_admin == 1) %}
+						<div class="w-100 form-section-heading">Security</div>
+						<div class="form-group row">
+
+							<label for="sec_sales" class="col-6 col-md-6 col-xl-6 col-form-label-sm txt-right">Sales</label>
+							<div class="col-6 col-md-6 col-xl-6">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" name="sec_sales" id="sec_sales" value="sec_sales"{% if user.sec_sales == 1 %} checked{% endif %}>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="form-group row">
+
+							<label for="sec_service" class="col-6 col-md-6 col-xl-6 col-form-label-sm txt-right">Service</label>
+							<div class="col-6 col-md-6 col-xl-6">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" name="sec_service" id="sec_service" value="sec_service"{% if user.sec_service == 1 %} checked{% endif %}>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="form-group row">
+
+							<label for="sec_manager" class="col-6 col-md-6 col-xl-6 col-form-label-sm txt-right">Manager</label>
+							<div class="col-6 col-md-6 col-xl-6">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" name="sec_manager" id="sec_manager" value="sec_manager"{% if user.sec_manager == 1 %} checked{% endif %}>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="form-group row">
+
+							<label for="sec_admin" class="col-6 col-md-6 col-xl-6 col-form-label-sm txt-right">Admin</label>
+							<div class="col-6 col-md-6 col-xl-6">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" name="sec_admin" id="sec_admin" value="sec_admin"{% if user.sec_admin == 1 %} checked{% endif %}>
+								</div>
+							</div>
+
+						</div>
+
+
+						<div class="form-group row">
+							<div class="w-100 form-section-heading" style="margin-top:0px; margin-bottom:0px; font-size:14px">Special Permission</div>
+							<label for="sec_delete" class="col-6 col-md-6 col-xl-6 col-form-label-sm txt-right">Delete</label>
+							<div class="col-6 col-md-3 col-xl-2"  style=" margin-bottom:20px">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" name="sec_delete" id="sec_delete" value="sec_delete"{% if user.sec_delete == 1 %} checked{% endif %}>
+								</div>
+							</div>
+
+							<label for="sec_deals_permission" class="col-6 col-md-6 col-xl-6 col-form-label-sm txt-right">Lock / Unlock Deal</label>
+							<div class="col-6 col-md-3 col-xl-2">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" name="sec_deals_permission" id="sec_deals_permission" value="sec_deals_permission"{% if user.sec_deals_permission == 1 %} checked{% endif %}>
+								</div>
+							</div>
+						</div>
+						{% endif %}
+
+						<div class="row" style="margin-top:20px">
+
+							<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-4 offset-xl-4">
+								<button id="user_form" type="submit" class="btn btn-primary btn-sm btn-block user-form">Submit</button>
+							</div>
+
+						</div>
+					</div>
+					
+					{% if action != 'insert' %}
+					<div class="col-12 col-md-6">
+						<div class="w-100 form-section-heading">Password</div>
+						<div class="form-group required row">
+							<label for="password" class="col-6 col-md-6 col-xl-4 col-form-label-sm txt-right">Current Password</label>
+							<div class="col-6 col-md-6 col-xl-4">
+								<input type="password" class="form-control form-control-sm" name="old_password" id="old_password">
+							</div>
+						</div>
+						<div class="form-group required row">
+							<label for="password" class="col-6 col-md-6 col-xl-4 col-form-label-sm txt-right">New Password</label>
+							<div class="col-6 col-md-6 col-xl-4">
+								<input type="password" class="form-control form-control-sm" name="new_password" id="new_password">
+							</div>
+						</div>
+						<div class="form-group required row">
+							<label for="password" class="col-6 col-md-6 col-xl-4 col-form-label-sm txt-right">Confirm Password</label>
+							<div class="col-6 col-md-6 col-xl-4">
+								<input type="password" class="form-control form-control-sm" name="confirm" id="confirm">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="password" class="col-6 col-md-6 col-xl-4 col-form-label-sm txt-right">&nbsp;</label>
+						</div>
+						<div class="form-group row" style="margin-top: 30px;">
+
+							<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-4 offset-xl-4">
+								<button type="button" class="btn btn-primary btn-sm btn-block user-form" id="confirm_password">Confirm</button>
+							</div>
+
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</form>
+		</div>
+		{% if affiliates|length > 0 %}
+		<div class="container p-4">
+			<div class="row">
+				<div class="w-100 form-section-heading">Affiliation</div>
+			</div>
+			{% for affiliate in affiliates %}
+			{% if session.SEC_ADMIN == '1' %}
+			<div class="form-group row ml-4 pl-4">
+				<div class="form-check mr-4">
+					{% if affiliate.id in user.affiliation %}
+						<input type="checkbox" class="form-check-input affiliate-chk" id="chk_{{ affiliate.id }}" name="{{ affiliate.id }}" checked>
+					{% elseif affiliate.id == user.company_id %}
+						<input type="checkbox" class="form-check-input affiliate-chk" id="chk_{{ affiliate.id }}" name="{{ affiliate.id }}" checked>
+					{% else %}
+						<input type="checkbox" class="form-check-input affiliate-chk" id="chk_{{ affiliate.id }}" name="{{ affiliate.id }}">
+					{% endif %}
+				</div>
+				<label for="chk_{{ affiliate.id }}" class="col-form-label-sm">{{ affiliate.val }}</label>
+
+			</div>
+			{% elseif affiliate.id in user.affiliation %}
+				<div class="form-group row ml-4 pl-4">
+					<label for="chk_{{ affiliate.id }}" class="col-form-label-sm col-sm-6 col-md-3">{{ affiliate.val }}</label>
+				</div>
+			{% endif %}
+			{% endfor %}
+			{% if session.SEC_ADMIN == '1' %}
+			<div class="row mt-3">
+				<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-2 offset-xl-2">
+					<button type="submit" id="submit_affiliate" class="btn btn-primary btn-sm btn-block">Submit</button>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+		{% endif %}
+	</div>
+	<script language = "JavaScript">
+	
+		$("#user_form").submit(function(e){
+			e.preventDefault();
+			{# if($('.security .form-check-input:checked').length == 0) {
+				toastr.warning("Please select security types","Warning");
+				return;
+			}
+			else{
+				var formData = new FormData(this);
+				$.ajax({
+					type:'POST',
+					url: "admin/users",
+					data: formData,
+					cache: false,
+					contentType: false,
+					processData: false,
+					success: function(data) {
+						toastr.success("Record updated successfully completed.","Success");
+						window.location.href = "admin/users"
+					},
+					error: function(data){
+						console.log(data)
+					}
+				})
+			} #}
+
+			var formData = new FormData(this);
+				$.ajax({
+					type:'POST',
+					url: "admin/users",
+					data: formData,
+					cache: false,
+					dataType:'json',
+					contentType: false,
+					processData: false,
+					success: function(data) {
+						if(data.type == 'error'){
+							toastr.error(data.msg, "Error");
+							
+							setTimeout(function() { 
+						        location.reload();
+						    }, 3000);
+						}else{
+							toastr.success(data.msg, "Success");
+							setTimeout(function() { 
+						        window.location.href = "admin/users"
+						    }, 2000);
+						}
+						
+						//window.location.href = "admin/users"
+					},
+					error: function(data){
+						console.log(data)
+					}
+				})
+		})
+
+		$("#confirm_password").click(function(){
+			var old_pass = $("#old_password").val();
+			var new_pass = $("#new_password").val();
+			var confirm = $("#confirm").val();
+			var user_id = $("#user_id").val();
+			var flag = true;
+			$('input:password').each(function(i, e){
+				if(e.value == '')
+				{
+					flag = false
+				}
+			});
+			if(flag === false) {
+				toastr.warning("Please fill all password fields","Warning");
+				return;
+			}
+			if(new_pass != confirm) {
+				toastr.warning("Confirm password doesn't match!","Warning");
+				return;
+			}
+			if(new_pass == old_pass) {
+				toastr.warning("Your old password and new password are same. Please add a different new Password!","Warning");
+				return;
+			}
+			$.ajax({
+				type:"POST",
+				url: "admin/users",
+				data: {
+					old_pass : old_pass,
+					new_pass : new_pass,
+					action : 'reset_pwd',
+					id: user_id
+				},
+				dataType:'json',
+				// cache:false,
+				// contentType:false,
+				// processData:false,
+				success:function(data){
+					if(data.type == 'error'){
+						toastr.error(data.msg, "Error", {timeOut: 5000});
+					}else{
+						toastr.success(data.msg, "Success");
+					}
+					setTimeout(function(){
+						location.reload()
+					}, 5000);
+				},
+				error:function(data){
+					toastr.error(data.responseText ? data.responseText : data,"error")
+				}
+			})
+		})
+		$("#submit_affiliate").click(function(){
+			var result = []
+			$('.affiliate-chk').each(function(i, e){
+				if(e.checked) {					
+					result.push(e.name);
+				}
+			});
+			var user_id = $("#user_id").val();
+			if(!user_id) {
+				toastr.success('Please save the user');
+			}
+			$.ajax({
+				type:"POST",
+				url: "admin/users",
+				data: {
+					affiliation: result,
+					id: user_id
+				},
+				// dataType:'json',
+				// cache:false,
+				// contentType:false,
+				// processData:false,
+				success:function(data){
+					toastr.success("Successfully updated affiliation", "Success");
+					setTimeout(function(){
+						location.reload()
+					}, 2000)
+				},
+				error:function(data){
+					toastr.error(data.responseText ? data.responseText : data,"error")
+				}
+			})
+		})
+	</script>
+{% endmacro %}
+
+{% macro tpl_userPasswordResetForm() %}
+	<div class="form-ft">
+		<div class="container">
+			<form name="reset_password" action="admin/users" method="POST">
+				<input type="hidden" name="action" value="{{ hidden_input_array.action }}">
+				<input type="hidden" name="id" value="{{ hidden_input_array.id }}">
+				<input type="hidden" name="nonce" value="{{ hidden_input_array.nonce }}">
+
+				<div class="row">
+					<div class="w-100 form-section-heading">Password Reset</div>
+				</div>
+
+				<div class="form-group row">
+
+					<label for="name_first" class="col-6 col-md-3 col-xl-2 col-form-label-sm txt-right">New Password</label>
+					<div class="col-6 col-md-3 col-xl-2">
+						<input type="password" class="form-control form-control-sm" name="password" id="password" required>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-6 offset-6 col-md-3 offset-md-3 col-xl-2 offset-xl-2">
+						<button type="submit" class="btn btn-primary btn-sm btn-block">Submit</button>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+{% endmacro %}

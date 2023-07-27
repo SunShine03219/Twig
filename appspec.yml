@@ -1,0 +1,14 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/fundingtracker/
+hooks:
+  BeforeInstall:
+    - location: script_before.sh
+      timeout: 30
+      runas: root
+  AfterInstall:
+    - location: script_after.sh
+      timeout: 30
+      runas: root

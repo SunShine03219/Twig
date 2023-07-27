@@ -1,0 +1,318 @@
+{% extends 'tpl.container.twig' %}
+
+{% import 'tpl.sidebar.twig' as sidebar %}
+{% import 'tpl.topbar.twig' as topbar %}
+
+{% block tpl_grid %}
+	<div class="container-fluid">
+		{{ sidebar.tpl_sidebar }}
+		<div id="stage">
+			{{ topbar.tpl_topbar }}
+			<div id="content-container">
+				<div id="content">
+					<div class="report-table mb-2 table-responsive">
+						<table class="top-table">
+							<tbody>
+								<tr>
+									<td class="theader">Average Time Approved:</td>
+									<td class="tnum">{{days}}day(s)</td>
+								</tr>
+								<tr>
+									<td class="theader">Deals:</td>
+									<td class="tnum">{{companytotal.total_gross_average}}</td>
+									<td class="theader">Total Gross:</td>
+									<td class="tnum">${{companytotal.total_gross | number_format(2, '.', ',')}}</td>
+									<td class="theader">Front End:</td>
+									<td class="tnum">${{companytotal.frontend | number_format(2, '.', ',')}}</td>
+									<td class="theader">Back End:</td>
+									{% if companytotal.backend %}
+										<td class="tnum">${{companytotal.backend | number_format(2, '.', ',')}}</td>
+									{% else %}
+										<td class="tnum"></td>
+									{% endif %}
+								</tr>
+								<tr>
+									<td class="theader">Financed Deals:</td>
+									<td class="tnum">{{companytotal.financed_deals}}</td>
+									<td class="theader">Amount Financed:</td>
+									<td class="tnum">${{companytotal.financed_total | number_format(2, '.', ',')}}</td>
+									<td class="theader">Funded:</td>
+									<td class="tnum">${{companytotal.funded_total | number_format(2, '.', ',')}}</td>
+									<td class="theader">Unfunded:</td>
+									{% if companytotal.unfunded_total %}
+										<td class="tnum">${{companytotal.unfunded_total | number_format(2, '.', ',')}}</td>
+									{% else %}
+										<td class="tnum"></td>
+									{% endif %}
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="report-table table-responsive">
+						<table class="table table-striped">
+							<tr class="heading">
+								{# <th class="ttxt">Date Sold<i class="fas fa-caret-up"></i></th> #}
+								{% if sortdir == "desc" and sortid == "date_sold" %}
+								<th class="sortable ttxt" onclick='javascript:sortColumn("date_sold", "asc")'>Date Sold
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable ttxt" onclick='javascript:sortColumn("date_sold", "desc")'>Date Sold
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="ttxt">Date Approved</th> #}
+								{% if sortdir == "desc" and sortid == "approved_date_f" %}
+								<th class="sortable ttxt" onclick='javascript:sortColumn("approved_date_f", "asc")'>Date Approved
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable ttxt" onclick='javascript:sortColumn("approved_date_f", "desc")'>Date Approved
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tcen">Client</th> #}
+								{% if sortdir == "desc" and sortid == "client_name" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("client_name", "asc")'>Client
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("client_name", "desc")'>Client
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tcen">Stock</th> #}
+								{% if sortdir == "desc" and sortid == "stock" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("stock", "asc")'>Stock
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("stock", "desc")'>Stock
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tcen">Make</th> #}
+								{% if sortdir == "desc" and sortid == "make" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("make", "asc")'>Make
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("make", "desc")'>Make
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tcen">Model</th> #}
+								{% if sortdir == "desc" and sortid == "model" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("model", "asc")'>Model
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("model", "desc")'>Model
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tcen">Finance Person</th> #}
+								{% if sortdir == "desc" and sortid == "financeperson" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("financeperson", "asc")'>Finance Person
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("financeperson", "desc")'>Finance Person
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tnum">Front End</th> #}
+								{% if sortdir == "desc" and sortid == "frontend" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("frontend", "asc")'>Front End
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("frontend", "desc")'>Front End
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tnum">Back End</th> #}
+								{% if sortdir == "desc" and sortid == "backend" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("backend", "asc")'>Back End
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("backend", "desc")'>Back End
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tnum">Total Gross</th> #}
+								{% if sortdir == "desc" and sortid == "total_gross" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("total_gross", "asc")'>Total Gross
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("total_gross", "desc")'>Total Gross
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+								{# <th class="tnum">Average Time</th> #}
+								{% if sortdir == "desc" and sortid == "approved_avarege" %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("approved_avarege", "asc")'>Average Time
+									<i class="fas fa-caret-down"></i>
+								</th>
+								{% else %}
+								<th class="sortable tcen" onclick='javascript:sortColumn("approved_avarege", "desc")'>Average Time
+									<i class="fas fa-caret-up"></i>
+								</th>
+								{% endif %}
+							</tr>
+							{% for deal in deals %}
+								<tr class="deal-row" data-id="{{ deal.deal_id }}" style="border-bottom: 1px solid #dadada">
+									<td class="tnum">{{deal.date_sold_f|date("m/d/Y")}}</td>
+									<td class="tnum">{{deal.approved_date_f|date("m/d/Y")}}</td>
+									<td class="tcen">{{deal.client_name}}</td>
+									<td class="tcen">{{deal.stock}}</td>
+									<td class="tcen">{{deal.make}}</td>
+									<td class="tcen">{{deal.model}}</td>
+									<td class="tcen">{{deal.financeperson}}</td>
+									{# <td class="tnum">${{deal.frontend | number_format(2, '.', ',')}}</td> #}
+									{% if '-' in deal.frontend %}
+										<td class="tnum text-danger">
+										$({{deal.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{deal.frontend | number_format(2, '.', ',')}}
+										</td>
+									{% endif %}
+									{# <td class="tnum">${{deal.backend | number_format(2, '.', ',')}}</td> #}
+									{% if '-' in deal.backend %}
+										<td class="tnum text-danger">
+										$({{deal.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{deal.backend | number_format(2, '.', ',')}}
+										</td>
+									{% endif %}
+									{# <td class="tnum">${{deal.total_gross | number_format(2, '.', ',')}}</td> #}
+									{% if '-' in deal.total_gross %}
+										<td class="tnum text-danger">
+										$({{deal.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+										</td>
+									{% else %}
+										<td class="tnum">
+										${{deal.total_gross | number_format(2, '.', ',')}}
+										</td>
+									{% endif %}
+									<td class="tnum">{{deal.approved_avarege}}</td>
+								</tr>
+							{% endfor %}
+							<tr >
+								<th >Total</th>
+								<th class="tnum"></th>
+								<th class="tcen"></th>
+								<th class="tcen">{{companytotal.deals}}</th>
+								<th class="tcen"></th>
+								<th class="tcen"></th>
+								<th class="tcen"></th>
+								{# <th class="tnum">${{companytotal.frontend | number_format(2, '.', ',')}}</th> #}
+								{% if '-' in companytotal.frontend %}
+									<th class="tnum text-danger">
+									$({{companytotal.frontend | replace({'-': ''}) | number_format(2, '.', ',') }})
+									</th>
+								{% else %}
+									<th class="tnum">
+									${{companytotal.frontend | number_format(2, '.', ',')}}
+									</th>
+								{% endif %}
+								{# <th class="tnum">${{companytotal.backend | number_format(2, '.', ',')}}</th> #}
+								{% if '-' in companytotal.backend %}
+									<th class="tnum text-danger">
+									$({{companytotal.backend | replace({'-': ''}) | number_format(2, '.', ',') }})
+									</th>
+								{% else %}
+									<th class="tnum">
+									${{companytotal.backend | number_format(2, '.', ',')}}
+									</th>
+								{% endif %}
+								{# <th class="tnum">${{companytotal.total_gross | number_format(2, '.', ',')}}</th> #}
+								{% if '-' in companytotal.total_gross %}
+									<th class="tnum text-danger">
+									$({{companytotal.total_gross | replace({'-': ''}) | number_format(2, '.', ',') }})
+									</th>
+								{% else %}
+									<th class="tnum">
+									${{companytotal.total_gross | number_format(2, '.', ',')}}
+									</th>
+								{% endif %}
+								<th class="tnum"></th>
+							</tr>
+							<tr >
+								<th>Average</th>
+								<th class="tnum"></th>
+								<th class="tcen"></th>
+								<th class="tcen"></th>
+								<th class="tcen"></th>
+								<th class="tcen"></th>
+								<th class="tcen"></th>
+								<th class="tnum"></th>
+								<th class="tnum"></th>
+								{# <th class="tnum">${{companytotal.total_gross_average}}</th> #}
+								{% if '-' in companytotal.total_gross_average %}
+									<th class="tnum text-danger">
+									$({{companytotal.total_gross_average | number_format(2, '.', ',') | replace({'-': ''}) }})
+									</th>
+								{% else %}
+									<th class="tnum">
+									${{companytotal.total_gross_average | number_format(2, '.', ',')}}
+									</th>
+								{% endif %}
+								<th class="tnum"></th>
+							</tr>
+							{% if companytotal.projected %}
+							<tr >
+								<th>Projected</th>
+								<th class="tnum"></th>
+								<th class="tcen"></th>
+								<th class="tcen">{{companytotal.projected.deals}}</th>
+								<th class="tcen"></th>
+								<th class="tcen"></th>
+								<th class="tcen"></th>
+								{# <th class="tnum">${{companytotal.projected.frontend}}</th> #}
+								{% if '-' in companytotal.projected.frontend %}
+									<th class="tnum text-danger">
+									$({{companytotal.projected.frontend | replace({'-': ''})}})
+									</th>
+								{% else %}
+									<th class="tnum">
+									${{companytotal.projected.frontend}}
+									</th>
+								{% endif %}
+								{# <th class="tnum">${{companytotal.projected.backend }}</th> #}
+								{% if '-' in companytotal.projected.backend %}
+									<th class="tnum text-danger">
+									$({{companytotal.projected.backend | replace({'-': ''})}})
+									</th>
+								{% else %}
+									<th class="tnum">
+									${{companytotal.projected.backend}}
+									</th>
+								{% endif %}
+								{# <th class="tnum">${{companytotal.projected.total_gross}}</th> #}
+								{% if '-' in companytotal.projected.total_gross %}
+									<th class="tnum text-danger">
+									$({{companytotal.projected.total_gross | replace({'-': ''})}})
+									</th>
+								{% else %}
+									<th class="tnum">
+									${{companytotal.projected.total_gross}}
+									</th>
+								{% endif %}
+								<th class="tnum"></th>
+							</tr>
+							{% endif %}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
